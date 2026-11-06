@@ -15,7 +15,7 @@
 
 ## ✅ 셀프 체크리스트
 
-- [ ] `pnpm lint` / `pnpm exec tsc --noEmit` 로컬 통과 확인
+- [ ] `pnpm lint` / `pnpm build` 로컬 통과 확인
 - [ ] 변경 범위 셀프 리뷰 완료
 - [ ] UI 변경 시 스크린샷 첨부함
 

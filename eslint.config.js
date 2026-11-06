@@ -5,6 +5,7 @@ import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import boundaries from 'eslint-plugin-boundaries'
+import eslintConfigPrettier from 'eslint-config-prettier/flat'
 import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
@@ -111,4 +112,6 @@ export default defineConfig([
     ignores: ['src/shared/lib/appsInToss/**'],
     rules: { 'no-restricted-imports': SDK_RESTRICTION },
   },
+  // Prettier와 겹치는 ESLint 스타일 규칙을 끕니다. 다른 설정을 덮어써야 하므로 반드시 맨 마지막에 둡니다.
+  eslintConfigPrettier,
 ])

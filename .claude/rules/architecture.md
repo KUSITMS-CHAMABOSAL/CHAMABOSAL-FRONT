@@ -305,7 +305,7 @@ src/
 │   ├── App.tsx
 │   ├── bootstrap/          # 사용자 식별, 내비게이션 바 하트 버튼, 서버 시간 보정
 │   ├── providers/          # TDSMobileAITProvider, QueryClientProvider
-│   ├── router/             # routes.tsx, useTossBackHandler.ts, guards/
+│   ├── router/             # routes.tsx, guards/
 │   ├── layouts/            # RoomTabLayout(하단 탭바), PlainLayout
 │   └── styles/             # index.css
 │

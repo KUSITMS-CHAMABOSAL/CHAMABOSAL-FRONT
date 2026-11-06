@@ -19,6 +19,12 @@
 
 - 한 커밋에는 한 type의 변경만 담습니다. 기능 로직과 시각 작업이 섞이면 `feat`와 `ui`로 나눕니다.
 
+## 커밋 시 자동 검사 (husky)
+
+- **커밋 전(pre-commit):** lint-staged가 스테이징된 파일만 검사합니다. `.ts`·`.tsx`는 `eslint --fix` 후 `prettier --write`, 나머지 파일은 `prettier --write`를 실행합니다. ESLint 레이어 규칙에 걸리면 커밋이 거부됩니다.
+- **커밋 메시지(commit-msg):** commitlint가 위 형식과 type 7개를 검사합니다. 설정은 `commitlint.config.js`입니다.
+- 검사를 우회하는 `git commit --no-verify`는 쓰지 않습니다. 규칙에 걸리면 코드나 메시지를 고칩니다.
+
 ## 이슈와 브랜치
 
 - 이슈는 `.github/ISSUE_TEMPLATE/issue.yml` 템플릿으로 만듭니다.

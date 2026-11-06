@@ -10,7 +10,7 @@ import tseslint from "typescript-eslint";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 /*
- * FSD 레이어 규칙 (.claude/rules/architecture.md)
+ * FSD 레이어 규칙 (.claude/rules/code.md)
  *
  * 레이어: app > pages > widgets > features > entities > shared
  * - 상위 레이어만 하위 레이어를 import할 수 있습니다.
@@ -58,7 +58,7 @@ const boundariesConfig = {
       {
         default: "disallow",
         message:
-          "FSD 레이어 규칙 위반: {{from.element.type}} → {{to.element.type}}. 상위 레이어만 하위 레이어를 import할 수 있고, 같은 레이어의 다른 슬라이스는 import할 수 없으며, 슬라이스 밖에서는 배럴(index.ts)로만 import합니다. (.claude/rules/architecture.md)",
+          "FSD 레이어 규칙 위반: {{from.element.type}} → {{to.element.type}}. 상위 레이어만 하위 레이어를 import할 수 있고, 같은 레이어의 다른 슬라이스는 import할 수 없으며, 슬라이스 밖에서는 배럴(index.ts)로만 import합니다. (.claude/rules/code.md)",
         policies: [
           // 같은 슬라이스 내부는 자유롭게
           ...SLICE_LAYERS.map(type => ({

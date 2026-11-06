@@ -1,5 +1,5 @@
 /*
- * 커밋 메시지 규칙 (.claude/rules/commit.md)
+ * 커밋 메시지 규칙 (.claude/skills/commit/SKILL.md)
  * 형식: `{type}: {한국어 설명}`
  */
 export default {

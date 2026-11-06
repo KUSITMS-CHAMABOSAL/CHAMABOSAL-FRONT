@@ -1,0 +1,23 @@
+import type { ButtonHTMLAttributes, ReactNode } from "react";
+
+// TDS는 앱인토스 환경 전용이라 jsdom에서 오버레이가 정상 동작하지 않습니다. 실제 렌더링은 브라우저에서 확인합니다.
+export const Button = (props: ButtonHTMLAttributes<HTMLButtonElement>) => <button type="button" {...props} />;
+
+interface ConfirmDialogProps {
+  open: boolean;
+  title?: ReactNode;
+  cancelButton?: ReactNode;
+  confirmButton?: ReactNode;
+}
+
+export const ConfirmDialog = ({ open, title, cancelButton, confirmButton }: ConfirmDialogProps) =>
+  open ? (
+    <div role="alertdialog">
+      <p>{title}</p>
+      {cancelButton}
+      {confirmButton}
+    </div>
+  ) : null;
+
+ConfirmDialog.CancelButton = Button;
+ConfirmDialog.ConfirmButton = Button;

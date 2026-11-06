@@ -14,18 +14,30 @@ importers:
       '@emotion/react':
         specifier: ^11
         version: 11.14.0(@types/react@18.3.31)(react@18.3.1)
+      '@tanstack/react-query':
+        specifier: ^5.106.1
+        version: 5.106.1(@types/react@18.3.31)(react@18.3.1)
       '@toss/tds-mobile':
         specifier: ^2.5.1
         version: 2.5.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@toss/tds-mobile-ait':
         specifier: ^2.5.1
         version: 2.5.1(@apps-in-toss/web-framework@3.9.0(typanion@3.14.0)(typescript@6.0.3))(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@toss/tds-mobile@2.5.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       react:
         specifier: ^18.3.1
         version: 18.3.1
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
+      react-router:
+        specifier: ^7.18.5
+        version: 7.18.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      tailwind-merge:
+        specifier: ^3.7.0
+        version: 3.7.0
     devDependencies:
       '@apps-in-toss/devtools':
         specifier: ^3.9.0
@@ -632,6 +644,18 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
 
+  '@tanstack/query-core@5.106.1':
+    resolution: {integrity: sha512-erYv/UACddcdgjOL2ixmFdK6tO/AVBeUcTCOtX2N51yZpDQ2U7KJ+xgB/bCNfsF3uoCDTqGHEEbDiFsIO9YUmQ==}
+
+  '@tanstack/react-query@5.106.1':
+    resolution: {integrity: sha512-ORDvJG/DSfmlFL9lQ8GDkE0VjtQbLeRDY7BL8xjKkQFGLfjFGfNWNuteWgPqA2gPJgLLuWfQ7IX0FlsHCJriyg==}
+    peerDependencies:
+      '@types/react': ^18 || ^19
+      react: ^18 || ^19
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
   '@toss/tds-colors@0.1.0':
     resolution: {integrity: sha512-NVV6vpcqobw8NBD7EKFS+muvmiyDsUItzzko9ib2RufU2DywlSb4A/4EyBO9EFV/Ff28ODrWySIuS6MjzDpiPw==}
 
@@ -834,6 +858,10 @@ packages:
     resolution: {integrity: sha512-neHB9xuzh/wk0dIHweyAXv2aPGZIVk3pLMe+/RNzINf17fe0OG96QroktYAUm7SM1PBnzTabaLboqqxDyMU+SQ==}
     engines: {node: '>=6'}
 
+  clsx@2.1.1:
+    resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
+    engines: {node: '>=6'}
+
   commondir@1.0.1:
     resolution: {integrity: sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==}
 
@@ -848,6 +876,10 @@ packages:
 
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
+
+  cookie@1.1.1:
+    resolution: {integrity: sha512-ei8Aos7ja0weRpFzJnEA9UHJ/7XQmqglbRwnf2ATjcB9Wq874VKH9kfjjirM6UhU2/E5fFYadylyhFldcqSidQ==}
+    engines: {node: '>=18'}
 
   cosmiconfig@7.1.0:
     resolution: {integrity: sha512-AdmX6xUzdNASswsFtmwSt7Vj8po9IuqXm0UXz7QKPuEUmPB4XyjGfaAr2PSuELMwkRMVH1EpIkX5bTZGRB3eCA==}
@@ -1473,6 +1505,16 @@ packages:
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
+  react-router@7.18.5:
+    resolution: {integrity: sha512-dTgvcXDOrLPrlLHrcZAqWveiK1hMSqN+rGAJzegP8HtmNkfRxOoshGWBNX3ZJ0cZjOHkRdlUJtaIhZMLLyGyPw==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+
   react@18.3.1:
     resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
     engines: {node: '>=0.10.0'}
@@ -1515,6 +1557,9 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  set-cookie-parser@2.7.3:
+    resolution: {integrity: sha512-irZHtTqurLna57KQG/s+fzOwv/J6XSH4cs8M/vsrY3uCaQ3S6+QJguAH0WdN47SXlk82voMZ4naWMQf8fdEoIg==}
+
   shallow-clone@3.0.1:
     resolution: {integrity: sha512-/6KqX+GVUdqPuPPd2LxDDxzX6CAbjJehAAOKlNpqqUpAqPM6HeL8f+o3a+JsyGjn2lv0WY8UsTgUJjU9Ok55NA==}
     engines: {node: '>=8'}
@@ -1555,6 +1600,9 @@ packages:
   supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
+
+  tailwind-merge@3.7.0:
+    resolution: {integrity: sha512-XPPUyAc+cvspz3lHTcR/QgPfW2A0lv/xQNIjX3HGhLR+Nq2lHaLq5MtTesHn8GUr3W3DguT2KT5x3NVgRtYwmA==}
 
   tailwindcss@4.3.3:
     resolution: {integrity: sha512-gOhV3P7ufE62QDGg1zVaTgCR+EtPv92k2nIhVcVKcLmxT1sUBsQGhnZj175j+MqRt4zLF7ic+sCYjfhxMxj7YQ==}
@@ -2344,6 +2392,15 @@ snapshots:
       tailwindcss: 4.3.3
       vite: 8.3.5(@types/node@24.19.2)(jiti@2.7.0)
 
+  '@tanstack/query-core@5.106.1': {}
+
+  '@tanstack/react-query@5.106.1(@types/react@18.3.31)(react@18.3.1)':
+    dependencies:
+      '@tanstack/query-core': 5.106.1
+      react: 18.3.1
+    optionalDependencies:
+      '@types/react': 18.3.31
+
   '@toss/tds-colors@0.1.0': {}
 
   '@toss/tds-mobile-ait@2.5.1(@apps-in-toss/web-framework@3.9.0(typanion@3.14.0)(typescript@6.0.3))(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@toss/tds-mobile@2.5.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
@@ -2571,6 +2628,8 @@ snapshots:
       kind-of: 6.0.3
       shallow-clone: 3.0.1
 
+  clsx@2.1.1: {}
+
   commondir@1.0.1: {}
 
   confbox@0.2.4: {}
@@ -2580,6 +2639,8 @@ snapshots:
   convert-source-map@1.9.0: {}
 
   convert-source-map@2.0.0: {}
+
+  cookie@1.1.1: {}
 
   cosmiconfig@7.1.0:
     dependencies:
@@ -3143,6 +3204,14 @@ snapshots:
 
   react-is@16.13.1: {}
 
+  react-router@7.18.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      cookie: 1.1.1
+      react: 18.3.1
+      set-cookie-parser: 2.7.3
+    optionalDependencies:
+      react-dom: 18.3.1(react@18.3.1)
+
   react@18.3.1:
     dependencies:
       loose-envify: 1.4.0
@@ -3197,6 +3266,8 @@ snapshots:
 
   semver@7.8.5: {}
 
+  set-cookie-parser@2.7.3: {}
+
   shallow-clone@3.0.1:
     dependencies:
       kind-of: 6.0.3
@@ -3225,6 +3296,8 @@ snapshots:
   stylis@4.2.0: {}
 
   supports-preserve-symlinks-flag@1.0.0: {}
+
+  tailwind-merge@3.7.0: {}
 
   tailwindcss@4.3.3: {}
 

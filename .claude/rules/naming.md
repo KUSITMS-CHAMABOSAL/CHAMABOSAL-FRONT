@@ -42,5 +42,5 @@ export default BosalStatusBadge;
 - 사용하는 쪽에서는 컴포넌트처럼 불러와서 Tailwind 클래스로 색상/크기를 조절합니다.
 
 ```tsx
-<HomeIcon className="text-gray-900 size-6" />
+<HomeIcon className="size-6 text-gray-900" />
 ```

@@ -15,17 +15,17 @@ paths:
   - 🔖 기본 뒤로가기가 React Router 이동 기록을 되돌리는지, 첫 화면에서 미니앱을 닫는지(검수 항목)는 QR 실기기 테스트로 확인합니다. 안 될 때만 `shared/lib/appsInToss`에 `backEvent`·`screen` 래퍼를 만들고 `app/router/`에서 처리합니다.
 - 화면 안에 자체 뒤로가기 버튼을 만들지 않습니다. 토스 뒤로가기와 동시에 보이면 검수에서 반려됩니다.
 
-| 경로 | 레이아웃 | 화면 |
-| --- | --- | --- |
-| `/` | — | 진입 분기 (방 없음 → `/intro`, 있음 → 마지막 방) |
-| `/intro` | Plain | 인트로 |
-| `/rooms/new` | Plain | 방 만들기 → 닉네임 → 보살 받기 → 초대 공유 |
-| `/invite?code=` | Plain | 초대 미리보기 → 닉네임 → 보살 받기 / 참여 불가 3종 |
-| `/rooms/:roomId` | 하단 탭 | 홈 |
-| `/rooms/:roomId/vote` | 하단 탭 | 투표 |
-| `/rooms/:roomId/vote/tap` | 하단 탭 | 정신 차려! 톡톡 |
-| `/rooms/:roomId/storehouse` | 하단 탭 | 곳간 |
-| `/rooms/:roomId/my` | 하단 탭 | 내 보살 |
-| `/rooms/:roomId/certify` | Plain | 번뇌 떨구기 |
-| `/rooms/:roomId/certify/result` | 하단 탭 | 인증 결과 |
-| `/terms`, `/privacy` | Plain | 약관 |
+| 경로                            | 레이아웃 | 화면                                               |
+| ------------------------------- | -------- | -------------------------------------------------- |
+| `/`                             | —        | 진입 분기 (방 없음 → `/intro`, 있음 → 마지막 방)   |
+| `/intro`                        | Plain    | 인트로                                             |
+| `/rooms/new`                    | Plain    | 방 만들기 → 닉네임 → 보살 받기 → 초대 공유         |
+| `/invite?code=`                 | Plain    | 초대 미리보기 → 닉네임 → 보살 받기 / 참여 불가 3종 |
+| `/rooms/:roomId`                | 하단 탭  | 홈                                                 |
+| `/rooms/:roomId/vote`           | 하단 탭  | 투표                                               |
+| `/rooms/:roomId/vote/tap`       | 하단 탭  | 정신 차려! 톡톡                                    |
+| `/rooms/:roomId/storehouse`     | 하단 탭  | 곳간                                               |
+| `/rooms/:roomId/my`             | 하단 탭  | 내 보살                                            |
+| `/rooms/:roomId/certify`        | Plain    | 번뇌 떨구기                                        |
+| `/rooms/:roomId/certify/result` | 하단 탭  | 인증 결과                                          |
+| `/terms`, `/privacy`            | Plain    | 약관                                               |

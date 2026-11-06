@@ -5,16 +5,16 @@
 
 ## 프로젝트 개요
 
-| 항목     | 내용                                                                 |
-| ------ | ------------------------------------------------------------------ |
-| 플랫폼    | 앱인토스 WebView 미니앱 (`@apps-in-toss/web-framework` 3.x)               |
-| 빌드     | Vite + React 18 + TypeScript                                       |
-| 렌더링    | CSR 전용 (앱인토스는 SSR 금지)                                              |
-| UI     | TDS (`@toss/tds-mobile`, `@toss/tds-mobile-ait`) 우선, 부족한 부분만 직접 제작 |
-| 스타일    | Tailwind CSS v4                                                    |
-| 서버 상태  | TanStack Query                                                  |
-| 라우터    | react-router (`createBrowserRouter`, loader 미사용 — 데이터는 TanStack Query)                                                    |
-| SDK 목킹 | `@apps-in-toss/devtools` (브라우저에서 SDK 동작 흉내)                        |
+| 항목            | 내용                                                                                                                                                                                   |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 플랫폼          | 앱인토스 WebView 미니앱 (`@apps-in-toss/web-framework` 3.x)                                                                                                                            |
+| 빌드            | Vite + React 18 + TypeScript                                                                                                                                                           |
+| 렌더링          | CSR 전용 (앱인토스는 SSR 금지)                                                                                                                                                         |
+| UI              | TDS (`@toss/tds-mobile`, `@toss/tds-mobile-ait`) 우선, 부족한 부분만 직접 제작                                                                                                         |
+| 스타일          | Tailwind CSS v4                                                                                                                                                                        |
+| 서버 상태       | TanStack Query                                                                                                                                                                         |
+| 라우터          | react-router (`createBrowserRouter`, loader 미사용 — 데이터는 TanStack Query)                                                                                                          |
+| SDK 목킹        | `@apps-in-toss/devtools` (브라우저에서 SDK 동작 흉내)                                                                                                                                  |
 | 클라이언트 상태 | 별도 라이브러리 없음. 서버 데이터는 TanStack Query, URL 상태는 라우터, 화면 상태는 `useState`. 멀리 떨어진 컴포넌트들이 공유하는 상태가 생길 때만 zustand를 슬라이스의 `model/`에 도입 |
 
 ---
@@ -42,14 +42,14 @@
 - Vite는 파일 기반 라우팅이 없는 SPA라서, FSD 원래 구성대로 `app`(앱 초기화·전역 설정)과 `pages`(라우트 화면)를 나눕니다.
 - 앱인토스 빌드는 `dist`의 정적 번들만 사용하므로, `src/` 내부 구조는 배포에 영향을 주지 않습니다.
 
-| 레이어 | 이 레이어에 넣는 것 | 이 레이어에 넣지 않는 것 |
-| --- | --- | --- |
-| `shared` | 도메인 개념이 전혀 없는 범용 UI/유틸/설정, 앱인토스 SDK 래퍼, API 클라이언트. 서비스 이름을 몰라도 이해되는 것들 | 보살, 방, 인증처럼 특정 화면이나 데이터 모델을 아는 코드 |
-| `entities` | 서비스에 존재하는 비즈니스 "객체"(보살, 방, 멤버, 인증, 투표, 아이템)의 데이터 모델, 조회 로직, 그 객체를 그대로 보여주기만 하는 UI | 클릭 시 상태를 바꾸거나 서버에 변경을 요청하는 로직/UI |
-| `features` | 사용자가 수행하는 하나의 "행동" — 인증 제출, 투표, 콕 찌르기, 아이템 구매 등. 그 행동에 필요한 전용 UI와 로직 | 여러 화면을 아우르는 레이아웃 구성 |
-| `widgets` | 여러 `features`/`entities`를 배치해 화면의 한 영역(섹션)을 완성한 블록 | 라우팅 자체 |
-| `pages` | 라우트 하나에 대응하는 화면. `widgets`/`features`를 배치만 함 | 조회·mutation 로직, 재사용 가능한 UI (하위 레이어로 내려보낼 것) |
-| `app` | 엔트리(`main.tsx`), Provider(TDS, QueryClient), 라우터 설정, 앱 시작 처리(사용자 식별 등), 레이아웃(하단 탭바), 전역 스타일 | 특정 화면에만 쓰이는 코드 |
+| 레이어     | 이 레이어에 넣는 것                                                                                                                 | 이 레이어에 넣지 않는 것                                         |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `shared`   | 도메인 개념이 전혀 없는 범용 UI/유틸/설정, 앱인토스 SDK 래퍼, API 클라이언트. 서비스 이름을 몰라도 이해되는 것들                    | 보살, 방, 인증처럼 특정 화면이나 데이터 모델을 아는 코드         |
+| `entities` | 서비스에 존재하는 비즈니스 "객체"(보살, 방, 멤버, 인증, 투표, 아이템)의 데이터 모델, 조회 로직, 그 객체를 그대로 보여주기만 하는 UI | 클릭 시 상태를 바꾸거나 서버에 변경을 요청하는 로직/UI           |
+| `features` | 사용자가 수행하는 하나의 "행동" — 인증 제출, 투표, 콕 찌르기, 아이템 구매 등. 그 행동에 필요한 전용 UI와 로직                       | 여러 화면을 아우르는 레이아웃 구성                               |
+| `widgets`  | 여러 `features`/`entities`를 배치해 화면의 한 영역(섹션)을 완성한 블록                                                              | 라우팅 자체                                                      |
+| `pages`    | 라우트 하나에 대응하는 화면. `widgets`/`features`를 배치만 함                                                                       | 조회·mutation 로직, 재사용 가능한 UI (하위 레이어로 내려보낼 것) |
+| `app`      | 엔트리(`main.tsx`), Provider(TDS, QueryClient), 라우터 설정, 앱 시작 처리(사용자 식별 등), 레이아웃(하단 탭바), 전역 스타일         | 특정 화면에만 쓰이는 코드                                        |
 
 ### 레이어 선택 판별법
 
@@ -79,13 +79,13 @@
 
 ### `entities` vs `features` 상세 비교
 
-|  | `entities` | `features` |
-| --- | --- | --- |
-| 성격 | 명사 — "이 서비스에 어떤 객체가 있는가" | 동사 — "사용자가 무엇을 하는가" |
-| 내용 | 데이터 모델(타입), 기본 조회 API/훅, 순수 표시용 UI | 폼, 도메인 로직, 사용자 액션이 포함된 전용 UI |
-| 클릭 시 동작 | 없음 (표시만) | 있음 (상태 변경, API mutation, 시트/다이얼로그 오픈) |
-| 재사용 범위 | 여러 feature/widget에서 공통 참조 | 특정 화면·역할에 종속 |
-| 판별 테스트 | 이 코드를 지워도 "그 객체"라는 개념은 서비스에 여전히 존재하는가? → Yes면 entities | 이 코드를 지우면 그 "행동" 자체가 서비스에서 사라지는가? → Yes면 features |
+|              | `entities`                                                                         | `features`                                                                |
+| ------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| 성격         | 명사 — "이 서비스에 어떤 객체가 있는가"                                            | 동사 — "사용자가 무엇을 하는가"                                           |
+| 내용         | 데이터 모델(타입), 기본 조회 API/훅, 순수 표시용 UI                                | 폼, 도메인 로직, 사용자 액션이 포함된 전용 UI                             |
+| 클릭 시 동작 | 없음 (표시만)                                                                      | 있음 (상태 변경, API mutation, 시트/다이얼로그 오픈)                      |
+| 재사용 범위  | 여러 feature/widget에서 공통 참조                                                  | 특정 화면·역할에 종속                                                     |
+| 판별 테스트  | 이 코드를 지워도 "그 객체"라는 개념은 서비스에 여전히 존재하는가? → Yes면 entities | 이 코드를 지우면 그 "행동" 자체가 서비스에서 사라지는가? → Yes면 features |
 
 **조합 예시 — 곳간 아이템 카드**
 
@@ -94,12 +94,12 @@
 
 ```tsx
 // widgets/storehouse/itemShop/ui/ItemShop.tsx
-import { ItemCard } from "@/entities/item";                         // 표시는 entities
-import { BuyItemButton } from "@/features/storehouse/buyItem";       // 행동은 features
+import { ItemCard } from "@/entities/item"; // 표시는 entities
+import { BuyItemButton } from "@/features/storehouse/buyItem"; // 행동은 features
 import { EquipItemButton } from "@/features/storehouse/equipItem";
 
 const ItemShop = ({ items }: ItemShopProps) => {
-  return items.map((item) => (
+  return items.map(item => (
     <ItemCard
       key={item.id}
       item={item}
@@ -127,17 +127,17 @@ entities/{objectName}
 - `{featureName}` / `{sectionName}`: 실제로 하는 일을 나타내는 이름 (동사 + 목적어 권장).
 - `entities`는 역할이 아니라 객체 단위로만 나눕니다 (역할 하위 폴더 없음).
 
-| role | 범위 | 예시 |
-| --- | --- | --- |
-| `onboarding` | 인트로, 닉네임, 보살 받기 | `features/onboarding/nicknameForm` |
-| `room` | 방 만들기, 초대, 참여, 나가기, 내보내기 | `features/room/createRoom`, `features/room/kickMember` |
-| `home` | 홈 화면 섹션 (widgets 전용) | `widgets/home/todayBosals` |
-| `member` | 멤버 간 상호작용 | `features/member/pokeMember` |
-| `certification` | 번뇌 떨구기 인증, 반응 | `features/certification/submitCertification` |
-| `vote` | 투표, 이마 톡톡, 방어권 | `features/vote/castVote`, `features/vote/tapForehead` |
-| `storehouse` | 곳간 (구매, 착용) | `features/storehouse/buyItem` |
-| `myBosal` | 내 보살 화면 | `widgets/myBosal/myRoomPanel` |
-| `settings` | 알림 설정, 데이터 삭제 | `features/settings/notificationSetting` |
+| role            | 범위                                    | 예시                                                   |
+| --------------- | --------------------------------------- | ------------------------------------------------------ |
+| `onboarding`    | 인트로, 닉네임, 보살 받기               | `features/onboarding/nicknameForm`                     |
+| `room`          | 방 만들기, 초대, 참여, 나가기, 내보내기 | `features/room/createRoom`, `features/room/kickMember` |
+| `home`          | 홈 화면 섹션 (widgets 전용)             | `widgets/home/todayBosals`                             |
+| `member`        | 멤버 간 상호작용                        | `features/member/pokeMember`                           |
+| `certification` | 번뇌 떨구기 인증, 반응                  | `features/certification/submitCertification`           |
+| `vote`          | 투표, 이마 톡톡, 방어권                 | `features/vote/castVote`, `features/vote/tapForehead`  |
+| `storehouse`    | 곳간 (구매, 착용)                       | `features/storehouse/buyItem`                          |
+| `myBosal`       | 내 보살 화면                            | `widgets/myBosal/myRoomPanel`                          |
+| `settings`      | 알림 설정, 데이터 삭제                  | `features/settings/notificationSetting`                |
 
 > 폴더명이 `use`로 시작하면 훅으로 오해받습니다. 방어권 사용은 `useShield`가 아니라 `applyShield`처럼 이름 짓습니다.
 
@@ -145,14 +145,14 @@ entities/{objectName}
 
 ## 슬라이스 내부 하위 폴더
 
-| 폴더 | 용도 | 파일명 규칙 |
-| --- | --- | --- |
-| `ui/` | 컴포넌트 | PascalCase (`BosalImage.tsx`) |
-| `api/` | 서버 요청 함수, Query 키/옵션 (`entities`·`features`) | camelCase (`roomApi.ts`, `roomQueries.ts`) |
-| `model/` | 상태, 커스텀 훅, 타입, 목업 데이터 | camelCase (`useSubmitCertification.ts`), 훅은 `use` 접두사 |
-| `lib/` | 순수 유틸 함수 (부수효과 없음) | camelCase (`getVoteView.ts`) |
-| `config/` | 상수, 메시지, 설정값 | camelCase 파일명, export는 대문자 SNAKE_CASE (`export const MAX_MEMBERS = 4`) |
-| `assets/` | 그 슬라이스 전용 이미지/SVG (`entities/bosal` 등) | 소문자, `snake_case` 허용 (아이콘은 `naming.md`의 아이콘 규칙) |
+| 폴더      | 용도                                                  | 파일명 규칙                                                                   |
+| --------- | ----------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `ui/`     | 컴포넌트                                              | PascalCase (`BosalImage.tsx`)                                                 |
+| `api/`    | 서버 요청 함수, Query 키/옵션 (`entities`·`features`) | camelCase (`roomApi.ts`, `roomQueries.ts`)                                    |
+| `model/`  | 상태, 커스텀 훅, 타입, 목업 데이터                    | camelCase (`useSubmitCertification.ts`), 훅은 `use` 접두사                    |
+| `lib/`    | 순수 유틸 함수 (부수효과 없음)                        | camelCase (`getVoteView.ts`)                                                  |
+| `config/` | 상수, 메시지, 설정값                                  | camelCase 파일명, export는 대문자 SNAKE_CASE (`export const MAX_MEMBERS = 4`) |
+| `assets/` | 그 슬라이스 전용 이미지/SVG (`entities/bosal` 등)     | 소문자, `snake_case` 허용 (아이콘은 `naming.md`의 아이콘 규칙)                |
 
 > 모든 하위 폴더가 항상 필요한 건 아닙니다. 필요한 폴더만 만드세요.
 
@@ -160,25 +160,25 @@ entities/{objectName}
 
 **디자인 문구에 나오는 비즈니스 규칙은 반드시 `config/`의 상수로 둡니다.**
 
-| 디자인 문구 | 상수 | 위치 |
-| --- | --- | --- |
-| 최대 4명까지 함께할 수 있어요 | `MAX_MEMBERS = 4` | `entities/room/config` |
-| 참여중인 방이 2개에요 | `MAX_ROOMS = 2` | `entities/room/config` |
-| 공양미 한 솥 300석, +30석 | `POT_CAPACITY`, `POT_REWARD` | `entities/room/config` |
-| 9분동안 수정 및 삭제 | `EDIT_WINDOW_MINUTES = 10` 🔖 (남은 시간 표시로 추정) | `entities/certification/config` |
-| 보살이 3명 이상 모이면 투표 | `MIN_VOTERS = 3` | `entities/vote/config` |
-| 1/10 번 | `TAP_GOAL = 10` | `entities/vote/config` |
-| 닉네임 3/8 | `NICKNAME_MAX_LENGTH = 8` | `features/onboarding/nicknameForm/config` |
+| 디자인 문구                   | 상수                                                  | 위치                                      |
+| ----------------------------- | ----------------------------------------------------- | ----------------------------------------- |
+| 최대 4명까지 함께할 수 있어요 | `MAX_MEMBERS = 4`                                     | `entities/room/config`                    |
+| 참여중인 방이 2개에요         | `MAX_ROOMS = 2`                                       | `entities/room/config`                    |
+| 공양미 한 솥 300석, +30석     | `POT_CAPACITY`, `POT_REWARD`                          | `entities/room/config`                    |
+| 9분동안 수정 및 삭제          | `EDIT_WINDOW_MINUTES = 10` 🔖 (남은 시간 표시로 추정) | `entities/certification/config`           |
+| 보살이 3명 이상 모이면 투표   | `MIN_VOTERS = 3`                                      | `entities/vote/config`                    |
+| 1/10 번                       | `TAP_GOAL = 10`                                       | `entities/vote/config`                    |
+| 닉네임 3/8                    | `NICKNAME_MAX_LENGTH = 8`                             | `features/onboarding/nicknameForm/config` |
 
 ### 서버 데이터는 어디서 가져오나
 
 SSR이나 서버 컴포넌트가 없으므로 데이터 패칭은 전부 클라이언트에서 일어납니다. 위치는 아래처럼 고정합니다.
 
-| 종류 | 위치 | 예시 |
-| --- | --- | --- |
-| 조회 요청 함수, Query 키, 조회 훅 | `entities/{object}/api/` | `roomApi.ts`, `roomQueries.ts`, `useRoomQuery.ts` |
-| mutation 훅 (생성·수정·삭제), 성공 후 무효화할 쿼리 | `features/{role}/{featureName}/model/` | `useCastVote.ts` |
-| 화면 조합 | `widgets`, `pages` | 조회 훅을 호출하고 결과를 entities/features 컴포넌트에 넘김 |
+| 종류                                                | 위치                                   | 예시                                                        |
+| --------------------------------------------------- | -------------------------------------- | ----------------------------------------------------------- |
+| 조회 요청 함수, Query 키, 조회 훅                   | `entities/{object}/api/`               | `roomApi.ts`, `roomQueries.ts`, `useRoomQuery.ts`           |
+| mutation 훅 (생성·수정·삭제), 성공 후 무효화할 쿼리 | `features/{role}/{featureName}/model/` | `useCastVote.ts`                                            |
+| 화면 조합                                           | `widgets`, `pages`                     | 조회 훅을 호출하고 결과를 entities/features 컴포넌트에 넘김 |
 
 `pages`는 조합만 합니다. 요청 함수나 쿼리 정의를 `pages` 안에 직접 작성하지 않습니다.
 
@@ -232,10 +232,10 @@ export default defineConfig({
 
 **단, 참조 위치에 따라 상대경로/절대경로를 구분합니다.**
 
-| 상황 | 사용 경로 |
-| --- | --- |
-| 같은 슬라이스 내부끼리 참조 (예: 같은 feature 폴더 안에서 `ui`가 `model`을 참조) | **상대경로** (`../model/...`) |
-| 다른 슬라이스/레이어를 참조 (경계를 넘음) | **절대경로 + 배럴 파일** (`@/features/{role}/{featureName}`) |
+| 상황                                                                             | 사용 경로                                                    |
+| -------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| 같은 슬라이스 내부끼리 참조 (예: 같은 feature 폴더 안에서 `ui`가 `model`을 참조) | **상대경로** (`../model/...`)                                |
+| 다른 슬라이스/레이어를 참조 (경계를 넘음)                                        | **절대경로 + 배럴 파일** (`@/features/{role}/{featureName}`) |
 
 슬라이스 밖에서 안으로 들어올 땐 반드시 `index.ts`를 거칩니다. 내부 경로를 직접 찌르지 않습니다.
 

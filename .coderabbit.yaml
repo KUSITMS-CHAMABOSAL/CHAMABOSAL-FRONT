@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# 전체 옵션: https://docs.coderabbit.ai/reference/configuration
+# CLAUDE.md, .claude/rules/**는 코드래빗이 기본으로 읽고 paths도 지키므로 여기에 다시 적지 않습니다.
+language: ko-KR
+
+knowledge_base:
+  code_guidelines:
+    filePatterns:
+      - ".claude/skills/find-code-location/**/*.md"
+      - ".claude/skills/check-rules/SKILL.md"
+
+reviews:
+  path_filters:
+    - "!pnpm-lock.yaml"
+  # 팀 기준은 ESLint + Prettier입니다. 설정이 없으면 코드래빗 기본값으로 도는 도구는 끕니다.
+  tools:
+    biome:
+      enabled: false
+    oxc:
+      enabled: false
+    languagetool:
+      enabled: false
+  pre_merge_checks:
+    docstrings:
+      mode: "off"
+    title:
+      requirements: "`<type>: <한국어 설명>` 형식이고 type은 feat, fix, chore, docs, style, refactor, ui 중 하나입니다."
+  finishing_touches:
+    docstrings:
+      enabled: false
+    # 테스트 도구 도입 후 켭니다.
+    unit_tests:
+      enabled: false
+  path_instructions:
+    - path: "src/**/*.{ts,tsx}"
+      instructions: |
+        참아보살은 친구끼리 소비를 참았는지 인증하고 투표하는 앱인토스 WebView 미니앱입니다.
+        ESLint, Prettier, tsc가 잡는 문제는 지적하지 마세요.
+
+        코드 퀄리티를 가장 먼저 확인하고, 개선안은 코드로 제안하세요.
+        1. 가독성: 역할이 드러나지 않는 이름, 깊은 중첩, 긴 함수,
+           의미를 알 수 없는 상수를 지적하세요.
+        2. 책임 분리: UI, 데이터 처리, 상태 관리가 한 컴포넌트에 섞이면
+           컴포넌트나 커스텀 훅으로 나누도록 제안하세요.
+        3. 중복과 복잡도: 반복되는 로직과 UI, 쓰이지 않는 코드,
+           한 번만 쓰는 과한 추상화를 지적하세요.
+        4. 타입 설계: 근거 없는 as 단언, 잘못된 상태를 표현할 수 있는 타입을 지적하세요.
+        5. React 사용: useEffect 남용과 의존성 실수, 정리되지 않는 타이머·리스너,
+           계산으로 구할 수 있는 값을 상태로 두는 코드를 지적하세요.
+        6. 비동기·에러: 로딩·에러·빈 상태 누락, 응답 순서 역전,
+           버튼 연타로 인한 중복 요청을 지적하세요.
+        7. 플랫폼: WebView에서 동작하지 않는 브라우저 API를 지적하세요.
+
+        서비스 규칙에 어긋나는 코드도 지적하세요.
+        - 인증 잠금과 투표 마감을 기기 시각에만 의존해 판단하는 코드
+        - 리액션을 누른 사람이나 투표자가 화면, 로그, 이벤트에서 식별되는 코드
+        - 토큰, 키, 사용자 식별키, 사진, 소비 기록이 코드나 로그에 노출되는 코드
+        - 시연 모드가 출시 빌드에 포함될 수 있는 코드
+        - 돈을 거는 내기, 공양미의 현금·포인트 전환 (소비 금액 기록은 정상 기능입니다)
+        - 해요체가 아닌 앱 문구, 벌칙을 "이마 톡톡"이 아닌 "때리다", "딱밤", "폭행" 등으로 쓴 문구

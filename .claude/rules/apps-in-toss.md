@@ -6,7 +6,7 @@ paths:
 
 # 앱인토스 플랫폼 규칙
 
-- **`@apps-in-toss/web-framework`는 `shared/lib/appsInToss/`에서만 import합니다.** 도메인과 무관한 플랫폼 계층입니다. 다른 레이어는 모두 `@/shared/lib/appsInToss`의 래퍼 함수를 씁니다. 🔖 ESLint `no-restricted-imports`로 강제
+- **`@apps-in-toss/web-framework`는 `shared/lib/appsInToss/`에서만 import합니다.** 도메인과 무관한 플랫폼 계층입니다. 다른 레이어는 모두 `@/shared/lib/appsInToss`의 래퍼 함수를 씁니다. `eslint.config.js`의 `no-restricted-imports`로 강제되며, `app/bootstrap`도 예외가 아닙니다.
 - 사용자 행동에 묶인 SDK 기능은 `features`가 이 래퍼를 호출하는 구조로 만듭니다. (예: `features/room/shareInvite` → `shareLink()`, `features/settings/notificationSetting` → `requestNotificationAgreement()`)
 - 앱 시작 시 사용자 식별(`User.getAnonymousKey` 계열)은 사용자 행동이 아니므로 `app/bootstrap/`이 래퍼를 호출합니다. 이 앱은 토스 로그인을 쓰지 않으므로 `features/auth/tossLogin` 같은 슬라이스는 만들지 않습니다. 🔖
 - 일반 브라우저처럼 토스 앱 밖에서 실행될 때의 처리도 래퍼 안에서 끝냅니다. 그래야 상위 레이어가 실행 환경을 몰라도 됩니다.

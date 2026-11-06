@@ -285,7 +285,14 @@ shared
 
 같은 레이어의 다른 슬라이스끼리 직접 참조하는 것도 원칙적으로 지양합니다. (예: `features/vote/castVote`가 `features/member/pokeMember`를 직접 import하지 않기) 공통으로 필요한 로직이 생기면 `entities`나 `shared`로 내려서 양쪽이 그걸 참조하게 만드세요. 두 행동을 한 화면에 함께 놓아야 하면 `widgets`에서 조합합니다.
 
-🔖 이 규칙은 ESLint로 강제합니다 (`eslint-plugin-boundaries` 또는 `no-restricted-imports`). 사람이 리뷰로만 지키는 규칙은 결국 무너집니다.
+이 규칙은 `eslint.config.js`의 `eslint-plugin-boundaries`로 강제합니다 (`pnpm lint`).
+
+- 실제 파일 경로를 해석해서 검사하므로 상대경로, `@/` 절대경로, 동적 `import()`가 모두 같은 기준으로 걸립니다.
+- 레이어 정의는 `boundaries/elements`에 있습니다. `features`·`widgets`는 `{role}/{slice}` 두 단계가 하나의 슬라이스이고, role이 다르면 이름이 같아도 다른 슬라이스입니다.
+- 슬라이스 밖에서는 그 슬라이스의 `index.ts`만 import할 수 있습니다. `shared`는 세그먼트끼리, 그리고 모든 레이어에서 자유롭게 import할 수 있습니다.
+- `src/` 안에 어느 레이어에도 속하지 않는 파일을 만들면 에러입니다 (`boundaries/no-unknown-files`).
+- 앱인토스 SDK 제한은 레이어 문제가 아니라서 `no-restricted-imports`로 따로 막습니다.
+- 규칙에 걸리면 우회하지 말고 구조를 고칩니다. 공통 로직은 하위 레이어로 내리고, 조합은 상위 레이어에서 합니다.
 
 ---
 

@@ -1,0 +1,86 @@
+name: Deploy Test Bundle
+
+# main에 머지되면 앱인토스 콘솔의 테스트 환경(intoss-private://)에 번들을 올립니다.
+# 검수 요청과 출시는 콘솔에서 직접 합니다.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# 연달아 머지되면 마지막 커밋만 올립니다.
+concurrency:
+  group: deploy-test
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # pnpm 버전은 package.json의 packageManager를 따릅니다.
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+
+      # tsc -b → vite build → ait build
+      - run: pnpm build
+
+      # 공개 저장소라 로그·요약·Artifact는 누구나 볼 수 있습니다.
+      # 테스트 링크와 QR은 GitHub에 남기지 않고 디스코드로만 보냅니다.
+      - name: Upload to Apps in Toss console
+        env:
+          AIT_API_KEY: ${{ secrets.AIT_API_KEY }}
+        run: |
+          # 키가 없으면 ait deploy가 입력을 기다리며 멈추므로 먼저 실패시킵니다.
+          if [ -z "$AIT_API_KEY" ]; then
+            echo "::error::GitHub Secret AIT_API_KEY가 없습니다. 콘솔 > 연동 > 콘솔 API 키에서 발급해 등록하세요."
+            exit 1
+          fi
+
+          SCHEME=$(pnpm exec ait deploy --api-key "$AIT_API_KEY" --scheme-only | tail -n 1)
+
+          if [[ "$SCHEME" != intoss-private://* ]]; then
+            echo "::error::업로드 결과에서 테스트 링크를 찾지 못했습니다."
+            exit 1
+          fi
+          echo "::add-mask::$SCHEME"
+
+          # 가린 값은 step output으로 넘기면 GitHub이 버리므로 임시 파일로 넘깁니다.
+          printf '%s' "$SCHEME" > "$RUNNER_TEMP/scheme"
+          echo "### 테스트 번들 업로드 완료 (\`${GITHUB_SHA::7}\`)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Send QR to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK_URL" ]; then
+            echo "::warning::GitHub Secret DISCORD_WEBHOOK_URL이 없어 디스코드 전송을 건너뜁니다."
+            exit 0
+          fi
+
+          SCHEME=$(cat "$RUNNER_TEMP/scheme")
+          echo "::add-mask::$SCHEME"
+
+          sudo apt-get update -qq && sudo apt-get install -y -qq qrencode > /dev/null
+          qrencode -s 8 -m 2 -o "$RUNNER_TEMP/qr.png" "$SCHEME"
+
+          CONTENT="**새 테스트 번들**"
+          CONTENT+=$'\n'"휴대폰 카메라로 QR을 찍으면 토스 앱에서 열려요."
+          CONTENT+=$'\n```\n'"$SCHEME"$'\n```'
+
+          # 메시지가 멘션 알림을 보내지 않게 막습니다.
+          PAYLOAD=$(jq -n --arg content "$CONTENT" '{content: $content, allowed_mentions: {parse: []}}')
+          curl -fsS -o /dev/null \
+            -F "payload_json=$PAYLOAD" \
+            -F "files[0]=@$RUNNER_TEMP/qr.png;type=image/png;filename=qr.png" \
+            "$DISCORD_WEBHOOK_URL"

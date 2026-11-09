@@ -1,2 +1,5 @@
 # 패키지 매니저가 자동 생성하는 파일
 pnpm-lock.yaml
+
+# browser_run_code_unsafe가 함수 식으로 감싸 실행해서 끝에 세미콜론이 붙으면 안 돼요
+.claude/skills/*/scripts/*.js

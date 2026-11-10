@@ -5,6 +5,22 @@ name: Deploy Test Bundle
 on:
   push:
     branches: [main]
+    # 앱 결과물에 영향 없는 파일만 바뀌면 건너뜁니다. 하나라도 다른 파일이 섞이면 실행됩니다.
+    paths-ignore:
+      - "README.md"
+      - "CLAUDE.md"
+      - "docs/**"
+      - ".claude/**"
+      - ".coderabbit.yaml"
+      - ".github/ISSUE_TEMPLATE/**"
+      - ".github/PULL_REQUEST_TEMPLATE.md"
+      - ".github/workflows/create-branch-on-issue.yml"
+      - ".husky/**"
+      - "commitlint.config.js"
+      - "eslint.config.js"
+      - ".prettierrc"
+      - ".prettierignore"
+      - ".gitignore"
   workflow_dispatch:
 
 permissions:

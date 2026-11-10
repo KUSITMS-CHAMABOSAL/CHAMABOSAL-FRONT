@@ -5,8 +5,8 @@ async page => {
   if (!opt.dir) throw new Error('localStorage "interaction-capture"에 dir을 넣어 주세요.');
   if (opt.reload) await page.reload();
   for (let i = 0; opt.tap && i < opt.times; i++) {
+    if (i > 0) await page.waitForTimeout(150);
     await page.locator(opt.tap).first().click({ noWaitAfter: true });
-    await page.waitForTimeout(150);
   }
   const started = Date.now();
   const paths = [];

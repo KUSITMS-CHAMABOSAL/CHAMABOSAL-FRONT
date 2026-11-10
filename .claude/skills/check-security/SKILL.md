@@ -22,13 +22,13 @@ background: false
 
 1. 범위를 정해요.
    - 파일 경로면 그 파일
-   - ref면 `git diff <ref>...HEAD`와 커밋 안 된 변경(`git diff HEAD`)
+   - ref면 `git diff <ref>...HEAD`, 커밋 안 된 변경(`git diff HEAD`), 추적 안 된 새 파일(`git ls-files --others --exclude-standard`)
    - `all`이면 `src/`, `public/`, `index.html`, `vite.config.ts`, `apps-in-toss.config.ts`, `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `.gitignore`
-   - 없으면 `git diff main...HEAD`와 커밋 안 된 변경. 변경이 없으면 그렇다고 보고하고 끝내요.
+   - 없으면 `main`을 ref로 보고 위와 같이 정해요. 세 결과가 모두 비어 있을 때만 변경이 없다고 보고하고 끝내요.
 2. `.claude/rules/toss.md`(앱인토스 SDK 규칙)와 `.claude/rules/ui.md`를 읽어요. 같은 규칙을 여기서 새로 정하지 않고 대조만 해요.
 3. 범위 안에서 앱 코드 기준을 `Grep`으로 먼저 찾고, 걸린 곳만 읽어 실제 위반인지 확인해요.
 4. 의존성 기준을 점검해요. 범위에 의존성 파일이 없으면 `pnpm audit --prod`만 실행해요.
-5. `.gitignore`에 `.env`가 빠졌는지, 커밋된 `.env*`가 있는지(`git ls-files`) 항상 확인해요. 빠졌으면 지금 `.env` 파일이 없어도 낮음으로 표에 넣어요.
+5. `.gitignore`에 `.env`가 빠졌는지, 커밋된 `.env*`가 있는지(`git ls-files`) 항상 확인해요. 빠졌으면 지금 `.env` 파일이 없어도 낮음으로 표에 넣어요. `.env.example`은 커밋 자체는 위반이 아니지만, 안에 실제 비밀값이 들어 있는지는 확인해요.
 6. 보고 형식대로 돌려줘요.
 
 ## 앱 코드 기준
@@ -40,11 +40,11 @@ background: false
 | XSS                   | `dangerouslySetInnerHTML`, `innerHTML`·`insertAdjacentHTML`, 검증 없이 `href`·`src`에 넣은 사용자 입력(`javascript:` 스킴) | 일반 보안           |
 | 통신                  | `http://`, `ws://` 주소. API와 WebSocket은 HTTPS·`wss://`만                                                                | 앱인토스 체크리스트 |
 | 토스 도메인 밖 렌더링 | 외부 사이트 `iframe`, `window.location`으로 외부 이동, 자사 앱 설치·자사 서비스 이동 유도                                  | 앱인토스 체크리스트 |
-| 딥링크·쿼리           | `intoss-private://` 링크, `deepLinks.ts` 밖의 링크 문자열, 검증 없이 API·라우팅에 쓴 쿼리 값(초대 코드 등)                 | toss.md, 체크리스트 |
+| 딥링크·쿼리           | toss.md "딥링크" 절 위반, 검증 없이 API·라우팅에 쓴 쿼리 값(초대 코드 등)                                                  | toss.md, 체크리스트 |
 | 기기 저장             | `Storage`·`localStorage`·`sessionStorage`·IndexedDB에 토큰·개인정보·결제 정보 저장. toss.md의 저장 대상 밖 값은 확인       | toss.md             |
 | 개인정보 노출         | `console.*`·분석 이벤트·에러 메시지에 사용자 정보나 토큰 출력                                                              | 체크리스트          |
 | 로그인                | 토스 로그인 외 자체 로그인, 로그인 연결을 끊은 뒤 남는 사용자 데이터                                                       | 체크리스트          |
-| 권한                  | `apps-in-toss.config.ts`의 쓰지 않는 권한, 사용자 행동 전에 요청하는 권한, 거부하면 멈추는 기능                            | toss.md, 체크리스트 |
+| 권한                  | toss.md "설정" 절의 권한 기준 위반, 사용자 행동 전에 요청하는 권한, 거부하면 멈추는 기능                                   | toss.md, 체크리스트 |
 | SDK 과호출            | 짧은 시간 반복 호출, 횟수·간격 제한 없는 재시도                                                                            | toss.md, 체크리스트 |
 | 결제(있을 때만)       | 토스페이·인앱 결제 외 결제 수단, 표시 금액과 주문 금액 불일치                                                              | 체크리스트          |
 | 빌드 설정             | `vite.config.ts`의 운영 소스맵 공개, `define`에 넣은 비밀값                                                                | 일반 보안           |
@@ -52,7 +52,7 @@ background: false
 ## 의존성 기준
 
 - `pnpm audit --prod`는 항상, 범위에 의존성 파일이 있거나 `all`이면 `pnpm audit`도 실행해요. high 이상은 표에, moderate 이하는 "참고"에 적어요. 네트워크 오류로 실패하면 "확인 못 함"이에요.
-- `main` 대비 새로 추가되거나 버전이 바뀐 패키지만 `pnpm view <패키지> time.modified maintainers repository scripts`로 출처, 최근 배포, 설치 스크립트를 보고 타이포스쿼팅(유명 패키지와 한두 글자 다른 이름)을 확인해요. 바뀐 패키지가 없으면 건너뛰어요.
+- 비교 기준은 ref를 지정했으면 그 ref, 아니면 `main`이에요. 기준 대비 새로 추가되거나 버전이 바뀐 패키지만 `pnpm-lock.yaml`에 기록된 실제 버전으로 `pnpm view <패키지>@<버전> time maintainers repository scripts`를 조회해 출처, 그 버전의 배포 시점, 설치 스크립트를 보고 타이포스쿼팅(유명 패키지와 한두 글자 다른 이름)을 확인해요. 기준 대비 바뀐 패키지가 없으면 건너뛰어요.
 - 설치 스크립트는 `pnpm ignored-builds`와 `pnpm-workspace.yaml`의 `allowBuilds`를 대조해요. 허용(`true`)한 패키지에 이유 주석이 없으면 낮음이에요. node_modules를 순회하지 않아요.
 - `pnpm-lock.yaml`의 레지스트리 주소 변경, lockfile 없이 바뀐 `package.json`, `index.html`이나 코드의 외부 CDN 스크립트를 봐요.
 

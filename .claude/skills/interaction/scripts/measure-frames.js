@@ -2,6 +2,8 @@
 async page => {
   const saved = await page.evaluate(() => localStorage.getItem("interaction-probe"));
   const opt = { reload: true, ms: 6000, times: 0, interval: 150, cpu: 4, by: 300, ...JSON.parse(saved || "{}") };
+  // 입력이 측정 시간보다 길면 마지막 입력 뒤 1초까지 늘려 모든 입력과 그 애니메이션을 통계에 넣어요.
+  if (opt.tap || opt.scroll) opt.ms = Math.max(opt.ms, opt.times * opt.interval + 1000);
   const errors = [];
   const onConsole = message => message.type() === "error" && errors.push(message.text());
   const cdp = await page.context().newCDPSession(page);

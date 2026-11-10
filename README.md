@@ -26,18 +26,19 @@
 - 직접 실행: `/gen-test src/entities/vote/lib/getVoteView.ts`
 - 말로 요청: "이 함수 테스트 작성해줘". 설명이 맞는 스킬을 Claude가 고릅니다.
 
-| 스킬                   | 언제 쓰나요                           | 입력                      | 코드 수정 |
-| ---------------------- | ------------------------------------- | ------------------------- | --------- |
-| `find-code-location`   | 새 파일을 어디에 둘지 모를 때         | 만들려는 것 설명          | 없음      |
-| `figma-to-component`   | Figma 시안을 구현할 때                | Figma URL 또는 스크린샷   | 있음      |
-| `interaction`          | 사용자 행동에 반응하는 모션을 만들 때 | 인터랙션 설명 또는 파일   | 있음      |
-| `gen-test`             | 테스트를 작성할 때                    | 대상 파일 경로            | 있음      |
-| `check-rules`          | 올리기 전에 규칙 위반을 점검할 때     | 파일 경로, ref, 또는 생략 | 없음      |
-| `visual-aesthetics-qa` | 화면 구현을 마쳤거나 출시 전일 때     | 화면 경로 또는 파일       | 없음      |
-| `refactor`             | 동작 변경 없이 구조를 정리할 때       | 파일 또는 폴더 경로       | 승인 범위 |
-| `commit`               | 커밋 메시지와 단위를 정할 때          | 파일 경로 또는 생략       | 없음      |
-| `issue-and-pr`         | 이슈, 브랜치, PR을 만들 때            | base 브랜치 또는 생략     | 없음      |
-| `record-decision`      | 결정이나 외부 이슈를 기록할 때        | 기록할 내용               | 문서만    |
+| 스킬                   | 언제 쓰나요                           | 입력                             | 코드 수정 |
+| ---------------------- | ------------------------------------- | -------------------------------- | --------- |
+| `find-code-location`   | 새 파일을 어디에 둘지 모를 때         | 만들려는 것 설명                 | 없음      |
+| `figma-to-component`   | Figma 시안을 구현할 때                | Figma URL 또는 스크린샷          | 있음      |
+| `interaction`          | 사용자 행동에 반응하는 모션을 만들 때 | 인터랙션 설명 또는 파일          | 있음      |
+| `gen-test`             | 테스트를 작성할 때                    | 대상 파일 경로                   | 있음      |
+| `check-rules`          | 올리기 전에 규칙 위반을 점검할 때     | 파일 경로, ref, 또는 생략        | 없음      |
+| `check-security`       | PR 전이나 의존성을 추가한 뒤          | 파일 경로, ref, `all`, 또는 생략 | 없음      |
+| `visual-aesthetics-qa` | 화면 구현을 마쳤거나 출시 전일 때     | 화면 경로 또는 파일              | 없음      |
+| `refactor`             | 동작 변경 없이 구조를 정리할 때       | 파일 또는 폴더 경로              | 승인 범위 |
+| `commit`               | 커밋 메시지와 단위를 정할 때          | 파일 경로 또는 생략              | 없음      |
+| `issue-and-pr`         | 이슈, 브랜치, PR을 만들 때            | base 브랜치 또는 생략            | 없음      |
+| `record-decision`      | 결정이나 외부 이슈를 기록할 때        | 기록할 내용                      | 문서만    |
 
 일반 버그 리뷰는 기본 `/code-review`, 코드 단순화는 기본 `/simplify`를 씁니다.
 
@@ -76,6 +77,12 @@
 - 파일 하나: `/check-rules src/widgets/home/todayBosals/ui/TodayBosals.tsx`
 - 브랜치 전체: `/check-rules main`
 
+**`check-security`**
+
+- 스킬이 따로 떨어진 읽기 전용 에이전트(`context: fork`, `agent: Explore`)에서 실행되고 결과 표만 돌려줍니다. 검사 기준이 길어도 메인 대화에는 로드되지 않습니다.
+- 앱 코드(비밀값, 외부 코드 실행, XSS, HTTP 통신, 토스 도메인 밖 렌더링, 딥링크, 기기 저장, 개인정보 로그, 권한, SDK 과호출), 의존성(`pnpm audit`, 새 패키지 출처, 설치 스크립트 허용), 빌드 설정을 앱인토스 출시 체크리스트와 `.claude/rules/toss.md` 기준으로 봅니다.
+- 범위: 생략하면 `main` 이후 변경, `all`이면 전체입니다. 기본 `/security-review`는 일반 보안 리뷰이고 앱인토스 기준은 보지 않습니다.
+
 **`visual-aesthetics-qa`**
 
 - 필요한 것: 브라우저 도구(Playwright MCP 등), 성능 측정은 Chrome DevTools MCP 등. 없으면 해당 항목을 미확인으로 보고합니다.
@@ -106,7 +113,7 @@
 1. `issue-and-pr`로 이슈를 만들고 생성된 브랜치로 이동합니다.
 2. 새 파일이면 `find-code-location`, 시안이 있으면 `figma-to-component`로 구현합니다.
 3. 로직이 있으면 `gen-test`로 테스트합니다.
-4. `check-rules`와 `visual-aesthetics-qa`로 점검합니다.
+4. `check-rules`와 `visual-aesthetics-qa`로 점검하고, 의존성을 추가했거나 PR 전이면 `check-security`도 돌립니다.
 5. `commit`으로 커밋하고 `issue-and-pr`로 PR을 올립니다. CodeRabbit이 자동으로 리뷰합니다.
 
 ### PR 자동 리뷰

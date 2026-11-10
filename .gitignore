@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# 환경변수 파일은 비밀값이 들어갈 수 있어 커밋하지 않아요. 예시 파일만 공유해요.
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

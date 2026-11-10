@@ -42,7 +42,7 @@ TDS 문서는 https://tossmini-docs.toss.im/tds-mobile/llms.txt 에서 찾습니
 2. 절대 좌표를 flex, grid로 바꾸고, 시안에서 눌리는 요소를 실제 동작으로 연결합니다.
 3. 고정 너비는 화면 폭에 맞춥니다. 긴 닉네임처럼 늘어나는 글자는 `min-w-0`, `truncate`를 검토합니다.
 4. 서버 데이터가 필요하지만 스펙이 없으면 props로 받게 두고 스펙을 요청합니다.
-5. 애니메이션이 있으면 Figma의 `figma-implement-motion` 스킬을 참고하고 `transform`, `opacity` 위주로 만듭니다.
+5. 애니메이션이나 사용자 행동에 반응하는 모션이 있으면 `interaction` 스킬을 따릅니다. Figma에 모션 스펙이 있으면 `figma-implement-motion` 스킬로 읽습니다.
 
 ## 4. 시안과 대조
 

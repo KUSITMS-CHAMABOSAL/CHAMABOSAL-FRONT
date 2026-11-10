@@ -19,6 +19,10 @@ paths:
 - 조건부 클래스는 항상 `shared/lib/cn.ts`의 `cn`으로 조합합니다. 문자열 템플릿이나 삼항을 이어붙이지 않습니다.
 - `w-[123px]` 같은 arbitrary value는 정말 필요할 때만 씁니다. 기본 스케일로 표현되면 스케일 클래스를 씁니다(16px → `p-4`).
 - 조건부 스타일이 복잡한 컴포넌트는 `shared/ui`가 아니라 슬라이스의 `ui/`에 두고 슬라이스 전용 variant로 관리합니다.
+- TDS 전역 CSS와 Emotion 스타일은 레이어 밖이라 Tailwind 유틸리티를 이깁니다. 안 먹으면 `!`를 붙입니다(`overflow-visible!`, `m-0!`, `button`의 `rounded-lg!`, `Paragraph` 안 `span`의 색).
+- 색 변수는 `text-(color:--adaptiveBlue600)`처럼 타입을 밝힙니다. `text-(--변수)`는 색으로 적용되지 않을 수 있습니다.
+- preflight가 없어 직접 만든 `button`, `ol`에 브라우저 기본 배경·테두리·여백이 남습니다. `button`은 `appearance-none border-0 bg-transparent p-0`로 지웁니다. `ol`은 여백만 `m-0! p-0!`로 지우고, 순서 번호가 필요하면 `list-decimal`을 씁니다. 번호를 숨기려고 `list-none`을 쓰면 일부 스크린 리더가 목록으로 읽지 않으니 `role="list"`를 함께 붙입니다.
+- 요소마다 CSS 변수를 받는 `@theme` 애니메이션은 `@theme inline`에 둡니다. 그냥 `@theme`의 `var()`는 `:root`에서 풀려 기본값이 됩니다.
 
 ## 앱인토스 검수 기준
 

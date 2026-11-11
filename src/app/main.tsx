@@ -1,13 +1,13 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { TDSMobileAITProvider } from "@toss/tds-mobile-ait";
 import "./styles/index.css";
 import App from "./App.tsx";
+import AppProviders from "./providers/AppProviders";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <TDSMobileAITProvider>
+    <AppProviders>
       <App />
-    </TDSMobileAITProvider>
+    </AppProviders>
   </StrictMode>,
 );

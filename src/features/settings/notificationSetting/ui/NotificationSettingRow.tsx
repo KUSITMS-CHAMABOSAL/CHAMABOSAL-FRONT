@@ -25,6 +25,8 @@ const NotificationSettingRow = ({ setting, label, checked }: NotificationSetting
         <Switch
           checked={checked}
           aria-label={label}
+          // TDS Switch는 색 prop이 없고 배경을 애니메이션으로 칠해서, 시안 초록은 !important로 덮어요.
+          className="transition-colors aria-checked:bg-(color:--adaptiveGreen500)! aria-checked:active:bg-(color:--adaptiveGreen600)! aria-[checked=false]:bg-(color:--adaptiveGrey200)!"
           onChange={() =>
             update(
               { key: setting, enabled: !checked },

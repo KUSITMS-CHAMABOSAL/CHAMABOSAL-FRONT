@@ -1,4 +1,4 @@
-import { memo, type MouseEvent, type Ref, useId } from "react";
+import { memo, type Ref, useId } from "react";
 
 import { cn } from "@/shared/lib";
 
@@ -26,8 +26,8 @@ interface BosalFigureProps {
   /** 아이템 카드처럼 보살은 흐리게, 아이템만 또렷하게 보여줄 때 써요. */
   dimmed?: boolean;
   className?: string;
+  /** 뽑기 애니메이션이 SVG 안의 머리카락을 찾을 때 써요. */
   svgRef?: Ref<SVGSVGElement>;
-  onClick?: (event: MouseEvent<SVGSVGElement>) => void;
 }
 
 const HEAD = { x: HEAD_OFFSET_X, y: 0, width: 87.89, height: 88.87 };
@@ -57,7 +57,6 @@ const BosalFigure = ({
   dimmed = false,
   className,
   svgRef,
-  onClick,
 }: BosalFigureProps) => {
   const gradientPrefix = useId().replace(/:/g, "");
 
@@ -66,7 +65,6 @@ const BosalFigure = ({
       ref={svgRef}
       viewBox="0 0 88.58 139"
       className={cn("overflow-visible!", className)}
-      onClick={onClick}
       aria-hidden
     >
       <defs>

@@ -120,31 +120,28 @@ const CertificationCalendar = ({ roomId }: CertificationCalendarProps) => {
             ))}
           </div>
           <div className="mt-2.75 grid grid-cols-7 gap-y-1">
-            {getMonthGrid(shownMonth).flatMap((week, weekIndex) =>
-              week.map((date, weekday) => {
-                const result = date ? results.get(date) : undefined;
+            {getMonthGrid(shownMonth).flatMap(week =>
+              week.map(({ date, inMonth }) => {
+                // 앞뒤 달 날짜는 흐린 숫자만 그리고 인증 결과는 표시하지 않아요.
+                const result = inMonth ? results.get(date) : undefined;
+                const textColor = result
+                  ? RESULT_STYLE[result].text
+                  : inMonth
+                    ? "var(--adaptiveGrey700)"
+                    : "var(--adaptiveGrey400)";
                 return (
-                  <div
-                    key={date ?? `empty-${weekIndex}-${weekday}`}
-                    className="flex h-8 justify-center"
-                  >
-                    {date && (
-                      <span
-                        className={cn(
-                          "flex size-8 items-center justify-center rounded-full",
-                          result && RESULT_STYLE[result].circle,
-                        )}
-                      >
-                        <Paragraph
-                          typography="t6"
-                          fontWeight="medium"
-                          color={result ? RESULT_STYLE[result].text : "var(--adaptiveGrey700)"}
-                        >
-                          {/* Paragraph는 문자열만 글자 스타일로 감싸서 숫자를 문자열로 넘겨요. */}
-                          {String(Number(date.slice(-2)))}
-                        </Paragraph>
-                      </span>
-                    )}
+                  <div key={date} className="flex h-8 justify-center">
+                    <span
+                      className={cn(
+                        "flex size-8 items-center justify-center rounded-full",
+                        result && RESULT_STYLE[result].circle,
+                      )}
+                    >
+                      <Paragraph typography="t6" fontWeight="medium" color={textColor}>
+                        {/* Paragraph는 문자열만 글자 스타일로 감싸서 숫자를 문자열로 넘겨요. */}
+                        {String(Number(date.slice(-2)))}
+                      </Paragraph>
+                    </span>
                   </div>
                 );
               }),

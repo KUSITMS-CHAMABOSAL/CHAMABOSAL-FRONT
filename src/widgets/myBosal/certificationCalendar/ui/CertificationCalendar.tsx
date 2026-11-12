@@ -104,10 +104,19 @@ const CertificationCalendar = ({ roomId }: CertificationCalendarProps) => {
           />
         </div>
 
-        {/* 칸 42개를 하나씩 읽지 않도록 격자는 숨기고 요약을 읽혀요. */}
+        {/* 칸 42개를 하나씩 읽지 않도록 격자는 숨기고, 요약과 기록이 있는 날짜만 읽혀요. */}
         <p className="sr-only" aria-live="polite">
           {`${label} 인증 기록, 참았어요 ${endured}일, 못 참았어요 ${days.length - endured}일`}
         </p>
+        {days.length > 0 && (
+          <ul className="sr-only">
+            {days.map(day => (
+              <li key={day.date}>
+                {`${Number(day.date.slice(5, 7))}월 ${Number(day.date.slice(-2))}일 ${RESULT_STYLE[day.result].label}`}
+              </li>
+            ))}
+          </ul>
+        )}
         <div className="mt-5.5" aria-hidden>
           {/* 시안 높이(18px)에 맞추고 글자는 가운데에 둬요. 글자가 커지면 넘쳐도 잘리지 않아요. */}
           <div className="grid h-4.5 grid-cols-7 items-center text-center">

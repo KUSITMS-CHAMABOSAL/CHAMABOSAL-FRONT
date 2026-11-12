@@ -104,30 +104,31 @@ export interface Scenario {
   rooms: Record<number, TodayResponse>;
 }
 
-const build = (roomNames: string[], members: TodayMember[]): Scenario => ({
+// 방마다 멤버와 인증을 새로 만들어요. 같은 객체를 나누면 한 방의 리액션·삭제가 다른 방에도 반영돼요.
+const build = (roomNames: string[], makeMembers: () => TodayMember[]): Scenario => ({
   me: me(roomNames),
   rooms: Object.fromEntries(
-    roomNames.map((name, index) => [index + 1, today(index + 1, name, members)]),
+    roomNames.map((name, index) => [index + 1, today(index + 1, name, makeMembers())]),
   ),
 });
 
 export const SCENARIOS: Record<string, () => Scenario> = {
   /** 2-0 디폴트, 2-1 넘겼을 때_친구 (나는 예나) */
-  default: () => build(ROOMS, fourMembers(2)),
+  default: () => build(ROOMS, () => fourMembers(2)),
   /** 2-0 한팀일때 */
-  oneRoom: () => build(ROOMS.slice(0, 1), fourMembers(2)),
+  oneRoom: () => build(ROOMS.slice(0, 1), () => fourMembers(2)),
   /** 2-1.1 넘겼을 때_본인_인증전 (나는 윤지) */
-  meBefore: () => build(ROOMS, fourMembers(1)),
+  meBefore: () => build(ROOMS, () => fourMembers(1)),
   /** 2-1.2 넘겼을 때_본인_인증완 (나는 태경, 9분 남음) */
-  meDone: () => build(ROOMS, fourMembers(3, 9)),
+  meDone: () => build(ROOMS, () => fourMembers(3, 9)),
   /** 2-1.3 수정기한 지남 (나는 태경) */
-  meExpired: () => build(ROOMS, fourMembers(3)),
+  meExpired: () => build(ROOMS, () => fourMembers(3)),
   /** 2-2 참여하지 않는 방: 첫 방이 사라져서 ROOM_005, 닫으면 남은 방으로 가요 */
   roomGone: () => {
-    const scenario = build(ROOMS, fourMembers(2));
+    const scenario = build(ROOMS, () => fourMembers(2));
     delete scenario.rooms[1];
     return scenario;
   },
   /** 2-4 친구 기다리는중 */
-  waiting: () => build(ROOMS.slice(0, 1), [member(1, "윤지", "PINK", true)]),
+  waiting: () => build(ROOMS.slice(0, 1), () => [member(1, "윤지", "PINK", true)]),
 };

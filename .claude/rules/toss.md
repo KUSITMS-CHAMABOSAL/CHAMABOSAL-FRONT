@@ -14,7 +14,7 @@ SDK는 3.x이고 `@apps-in-toss/web-framework`는 `shared/lib/appsInToss/`에서
 ## 래퍼
 
 - 사용자 행동에 묶인 SDK 기능은 `features`가 래퍼를 호출합니다(`features/room/shareInvite` → `shareLink()`, `features/settings/notificationSetting` → `requestNotificationAgreement()`).
-- 앱 시작 시 사용자 식별(`User.getAnonymousKey` 계열)은 `app/bootstrap/`이 래퍼를 호출합니다. 토스 로그인을 쓰지 않으므로 `features/auth/tossLogin` 슬라이스는 만들지 않습니다. 🔖
+- 로그인은 서버 스펙(`POST /api/auth/login`)대로 익명 키 인증 코드(`User.createAnonymousKeyAuthCode`)를 씁니다. 토스 로그인(`TossAuth.login`)과 `getAnonymousKey` 값 직접 전송은 쓰지 않습니다. 사용자 행동이 아니라 앱 시작과 첫 API 요청에 묶여 있어 `app/bootstrap/auth.ts`가 래퍼를 호출하고, `features/auth` 슬라이스는 만들지 않습니다.
 - 토스 앱 밖에서 실행될 때의 처리도 래퍼 안에서 끝냅니다.
   - 로컬 개발은 `@apps-in-toss/devtools`가 SDK를 목으로 대체합니다. 래퍼에 목을 따로 쓰지 않습니다.
   - 지원하지 않는 앱 버전이나 브릿지 호출 실패는 래퍼가 잡아 앱 공통 에러나 fallback 값으로 바꿉니다.

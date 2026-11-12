@@ -33,8 +33,7 @@ dist-ssr
 # AI agent local state (oh-my-claudecode)
 .omc/
 
-# Serena local state
-.serena/
+# Serena는 설정(project.yml)만 공유해요. 캐시와 개인 설정은 .serena/.gitignore가 제외해요.
 
 # Claude Code 개인 설정
 .claude/settings.local.json

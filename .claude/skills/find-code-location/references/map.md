@@ -16,15 +16,16 @@
 
 ## 비즈니스 상수
 
-| 디자인 문구                   | 상수                                                  | 위치                                      |
-| ----------------------------- | ----------------------------------------------------- | ----------------------------------------- |
-| 최대 4명까지 함께할 수 있어요 | `MAX_MEMBERS = 4`                                     | `entities/room/config`                    |
-| 참여중인 방이 2개에요         | `MAX_ROOMS = 2`                                       | `entities/room/config`                    |
-| 공양미 한 솥 300석, +30석     | `POT_CAPACITY`, `POT_REWARD`                          | `entities/room/config`                    |
-| 9분동안 수정 및 삭제          | `EDIT_WINDOW_MINUTES = 10` 🔖 (남은 시간 표시로 추정) | `entities/certification/config`           |
-| 보살이 3명 이상 모이면 투표   | `MIN_VOTERS = 3`                                      | `entities/vote/config`                    |
-| 1/10 번                       | `TAP_GOAL = 10`                                       | `entities/vote/config`                    |
-| 닉네임 3/8                    | `NICKNAME_MAX_LENGTH = 8`                             | `features/onboarding/nicknameForm/config` |
+| 디자인 문구                       | 상수                                                  | 위치                                      |
+| --------------------------------- | ----------------------------------------------------- | ----------------------------------------- |
+| 최대 4명까지 함께할 수 있어요     | `MAX_MEMBERS = 4`                                     | `entities/room/config`                    |
+| 참여중인 방이 2개에요             | `MAX_ROOMS = 2`                                       | `entities/room/config`                    |
+| 2명부터 인증·투표 공양미가 쌓이고 | `MIN_RICE_MEMBERS = 2`                                | `entities/room/config`                    |
+| 공양미 한 솥 300석, +30석         | `POT_REWARD` (용량은 서버 `pot.goalAmount`)           | `entities/room/config`                    |
+| 9분동안 수정 및 삭제              | `EDIT_WINDOW_MINUTES = 10` 🔖 (남은 시간 표시로 추정) | `entities/certification/config`           |
+| 보살이 3명 이상 모이면 투표       | `MIN_VOTERS = 3`                                      | `entities/vote/config`                    |
+| 1/10 번                           | `TAP_GOAL = 10`                                       | `entities/vote/config`                    |
+| 닉네임 3/8                        | `NICKNAME_MAX_LENGTH = 8`                             | `features/onboarding/nicknameForm/config` |
 
 ## 목표 폴더 구조
 

@@ -96,5 +96,14 @@ export const mockHandler: MockHandler = (method, path, body) => {
     return ok();
   }
 
+  if ((match = route.match(/^DELETE \/api\/rooms\/(\d+)\/members\/me$/))) {
+    const roomId = Number(match[1]);
+    if (!state.rooms[roomId]) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
+    delete state.rooms[roomId];
+    state.me.rooms = state.me.rooms.filter(room => room.roomId !== roomId);
+    state.me.canCreateRoom = true;
+    return ok();
+  }
+
   return fail(404, "COMMON_404", `목에 없는 API예요: ${route}`);
 };

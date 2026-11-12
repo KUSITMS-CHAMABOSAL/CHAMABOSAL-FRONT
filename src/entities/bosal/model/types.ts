@@ -5,3 +5,7 @@ export type BosalExpression = "default" | "patient" | "failed" | "poked";
 
 /** 오늘 인증 상태예요. 상태 뱃지와 표정을 정해요. */
 export type BosalStatus = "unverified" | "patient" | "failed";
+
+export type BosalHat = "santaHat";
+
+export type BosalFaceItem = "rudolphNose";

@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-import { Button, IconButton, Paragraph, useToast } from "@toss/tds-mobile";
+import { Button, IconButton, Paragraph } from "@toss/tds-mobile";
 
 import { BosalCard, BosalStatusBadge, EmptyBosalCard } from "@/entities/bosal";
 import { CertificationCard } from "@/entities/certification";
@@ -11,7 +11,7 @@ import {
   useReactCertification,
 } from "@/features/certification/reactCertification";
 import { PokeButton, usePokeMember } from "@/features/member/pokeMember";
-import { formatTime, formatWon } from "@/shared/lib";
+import { formatTime, formatWon, useTabBarToast } from "@/shared/lib";
 
 import { getBosalCardView, getBosalName, getBosalStatus } from "../lib/getBosalCardView";
 import type { BosalCardView } from "../model/types";
@@ -37,7 +37,7 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
   const scrollerRef = useRef<HTMLDivElement>(null);
   /** 이 화면에서 찌른 횟수예요. 서버는 내가 받은 콕만 알려줘서 움찔 연출에만 써요. */
   const [sentPokes, setSentPokes] = useState<Record<number, number>>({});
-  const { openToast } = useToast();
+  const openToast = useTabBarToast();
   const poke = usePokeMember(roomId, () =>
     openToast("콕 찌르지 못했어요. 잠시 후 다시 시도해 주세요"),
   );

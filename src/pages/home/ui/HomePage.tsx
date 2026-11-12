@@ -1,10 +1,10 @@
-import { useToast } from "@toss/tds-mobile";
 import { useNavigate, useParams } from "react-router";
 
 import { useTodayQuery } from "@/entities/room";
 import { useMeQuery } from "@/entities/session";
 import { isApiError } from "@/shared/api";
 import { paths } from "@/shared/config";
+import { useTabBarToast } from "@/shared/lib";
 import { RoomSummary } from "@/widgets/home/roomSummary";
 import { TodayBosals } from "@/widgets/home/todayBosals";
 
@@ -16,7 +16,7 @@ const HomePage = () => {
   const roomId = Number(useParams().roomId);
   const today = useTodayQuery(roomId);
   const navigate = useNavigate();
-  const { openToast } = useToast();
+  const openToast = useTabBarToast();
   const notReady = (label: string) => () => openToast(`${label}은 준비 중이에요`);
   const selectRoom = (id: number) => navigate(paths.room.home(id), { replace: true });
 

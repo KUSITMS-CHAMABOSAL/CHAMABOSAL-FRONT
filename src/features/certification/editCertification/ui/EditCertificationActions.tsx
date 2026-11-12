@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
-import { Paragraph, useToast } from "@toss/tds-mobile";
+import { Paragraph } from "@toss/tds-mobile";
 
 import { isApiError } from "@/shared/api";
-import { minutesUntil } from "@/shared/lib";
+import { minutesUntil, useTabBarToast } from "@/shared/lib";
 import type { LockReason } from "@/shared/types";
 
 import { useDeleteCertification } from "../model/useDeleteCertification";
@@ -35,7 +35,7 @@ const EditCertificationActions = ({
   const [now, setNow] = useState(Date.now);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const { mutate: remove, isPending } = useDeleteCertification(roomId);
-  const { openToast } = useToast();
+  const openToast = useTabBarToast();
   const minutesLeft = lockReason ? 0 : minutesUntil(editableUntil, now);
 
   useEffect(() => {

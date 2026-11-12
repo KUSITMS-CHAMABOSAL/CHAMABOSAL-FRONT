@@ -110,5 +110,12 @@ export const mockHandler: MockHandler = (method, path, body) => {
     return ok();
   }
 
+  if (route === "DELETE /api/users/me") {
+    state.rooms = {};
+    state.me.rooms = [];
+    state.me.canCreateRoom = true;
+    return ok();
+  }
+
   return fail(404, "COMMON_404", `목에 없는 API예요: ${route}`);
 };

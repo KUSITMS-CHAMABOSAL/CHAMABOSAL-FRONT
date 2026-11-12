@@ -1,4 +1,13 @@
-// 탭 이동을 위한 빈 화면이에요. 곳간 화면 이슈에서 채워요.
-const StorehousePage = () => <main className="min-h-svh bg-(--adaptiveBackground)" />;
+import { useNavigate, useParams } from "react-router";
+
+import { paths } from "@/shared/config";
+import { BosalCloset } from "@/widgets/storehouse/bosalCloset";
+
+const StorehousePage = () => {
+  const roomId = Number(useParams().roomId);
+  const navigate = useNavigate();
+
+  return <BosalCloset onPlantHair={() => navigate(paths.room.hairPlanting(roomId))} />;
+};
 
 export default StorehousePage;

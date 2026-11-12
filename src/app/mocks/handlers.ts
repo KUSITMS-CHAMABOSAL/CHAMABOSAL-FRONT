@@ -81,5 +81,20 @@ export const mockHandler: MockHandler = (method, path, body) => {
     return ok({ month, calendar: calendarOf(month) });
   }
 
+  if ((match = route.match(/^PATCH \/api\/rooms\/(\d+)\/members\/me\/nickname$/))) {
+    const roomId = Number(match[1]);
+    const today = state.rooms[roomId];
+    const room = state.me.rooms.find(item => item.roomId === roomId);
+    if (!today || !room) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
+    const { nickname } = body as { nickname: string };
+    const taken = today.members.some(
+      member => !member.isMe && member.nickname.toLowerCase() === nickname.toLowerCase(),
+    );
+    if (taken) return fail(409, "ROOM_004", "이미 쓰는 닉네임입니다.");
+    room.nickname = nickname;
+    for (const member of today.members) if (member.isMe) member.nickname = nickname;
+    return ok();
+  }
+
   return fail(404, "COMMON_404", `목에 없는 API예요: ${route}`);
 };

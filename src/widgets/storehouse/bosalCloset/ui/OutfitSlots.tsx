@@ -3,7 +3,7 @@ import { Paragraph } from "@toss/tds-mobile";
 import { cn } from "@/shared/lib";
 import type { Outfit } from "@/features/storehouse/equipItem";
 
-import plusIcon from "../assets/icon_plus_regular.svg";
+import { PlusIcon } from "../assets";
 import rudolphNoseIcon from "../assets/slot_rudolph_nose.svg";
 import santaHatIcon from "../assets/slot_santa_hat.svg";
 import type { ClosetTab } from "../config/demoItems";
@@ -56,11 +56,15 @@ const OutfitSlots = ({ outfit, onSelect }: OutfitSlotsProps) => {
           aria-label={`${slot.label} ${slot.filled ? "착용 중" : "비어 있음"}`}
           onClick={() => onSelect(slot.tab)}
           className={cn(
-            "flex size-12 items-center justify-center rounded-[14px] border border-(--adaptiveGreyOpacity200) bg-(--adaptiveBackground) transition-transform duration-150 active:scale-95",
+            "flex size-12 appearance-none items-center justify-center rounded-[14px] border border-(--adaptiveGreyOpacity200) bg-(--adaptiveBackground) p-0 transition-transform duration-150 active:scale-95",
             !slot.filled && "border-dashed",
           )}
         >
-          {slot.filled ? slot.content : <img src={plusIcon} alt="" className="size-5" />}
+          {slot.filled ? (
+            slot.content
+          ) : (
+            <PlusIcon aria-hidden className="size-5 text-(color:--adaptiveGrey400)" />
+          )}
         </button>
       ))}
     </div>

@@ -8,8 +8,8 @@ import { cn } from "@/shared/lib";
 import { useSafeAreaBottom } from "@/shared/lib/appsInToss";
 
 import bottomFade from "../assets/bottom_fade.png";
+import { CloseIcon } from "../assets";
 import hairPlanted from "../assets/hair_planted.png";
-import closeIcon from "../assets/icon_close_fill.svg";
 import slotEmpty from "../assets/slot_empty.png";
 import slotSelected from "../assets/slot_selected.png";
 import {
@@ -30,7 +30,6 @@ const slotStyle = (index: number) => {
   } as CSSProperties;
 };
 
-/** 고른 자리가 화면 밖으로 나가지 않게 가로로 밀 거리예요. 보살 폭 대비 비율이에요. */
 /** 고른 자리가 보이도록 확대한 보살을 가운데, 왼쪽 끝, 오른쪽 끝 중 어디에 맞출지 정해요. */
 const getZoomAlign = (index: number): keyof typeof PLANT_ZOOM_SHIFT => {
   const offset = GREY_HAIR_CURLS[index][0] / GREY_FIGURE.width - 0.5;
@@ -242,7 +241,7 @@ const HairPlanting = ({ onClose }: HairPlantingProps) => {
         >
           {/* TextButton은 내용을 글자 span 안에 넣어서 아이콘을 인라인으로 붙여요. */}
           <span className="mr-3 inline-flex size-5 items-center justify-center align-[-4px]">
-            <img src={closeIcon} alt="" className="size-[13px]" />
+            <CloseIcon aria-hidden className="size-[13px] text-(color:--adaptiveGrey800)" />
           </span>
           닫기
         </TextButton>

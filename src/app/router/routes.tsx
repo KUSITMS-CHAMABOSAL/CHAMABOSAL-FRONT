@@ -18,7 +18,29 @@ export const router = createBrowserRouter([
         path: "rooms/:roomId",
         children: [
           // 하단 탭바가 있는 방 화면
-          { Component: RoomTabLayout, children: [] },
+          {
+            Component: RoomTabLayout,
+            children: [
+              {
+                index: true,
+                lazy: { Component: async () => (await import("@/pages/home")).HomePage },
+              },
+              {
+                path: "vote",
+                lazy: { Component: async () => (await import("@/pages/vote")).VotePage },
+              },
+              {
+                path: "storehouse",
+                lazy: {
+                  Component: async () => (await import("@/pages/storehouse")).StorehousePage,
+                },
+              },
+              {
+                path: "my",
+                lazy: { Component: async () => (await import("@/pages/my")).MyPage },
+              },
+            ],
+          },
           // 하단 탭바가 없는 방 화면
           { Component: PlainLayout, children: [] },
         ],

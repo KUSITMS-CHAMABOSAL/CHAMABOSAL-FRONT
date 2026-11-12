@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
 
 import { ListRow } from "@toss/tds-mobile";
 
-import { paths } from "@/shared/config";
 import { useTabBarToast } from "@/shared/lib";
 
 import { useDeleteMyData } from "../model/useDeleteMyData";
@@ -14,12 +12,10 @@ import DeleteMyDataDialog from "./DeleteMyDataDialog";
 const DeleteMyDataRow = () => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const { mutate: remove, isPending } = useDeleteMyData();
-  const navigate = useNavigate();
   const openToast = useTabBarToast();
 
   const confirmDelete = () =>
     remove(undefined, {
-      onSuccess: () => navigate(paths.root, { replace: true }),
       onError: () => {
         setIsConfirmOpen(false);
         openToast("데이터를 지우지 못했어요. 잠시 후 다시 시도해 주세요");

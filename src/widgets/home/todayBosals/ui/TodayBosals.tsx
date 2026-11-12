@@ -170,7 +170,7 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
             </div>
           );
         })}
-        <div className="flex h-[406px] w-[120px] shrink-0 snap-center items-center justify-center">
+        <div className="flex h-[406px] shrink-0 snap-end items-center pr-5">
           <IconButton
             name="icon-arrow-left-small-mono"
             variant="fill"
@@ -180,8 +180,6 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
             onClick={() => goToPage(0)}
           />
         </div>
-        {/* 끝 버튼도 가운데에 멈추도록 여백을 둬요. 버튼 칸 절반 60px + 간격 18px */}
-        <div aria-hidden className="w-[calc(50%-78px)] shrink-0" />
       </div>
     </section>
   );

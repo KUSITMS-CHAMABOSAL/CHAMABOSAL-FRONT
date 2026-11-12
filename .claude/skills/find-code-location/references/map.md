@@ -16,28 +16,28 @@
 
 ## 비즈니스 상수
 
-| 디자인 문구                       | 상수                                                  | 위치                                      |
-| --------------------------------- | ----------------------------------------------------- | ----------------------------------------- |
-| 최대 4명까지 함께할 수 있어요     | `MAX_MEMBERS = 4`                                     | `entities/room/config`                    |
-| 참여중인 방이 2개에요             | `MAX_ROOMS = 2`                                       | `entities/room/config`                    |
-| 2명부터 인증·투표 공양미가 쌓이고 | `MIN_RICE_MEMBERS = 2`                                | `entities/room/config`                    |
-| 공양미 한 솥 300석, +30석         | `POT_REWARD` (용량은 서버 `pot.goalAmount`)           | `entities/room/config`                    |
-| 9분동안 수정 및 삭제              | `EDIT_WINDOW_MINUTES = 10` 🔖 (남은 시간 표시로 추정) | `entities/certification/config`           |
-| 보살이 3명 이상 모이면 투표       | `MIN_VOTERS = 3`                                      | `entities/vote/config`                    |
-| 1/10 번                           | `TAP_GOAL = 10`                                       | `entities/vote/config`                    |
-| 닉네임 3/8                        | `NICKNAME_MAX_LENGTH = 8`                             | `features/onboarding/nicknameForm/config` |
+| 디자인 문구                       | 상수                                                  | 위치                            |
+| --------------------------------- | ----------------------------------------------------- | ------------------------------- |
+| 최대 4명까지 함께할 수 있어요     | `MAX_MEMBERS = 4`                                     | `entities/room/config`          |
+| 참여중인 방이 2개에요             | `MAX_ROOMS = 2`                                       | `entities/room/config`          |
+| 2명부터 인증·투표 공양미가 쌓이고 | `MIN_RICE_MEMBERS = 2`                                | `entities/room/config`          |
+| 공양미 한 솥 300석, +30석         | `POT_REWARD` (용량은 서버 `pot.goalAmount`)           | `entities/room/config`          |
+| 9분동안 수정 및 삭제              | `EDIT_WINDOW_MINUTES = 10` 🔖 (남은 시간 표시로 추정) | `entities/certification/config` |
+| 보살이 3명 이상 모이면 투표       | `MIN_VOTERS = 3`                                      | `entities/vote/config`          |
+| 1/10 번                           | `TAP_GOAL = 10`                                       | `entities/vote/config`          |
+| 닉네임 3/8                        | `NICKNAME_MAX_LENGTH = 8`                             | `entities/room/config`          |
 
 ## 목표 폴더 구조
 
 아직 없는 폴더는 처음 필요할 때 만듭니다.
 
-| 위치        | 구성                                                                                                                                                                                                                                                                                                                                 |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `app/`      | `main.tsx`, `App.tsx`, `bootstrap/`(사용자 식별, 내비게이션 바 하트 버튼, 서버 시간 보정), `providers/`(`TDSMobileAITProvider`, `QueryClientProvider`), `router/`(`routes.tsx`, `guards/`), `layouts/`(`RoomTabLayout`, `PlainLayout`), `styles/`(`index.css`)                                                                       |
-| `pages/`    | `intro`(`IntroPage`), `createRoom`(`CreateRoomPage`), `invite`(`InvitePage`), `home`(`HomePage`), `certify`(`CertifyPage`, `CertifyResultPage`), `vote`(`VotePage`, `TapTapPage`), `storehouse`(`StorehousePage`), `myBosal`(`MyBosalPage`), `legal`(`TermsPage`, `PrivacyPage`)                                                     |
-| `widgets/`  | `onboarding/joinSteps`(방 만들기·초대 공용), `home/roomSummary`, `home/todayBosals`, `home/myToday`, `certification/certifyResult`, `vote/voteBoard`(`VoteView` 분기), `storehouse/itemShop`, `myBosal/myRoomPanel`                                                                                                                  |
-| `features/` | `onboarding/nicknameForm`, `room/{createRoom,joinRoom,shareInvite,leaveRoom,kickMember,renameNickname}`, `member/pokeMember`, `certification/{submitCertification,editCertification,reactCertification}`, `vote/{castVote,tapForehead,applyShield}`, `storehouse/{buyItem,equipItem}`, `settings/{notificationSetting,deleteMyData}` |
-| `entities/` | `bosal`(`BosalImage`, `BosalCard`, `BosalStatusBadge`, `BosalGrid`, `assets/`), `room`(`RoomIllustration`, `RicePotGauge`, `roomQueries`, 방 규칙 상수), `member`(`MemberStatRow`), `certification`(`CertificationCard`), `vote`(`VoteCandidateCard`, `getVoteView`), `item`(`ItemCard`), `session`(로그인 토큰, 내 정보)            |
-| `shared/`   | `api/`(`client.ts`, `queryClient.ts`), `ui/`(`EmptyState`, `InfoBox`, `GradientScreen`, `MonthCalendar`), `lib/`(`appsInToss/`, `cn.ts`, `formatWon.ts`, `formatDateTime.ts`), `hooks/`(`useServerCountdown`, `useFunnel`), `config/`(`env.ts`, `paths.ts`, `deepLinks.ts`), `types/`, `assets/`(`icons/`, `illustrations/`)         |
+| 위치        | 구성                                                                                                                                                                                                                                                                                                                                              |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app/`      | `main.tsx`, `App.tsx`, `bootstrap/`(사용자 식별, 내비게이션 바 하트 버튼, 서버 시간 보정), `providers/`(`TDSMobileAITProvider`, `QueryClientProvider`), `router/`(`routes.tsx`, `guards/`), `layouts/`(`RoomTabLayout`, `PlainLayout`), `styles/`(`index.css`)                                                                                    |
+| `pages/`    | `intro`(`IntroPage`), `createRoom`(`CreateRoomPage`), `invite`(`InvitePage`), `home`(`HomePage`), `certify`(`CertifyPage`, `CertifyResultPage`), `vote`(`VotePage`, `TapTapPage`), `storehouse`(`StorehousePage`), `myBosal`(`MyBosalPage`), `legal`(`TermsPage`, `PrivacyPage`)                                                                  |
+| `widgets/`  | `onboarding/joinSteps`(방 만들기·초대 공용), `home/roomSummary`, `home/todayBosals`, `home/myToday`, `certification/certifyResult`, `vote/voteBoard`(`VoteView` 분기), `storehouse/itemShop`, `myBosal/{myRoomPanel,certificationCalendar,settingsList}`                                                                                          |
+| `features/` | `onboarding/nicknameForm`, `room/{createRoom,joinRoom,shareInvite,leaveRoom,kickMember,renameNickname}`, `member/pokeMember`, `certification/{submitCertification,editCertification,reactCertification}`, `vote/{castVote,tapForehead,applyShield}`, `storehouse/{buyItem,equipItem}`, `settings/{notificationSetting,deleteMyData}`              |
+| `entities/` | `bosal`(`BosalImage`, `BosalCard`, `BosalStatusBadge`, `BosalGrid`, `assets/`), `room`(`RoomIllustration`, `RicePotGauge`, `roomQueries`, 방 규칙 상수), `member`(`MemberStatRow`), `certification`(`CertificationCard`, `certificationQueries`), `vote`(`VoteCandidateCard`, `getVoteView`), `item`(`ItemCard`), `session`(로그인 토큰, 내 정보) |
+| `shared/`   | `api/`(`client.ts`, `queryClient.ts`), `ui/`(`EmptyState`, `InfoBox`, `GradientScreen`), `lib/`(`appsInToss/`, `cn.ts`, `formatWon.ts`, `formatDateTime.ts`), `hooks/`(`useServerCountdown`, `useFunnel`), `config/`(`env.ts`, `paths.ts`, `deepLinks.ts`), `types/`, `assets/`(`icons/`, `illustrations/`)                                       |
 
 `shared/lib/appsInToss/` 래퍼: `auth`, `share`, `photos`, `haptic`, `notification`, `storage`, `screen`, `backEvent`, `errors`

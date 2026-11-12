@@ -22,6 +22,30 @@ const findCertification = (certificationId: number) => {
   return null;
 };
 
+const pad = (value: number) => String(value).padStart(2, "0");
+const now = new Date();
+const thisMonth = `${now.getFullYear()}-${pad(now.getMonth() + 1)}`;
+
+const todayDate = `${thisMonth}-${pad(now.getDate())}`;
+
+/**
+ * 인증 캘린더 목 데이터예요. 달마다 같은 규칙으로 참은 날·못 참은 날을 섞고, 이번 달은 오늘까지만 채워요.
+ * 오늘 칸은 그 방 오늘 탭의 내 인증을 따라서, 인증을 지우면 캘린더에서도 빠져요.
+ */
+const calendarOf = (roomId: number, month: string) => {
+  if (month > thisMonth) return [];
+  const [year, monthNumber] = month.split("-").map(Number);
+  const lastDay = month === thisMonth ? now.getDate() : new Date(year, monthNumber, 0).getDate();
+  const myToday = state.rooms[roomId]?.members.find(member => member.isMe)?.certification;
+  return Array.from({ length: lastDay }, (_, index) => index + 1).flatMap(day => {
+    const date = `${month}-${pad(day)}`;
+    if (date === todayDate) return myToday ? [{ date, result: myToday.result }] : [];
+    if (day % 5 === 2) return [{ date, result: "FAILED" }];
+    if (day % 3 !== 0) return [{ date, result: "ENDURED" }];
+    return [];
+  });
+};
+
 /** API 초안의 경로와 응답 모양을 흉내 내요. 없는 경로는 404예요. */
 export const mockHandler: MockHandler = (method, path, body) => {
   const route = `${method} ${path}`;
@@ -53,6 +77,53 @@ export const mockHandler: MockHandler = (method, path, body) => {
     found.member.certification = null;
     found.today.pot.amount = Math.max(0, found.today.pot.amount - 10);
     return ok({ riceRecalled: 10, potRecalled: 10 });
+  }
+
+  if (
+    (match = route.match(
+      /^GET \/api\/rooms\/(\d+)\/members\/me\/calendar(?:\?month=(\d{4}-\d{2}))?$/,
+    ))
+  ) {
+    const roomId = Number(match[1]);
+    if (!state.rooms[roomId]) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
+    const month = match[2] ?? thisMonth;
+    return ok({ month, calendar: calendarOf(roomId, month) });
+  }
+
+  if ((match = route.match(/^PATCH \/api\/rooms\/(\d+)\/members\/me\/nickname$/))) {
+    const roomId = Number(match[1]);
+    const today = state.rooms[roomId];
+    const room = state.me.rooms.find(item => item.roomId === roomId);
+    if (!today || !room) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
+    const { nickname } = body as { nickname: string };
+    const taken = today.members.some(
+      member => !member.isMe && member.nickname.toLowerCase() === nickname.toLowerCase(),
+    );
+    if (taken) return fail(409, "ROOM_004", "이미 쓰는 닉네임입니다.");
+    room.nickname = nickname;
+    for (const member of today.members) if (member.isMe) member.nickname = nickname;
+    return ok();
+  }
+
+  if ((match = route.match(/^DELETE \/api\/rooms\/(\d+)\/members\/me$/))) {
+    const roomId = Number(match[1]);
+    if (!state.rooms[roomId]) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
+    delete state.rooms[roomId];
+    state.me.rooms = state.me.rooms.filter(room => room.roomId !== roomId);
+    state.me.canCreateRoom = true;
+    return ok();
+  }
+
+  if (route === "PATCH /api/users/me/settings") {
+    Object.assign(state.me, body);
+    return ok();
+  }
+
+  if (route === "DELETE /api/users/me") {
+    state.rooms = {};
+    state.me.rooms = [];
+    state.me.canCreateRoom = true;
+    return ok();
   }
 
   return fail(404, "COMMON_404", `목에 없는 API예요: ${route}`);

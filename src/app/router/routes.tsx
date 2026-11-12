@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router";
 
 import PlainLayout from "../layouts/PlainLayout";
 import RoomTabLayout from "../layouts/RoomTabLayout";
+import EntryRedirect from "./EntryRedirect";
 import RouteErrorBoundary from "./RouteErrorBoundary";
 
 // 경로는 화면을 만드는 이슈에서 추가합니다. 경로 표는 .claude/rules/routes.md에 있습니다.
@@ -12,6 +13,7 @@ export const router = createBrowserRouter([
     path: "/",
     ErrorBoundary: RouteErrorBoundary,
     children: [
+      { index: true, Component: EntryRedirect },
       // 하단 탭바가 없는 화면
       { Component: PlainLayout, children: [] },
       {

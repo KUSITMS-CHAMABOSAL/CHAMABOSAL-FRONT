@@ -20,10 +20,12 @@ export const useHairLoss = (svgRef: RefObject<SVGSVGElement | null>) => {
 
   useEffect(() => () => window.clearTimeout(ouchTimer.current), []);
 
-  const markPlucked = (index: number) => {
-    inFlight.current.delete(index);
-    setPlucked(prev => new Set(prev).add(index));
-  };
+  // 뽑힌 상태가 반영된 뒤에 예약을 풀어요. 먼저 풀면 반영 전 사이에 같은 가닥을 다시 고를 수 있어요.
+  useEffect(() => {
+    plucked.forEach(index => inFlight.current.delete(index));
+  }, [plucked]);
+
+  const markPlucked = (index: number) => setPlucked(prev => new Set(prev).add(index));
 
   const pluck = useCallback(() => {
     const remaining = HAIR_CURLS.map((_, index) => index).filter(

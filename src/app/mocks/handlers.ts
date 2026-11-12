@@ -105,5 +105,10 @@ export const mockHandler: MockHandler = (method, path, body) => {
     return ok();
   }
 
+  if (route === "PATCH /api/users/me/settings") {
+    Object.assign(state.me, body);
+    return ok();
+  }
+
   return fail(404, "COMMON_404", `목에 없는 API예요: ${route}`);
 };

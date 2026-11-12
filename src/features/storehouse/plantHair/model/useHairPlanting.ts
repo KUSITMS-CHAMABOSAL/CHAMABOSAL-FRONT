@@ -20,9 +20,11 @@ const subscribe = (listener: () => void) => {
   return () => listeners.delete(listener);
 };
 
-export type PlantResult = "planted" | "notEnoughRice";
+export type PlantResult = "planted" | "notEnoughRice" | "notEmpty";
 
 const plant = (index: number): PlantResult => {
+  // 이미 심긴 자리에 다시 불려도 공양미를 깎지 않아요.
+  if (!state.plucked.has(index)) return "notEmpty";
   if (state.rice < HAIR_PLANT_PRICE) return "notEnoughRice";
   const plucked = new Set(state.plucked);
   plucked.delete(index);

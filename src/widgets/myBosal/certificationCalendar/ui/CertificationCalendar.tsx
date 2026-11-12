@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { IconButton, Paragraph, TableRow } from "@toss/tds-mobile";
 
-import { useCalendarQuery } from "@/entities/certification";
+import { useCalendarQuery, usePrefetchCalendar } from "@/entities/certification";
 import { cn } from "@/shared/lib";
 import type { CertificationResult } from "@/shared/types";
 
@@ -43,6 +43,9 @@ const CertificationCalendar = ({ roomId }: CertificationCalendarProps) => {
   const current = useCalendarQuery(roomId);
   const selected = useCalendarQuery(roomId, month);
   const thisMonth = current.data?.month;
+  // 화살표로 넘길 수 있는 건 지난 달뿐이라 보고 있는 달의 이전 달을 미리 받아요.
+  // 다음 달은 이미 보고 온 달이라 캐시에 있어요.
+  usePrefetchCalendar(roomId, thisMonth ? shiftMonth(month ?? thisMonth, -1) : undefined);
 
   // 🔖 로딩·에러 시안이 없어 아직 아무것도 그리지 않아요.
   if (!thisMonth) return null;

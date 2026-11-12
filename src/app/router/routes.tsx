@@ -39,7 +39,7 @@ export const router = createBrowserRouter([
               },
               {
                 path: "my",
-                lazy: { Component: async () => (await import("@/pages/my")).MyPage },
+                lazy: { Component: async () => (await import("@/pages/myBosal")).MyBosalPage },
               },
             ],
           },

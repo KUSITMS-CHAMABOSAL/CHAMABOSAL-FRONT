@@ -5,6 +5,7 @@ export const paths = {
     home: (roomId: number) => `/rooms/${roomId}`,
     vote: (roomId: number) => `/rooms/${roomId}/vote`,
     storehouse: (roomId: number) => `/rooms/${roomId}/storehouse`,
+    hairPlanting: (roomId: number) => `/rooms/${roomId}/storehouse/hair`,
     my: (roomId: number) => `/rooms/${roomId}/my`,
   },
 } as const;

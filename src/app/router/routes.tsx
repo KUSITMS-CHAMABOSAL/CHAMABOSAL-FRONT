@@ -44,7 +44,17 @@ export const router = createBrowserRouter([
             ],
           },
           // 하단 탭바가 없는 방 화면
-          { Component: PlainLayout, children: [] },
+          {
+            Component: PlainLayout,
+            children: [
+              {
+                path: "storehouse/hair",
+                lazy: {
+                  Component: async () => (await import("@/pages/hairPlanting")).HairPlantingPage,
+                },
+              },
+            ],
+          },
         ],
       },
     ],

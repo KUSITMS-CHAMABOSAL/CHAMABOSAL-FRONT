@@ -1,0 +1,52 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="86.1578" height="132.015" viewBox="0 0 86.1578 132.015" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="Group 5">
+<g id="Rectangle 33">
+<use xlink:href="#stroke0_0_67" fill="#FF9EB7"/>
+<use xlink:href="#stroke0_0_67" fill="url(#paint0_radial_0_67)" fill-opacity="0.5"/>
+</g>
+<g id="Union">
+<use xlink:href="#stroke1_0_67" fill="#FFC7D5"/>
+<use xlink:href="#stroke1_0_67" fill="url(#paint1_radial_0_67)" fill-opacity="0.5"/>
+</g>
+<path id="Union_2" d="M74.451 41.5172C76.0886 39.4729 79.136 39.885 81.3505 40.3707C84.8539 41.139 86.864 45.5493 85.8397 50.2213C85.6514 51.0802 85.3734 51.8878 85.0233 52.6294C84.058 54.6742 83.993 57.4395 83.993 59.7008C83.993 62.8097 81.4726 65.3297 78.3641 65.3297C75.2558 65.3295 72.7362 62.8096 72.7362 59.7008C72.7362 57.0109 73.2286 53.6644 72.944 50.9896C72.8242 49.8643 72.8844 48.6607 73.1522 47.439C73.5291 45.7202 73.498 42.7071 74.451 41.5172Z" fill="#FFDBE4"/>
+<path id="Vector" d="M42.9816 80.7556C61.3485 80.7556 76.2377 65.864 76.2377 47.4943C76.2377 29.1246 61.3485 14.233 42.9816 14.233C24.6148 14.233 9.72559 29.1246 9.72559 47.4943C9.72559 65.864 24.6148 80.7556 42.9816 80.7556Z" fill="url(#paint2_linear_0_67)"/>
+<g id="Vector_2">
+<use xlink:href="#stroke2_0_67" fill="#FFE2E9"/>
+<use xlink:href="#stroke2_0_67" fill="url(#paint3_radial_0_67)" fill-opacity="0.5"/>
+</g>
+<path id="Vector_3" d="M43.116 70.1494C62.4842 70.1494 78.1852 54.4459 78.1852 35.0747C78.1852 15.7035 62.4842 0 43.116 0C23.7479 0 8.04688 15.7035 8.04688 35.0747C8.04688 54.4459 23.7479 70.1494 43.116 70.1494Z" fill="#FFDBE4"/>
+<path id="Vector 1" d="M23.1626 96.0737C22.2966 96.0737 22.0801 103.579 22.0801 107.332L24.0287 110.796C24.1008 105.889 24.0287 96.0737 23.1626 96.0737Z" fill="#FFADC2"/>
+<path id="Vector 2" d="M63.8816 96.0737C64.7476 96.0737 64.9641 103.579 64.9641 107.332L63.0155 110.796C62.9433 105.889 63.0155 96.0737 63.8816 96.0737Z" fill="#FFADC2"/>
+<g id="Vector_4">
+<use xlink:href="#stroke3_0_67" fill="#4E5968"/>
+<use xlink:href="#stroke3_0_67" fill="#FFE2E9"/>
+<use xlink:href="#stroke3_0_67" fill="url(#paint4_radial_0_67)" fill-opacity="0.5"/>
+</g>
+</g>
+<defs>
+<radialGradient id="paint0_radial_0_67" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(42.4748 82.1683) rotate(90) scale(40.7534 49.3221)">
+<stop offset="0.400914" stop-color="#FFBECA" stop-opacity="0"/>
+<stop offset="1" stop-color="#FFBECA"/>
+</radialGradient>
+<radialGradient id="paint1_radial_0_67" cx="0" cy="0" r="1" gradientTransform="matrix(-20.5563 5.28485 3.9139 14.8375 43.0061 79.0956)" gradientUnits="userSpaceOnUse">
+<stop offset="0.0226287" stop-color="#FEA6BD" stop-opacity="0"/>
+<stop offset="1" stop-color="#FF9EB7"/>
+</radialGradient>
+<linearGradient id="paint2_linear_0_67" x1="42.9816" y1="14.233" x2="42.9816" y2="80.7556" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFDBE4"/>
+<stop offset="1" stop-color="#FFCDD7"/>
+</linearGradient>
+<radialGradient id="paint3_radial_0_67" cx="0" cy="0" r="1" gradientTransform="matrix(3.45548e-06 33.9779 -36.0885 -1.44264 42.7072 45.9256)" gradientUnits="userSpaceOnUse">
+<stop offset="0.120192" stop-color="#FFE2E9"/>
+<stop offset="1" stop-color="#FDCBD6"/>
+</radialGradient>
+<radialGradient id="paint4_radial_0_67" cx="0" cy="0" r="1" gradientTransform="matrix(0.0179523 24.9049 -64.8388 0.0415629 42.8625 107.11)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFE2E9"/>
+<stop offset="1" stop-color="#FFBACA"/>
+</radialGradient>
+<path id="stroke0_0_67" d="M5.62793 107.111C5.62793 86.6664 22.2012 70.0931 42.6454 70.0931C63.0895 70.0931 79.6628 86.6664 79.6628 107.111V122.922H5.62793V107.111Z"/>
+<path id="stroke1_0_67" d="M59.5579 74.5514C61.4439 73.285 63.9997 73.7874 65.2659 75.6734C66.5321 77.5596 66.0298 80.1159 64.1439 81.3824L45.3802 93.982C43.7258 95.0929 41.5562 94.8421 40.1937 93.4908C39.7564 93.3773 39.3302 93.1905 38.9339 92.9244L21.7445 81.3824C19.8584 80.116 19.3552 77.5597 20.6214 75.6734C21.8876 73.7873 24.4434 73.285 26.3294 74.5514L42.9427 85.7076L59.5579 74.5514Z"/>
+<path id="stroke2_0_67" d="M42.8272 81.0251C61.344 81.0251 76.3548 66.327 76.3548 48.196C76.3548 30.0649 61.344 15.3668 42.8272 15.3668C24.3104 15.3668 9.29957 30.0649 9.29957 48.196C9.29957 66.327 24.3104 81.0251 42.8272 81.0251Z"/>
+<path id="stroke3_0_67" d="M71.7025 103.436C64.4622 103.436 57.2727 104.644 50.4302 107.011L47.3338 108.082C44.6539 109.008 41.7628 109.03 39.0711 108.144L37.5696 107.649C29.1049 104.86 20.1913 103.439 11.2789 103.439C11.0261 103.439 10.7881 103.501 10.5383 103.516C4.66099 103.922 0.000211016 108.958 0.000211016 115.178C0.000211016 124.477 7.24272 132.015 16.1776 132.015H69.9804C78.9153 132.015 86.1578 124.477 86.1578 115.178C86.1578 108.903 81.4137 103.82 75.462 103.498C75.2657 103.488 75.0784 103.436 74.8791 103.436H71.7055H71.7025Z"/>
+</defs>
+</svg>

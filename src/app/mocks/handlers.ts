@@ -22,6 +22,22 @@ const findCertification = (certificationId: number) => {
   return null;
 };
 
+const pad = (value: number) => String(value).padStart(2, "0");
+const now = new Date();
+const thisMonth = `${now.getFullYear()}-${pad(now.getMonth() + 1)}`;
+
+/** 인증 캘린더 목 데이터예요. 달마다 같은 규칙으로 참은 날·못 참은 날을 섞고, 이번 달은 오늘까지만 채워요. */
+const calendarOf = (month: string) => {
+  if (month > thisMonth) return [];
+  const [year, monthNumber] = month.split("-").map(Number);
+  const lastDay = month === thisMonth ? now.getDate() : new Date(year, monthNumber, 0).getDate();
+  return Array.from({ length: lastDay }, (_, index) => index + 1).flatMap(day => {
+    if (day % 5 === 2) return [{ date: `${month}-${pad(day)}`, result: "FAILED" }];
+    if (day % 3 !== 0) return [{ date: `${month}-${pad(day)}`, result: "ENDURED" }];
+    return [];
+  });
+};
+
 /** API 초안의 경로와 응답 모양을 흉내 내요. 없는 경로는 404예요. */
 export const mockHandler: MockHandler = (method, path, body) => {
   const route = `${method} ${path}`;
@@ -53,6 +69,16 @@ export const mockHandler: MockHandler = (method, path, body) => {
     found.member.certification = null;
     found.today.pot.amount = Math.max(0, found.today.pot.amount - 10);
     return ok({ riceRecalled: 10, potRecalled: 10 });
+  }
+
+  if (
+    (match = route.match(
+      /^GET \/api\/rooms\/(\d+)\/members\/me\/calendar(?:\?month=(\d{4}-\d{2}))?$/,
+    ))
+  ) {
+    if (!state.rooms[Number(match[1])]) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
+    const month = match[2] ?? thisMonth;
+    return ok({ month, calendar: calendarOf(month) });
   }
 
   return fail(404, "COMMON_404", `목에 없는 API예요: ${route}`);

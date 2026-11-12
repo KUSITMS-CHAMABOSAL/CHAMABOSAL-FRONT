@@ -16,8 +16,12 @@ const MyBosalPage = () => {
   const navigate = useNavigate();
   const openToast = useTabBarToast();
 
-  // 🔖 로딩·에러 시안이 없어 아직 아무것도 그리지 않아요.
-  if (!me.data) return null;
+  if (!me.data) {
+    // 진입 분기처럼 내 정보를 못 받으면 라우트 오류 화면으로 보내요.
+    if (me.error) throw me.error;
+    // 🔖 로딩 시안이 없어 아직 아무것도 그리지 않아요.
+    return null;
+  }
 
   const room = me.data.rooms.find(item => item.roomId === roomId);
   // 나갔거나 없는 방이면 진입 분기로 보내요.

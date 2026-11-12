@@ -32,10 +32,12 @@ const RenameNicknameSheet = ({
   onClose,
 }: RenameNicknameSheetProps) => {
   const [value, setValue] = useState(nickname);
-  const [isTaken, setIsTaken] = useState(false);
+  /** 서버가 중복이라고 답한 닉네임이에요. 응답 전에 입력을 바꿔도 지금 값에 오류가 붙지 않아요. */
+  const [takenNickname, setTakenNickname] = useState<string | null>(null);
   const { mutate: rename, isPending } = useRenameNickname(roomId);
   const openToast = useTabBarToast();
 
+  const isTaken = value === takenNickname;
   const isInvalid = hasInvalidCharacter(value);
   const errorMessage = isInvalid
     ? NICKNAME_INVALID_MESSAGE
@@ -44,14 +46,16 @@ const RenameNicknameSheet = ({
       : null;
   const canSave = isSubmittableNickname(value) && value !== nickname && !isTaken;
 
-  const save = () =>
-    rename(value, {
+  const save = () => {
+    const submitted = value;
+    rename(submitted, {
       onSuccess: onClose,
       onError: error => {
-        if (isApiError(error, "ROOM_004")) setIsTaken(true);
+        if (isApiError(error, "ROOM_004")) setTakenNickname(submitted);
         else openToast("닉네임을 바꾸지 못했어요. 잠시 후 다시 시도해 주세요");
       },
     });
+  };
 
   return (
     <BottomSheet
@@ -73,10 +77,7 @@ const RenameNicknameSheet = ({
         hasError={errorMessage !== null}
         help={errorMessage ?? `${value.length}/${NICKNAME_MAX_LENGTH}`}
         aria-label="방 닉네임"
-        onChange={event => {
-          setValue(event.target.value.slice(0, NICKNAME_MAX_LENGTH));
-          setIsTaken(false);
-        }}
+        onChange={event => setValue(event.target.value.slice(0, NICKNAME_MAX_LENGTH))}
       />
     </BottomSheet>
   );

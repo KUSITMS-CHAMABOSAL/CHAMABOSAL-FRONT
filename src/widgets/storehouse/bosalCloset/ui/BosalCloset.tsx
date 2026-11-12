@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
-import { Button, Paragraph, SegmentedControl, useToast } from "@toss/tds-mobile";
+import { Button, Paragraph, SegmentedControl } from "@toss/tds-mobile";
 
 import { BosalFigure } from "@/entities/bosal";
 import { ItemCard, ShieldImage } from "@/entities/item";
 import { EquipItemButton, type Outfit, useOutfit } from "@/features/storehouse/equipItem";
 import { useHairPlanting } from "@/features/storehouse/plantHair";
-import { cn } from "@/shared/lib";
+import { cn, useTabBarToast } from "@/shared/lib";
 
 import {
   CLOSET_TABS,
@@ -64,27 +64,20 @@ const BosalCloset = ({ onPlantHair }: BosalClosetProps) => {
   const [tab, setTab] = useState<ClosetTab>("all");
   const { outfit, toggleHat, toggleFaceItem, toggleExpression } = useOutfit();
   const { plucked, rice } = useHairPlanting();
-  const { openToast } = useToast();
+  const openToast = useTabBarToast();
   const gridRef = useRef<HTMLDivElement>(null);
-  const isFirstOutfit = useRef(true);
 
   const playStage = (keyframes: Keyframe[], duration: number) => {
     if (prefersReducedMotion()) return;
     stageRef.current?.animate(keyframes, { duration, easing: "ease-out" });
   };
 
-  useEffect(() => {
-    if (isFirstOutfit.current) {
-      isFirstOutfit.current = false;
-      return;
-    }
-    playStage(SQUASH, 380);
-  }, [outfit]);
-
   const toggle = (item: ClosetItem) => {
     if (item.kind === "hat") toggleHat(item.hat);
     if (item.kind === "faceItem") toggleFaceItem(item.faceItem);
     if (item.kind === "expression") toggleExpression(item.expression);
+    // 착용을 바꾼 순간에만 눌렸다 튀어요. effect로 걸면 StrictMode의 마운트 재실행에서도 재생돼요.
+    playStage(SQUASH, 380);
   };
 
   const changeTab = (next: ClosetTab) => {

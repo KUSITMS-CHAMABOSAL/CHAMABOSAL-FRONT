@@ -38,7 +38,9 @@ const HomePage = () => {
             onRoomInfo={notReady("방 정보")}
             onInvite={notReady("친구 초대")}
           />
+          {/* 방을 바꾸면 새로 그려요. 모아 둔 콕이 이전 방 ID로 전송되고, 캐러셀 위치와 찌른 횟수도 초기화돼요. */}
           <TodayBosals
+            key={roomId}
             today={today.data}
             onCertify={notReady("인증")}
             onEditCertification={notReady("인증 수정")}

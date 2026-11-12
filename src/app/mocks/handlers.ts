@@ -26,14 +26,22 @@ const pad = (value: number) => String(value).padStart(2, "0");
 const now = new Date();
 const thisMonth = `${now.getFullYear()}-${pad(now.getMonth() + 1)}`;
 
-/** 인증 캘린더 목 데이터예요. 달마다 같은 규칙으로 참은 날·못 참은 날을 섞고, 이번 달은 오늘까지만 채워요. */
-const calendarOf = (month: string) => {
+const todayDate = `${thisMonth}-${pad(now.getDate())}`;
+
+/**
+ * 인증 캘린더 목 데이터예요. 달마다 같은 규칙으로 참은 날·못 참은 날을 섞고, 이번 달은 오늘까지만 채워요.
+ * 오늘 칸은 그 방 오늘 탭의 내 인증을 따라서, 인증을 지우면 캘린더에서도 빠져요.
+ */
+const calendarOf = (roomId: number, month: string) => {
   if (month > thisMonth) return [];
   const [year, monthNumber] = month.split("-").map(Number);
   const lastDay = month === thisMonth ? now.getDate() : new Date(year, monthNumber, 0).getDate();
+  const myToday = state.rooms[roomId]?.members.find(member => member.isMe)?.certification;
   return Array.from({ length: lastDay }, (_, index) => index + 1).flatMap(day => {
-    if (day % 5 === 2) return [{ date: `${month}-${pad(day)}`, result: "FAILED" }];
-    if (day % 3 !== 0) return [{ date: `${month}-${pad(day)}`, result: "ENDURED" }];
+    const date = `${month}-${pad(day)}`;
+    if (date === todayDate) return myToday ? [{ date, result: myToday.result }] : [];
+    if (day % 5 === 2) return [{ date, result: "FAILED" }];
+    if (day % 3 !== 0) return [{ date, result: "ENDURED" }];
     return [];
   });
 };
@@ -76,9 +84,10 @@ export const mockHandler: MockHandler = (method, path, body) => {
       /^GET \/api\/rooms\/(\d+)\/members\/me\/calendar(?:\?month=(\d{4}-\d{2}))?$/,
     ))
   ) {
-    if (!state.rooms[Number(match[1])]) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
+    const roomId = Number(match[1]);
+    if (!state.rooms[roomId]) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
     const month = match[2] ?? thisMonth;
-    return ok({ month, calendar: calendarOf(month) });
+    return ok({ month, calendar: calendarOf(roomId, month) });
   }
 
   if ((match = route.match(/^PATCH \/api\/rooms\/(\d+)\/members\/me\/nickname$/))) {

@@ -4,6 +4,7 @@ import { Outlet, useLocation, useNavigate, useParams } from "react-router";
 import { NotFoundPage } from "@/pages/notFound";
 import { paths } from "@/shared/config";
 
+import type { EntryState } from "../router/EntryRedirect";
 import RoomTabBar, { type RoomTab } from "./RoomTabBar";
 
 /** 탭 레이아웃 안에 있지만 하단 바를 그리지 않는 화면이에요. */
@@ -24,7 +25,8 @@ const RoomTabLayout = () => {
   const id = Number(param);
   // 주소의 방 번호가 정수가 아니면(`/my/abc`) 방이 없는 것으로 봐요. NaN을 그대로 두면 아래 기억 비교가 끝나지 않아요.
   const roomId = Number.isInteger(id) ? id : undefined;
-  const { pathname } = useLocation();
+  // 라우터는 끝의 `/`도 같은 화면으로 보여줘요(`/storehouse/hair/`). 탭 판단도 같게 하려고 떼어 내요.
+  const pathname = useLocation().pathname.replace(/\/+$/, "");
   const navigate = useNavigate();
   const activeTab = getActiveTab(pathname, roomId);
 
@@ -34,13 +36,12 @@ const RoomTabLayout = () => {
   const [lastRoomId, setLastRoomId] = useState(roomId);
   if (roomId !== undefined && roomId !== lastRoomId) setLastRoomId(roomId);
 
-  const getTabPath = (tab: RoomTab) => {
-    if (tab === "storehouse") return paths.storehouse;
+  const goToTab = (tab: RoomTab) => {
+    if (tab === "storehouse") return navigate(paths.storehouse);
     const id = roomId ?? lastRoomId;
-    // 곳간으로 바로 들어와 본 방이 없으면 진입 분기가 방을 골라요.
-    if (id === undefined) return paths.root;
-    if (tab === "my") return paths.my(id);
-    return paths.room[tab](id);
+    // 곳간으로 바로 들어와 본 방이 없으면 진입 분기가 방을 고른 뒤 누른 탭으로 보내요.
+    if (id === undefined) return navigate(paths.root, { state: { tab } satisfies EntryState });
+    navigate(tab === "my" ? paths.my(id) : paths.room[tab](id));
   };
 
   if (param !== undefined && roomId === undefined) return <NotFoundPage />;
@@ -49,10 +50,7 @@ const RoomTabLayout = () => {
     <>
       <Outlet />
       {!NO_TAB_BAR_PATHS.includes(pathname) && (
-        <RoomTabBar
-          activeTab={activeTab}
-          onTabClick={tab => tab !== activeTab && navigate(getTabPath(tab))}
-        />
+        <RoomTabBar activeTab={activeTab} onTabClick={tab => tab !== activeTab && goToTab(tab)} />
       )}
     </>
   );

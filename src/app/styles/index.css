@@ -15,6 +15,10 @@
   /* 인트로 배경 그라데이션. Figma color/secondary-mint/100과 중간 단계 */
   --color-mint-75: #e7fdf1;
   --color-mint-100: #ccfbe0;
+  /* 방 만들기에서 고른 절약 목표. Figma color/secondary-mint/50, button/secondary-fill-pressed, text/secondary-darker */
+  --color-mint-50: #e5fff0;
+  --color-mint-500: #23bc6b;
+  --color-mint-700: #199451;
 }
 
 @theme {

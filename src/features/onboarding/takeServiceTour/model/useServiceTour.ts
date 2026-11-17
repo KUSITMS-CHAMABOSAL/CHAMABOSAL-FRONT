@@ -39,9 +39,9 @@ export const useServiceTour = (onFinish: () => void) => {
     toneRefs.current[tone] = element;
   };
 
+  // 저장이 끝난 뒤 떠나요. 다음 화면이 본 기록을 읽을 때 아직 저장 전이면 온보딩으로 돌아와요.
   const finish = useCallback(() => {
-    void markServiceTourSeen();
-    onFinish();
+    void markServiceTourSeen().then(onFinish);
   }, [onFinish]);
 
   const nextRef = useRef<() => void>(() => {});

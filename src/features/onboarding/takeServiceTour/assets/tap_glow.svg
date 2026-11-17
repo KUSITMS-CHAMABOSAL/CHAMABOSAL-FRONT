@@ -1,0 +1,28 @@
+<svg width="639" height="639" viewBox="0 0 639 639" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><svg x="0" y="0" width="639" height="639" viewBox="0 0 639 639" overflow="visible">
+<circle id="o_Ellipse 13" cx="319.5" cy="319.5" r="319.5" fill="url(#o_paint0_radial_0_232)" fill-opacity="0.33"/>
+<defs>
+<radialGradient id="o_paint0_radial_0_232" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(319.5 319.5) rotate(90) scale(319.5)">
+<stop stop-color="#22AAAA" stop-opacity="0.33"/>
+<stop offset="1" stop-color="#22AAAA" stop-opacity="0.6"/>
+</radialGradient>
+</defs>
+</svg><svg x="56" y="42" width="526" height="526" viewBox="0 0 526 526" overflow="visible">
+<circle id="m_Ellipse 16" cx="263" cy="263" r="263" fill="url(#m_paint0_radial_0_307)" fill-opacity="0.33"/>
+<defs>
+<radialGradient id="m_paint0_radial_0_307" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(263 263) rotate(90) scale(263)">
+<stop stop-color="#F8C600" stop-opacity="0.1"/>
+<stop offset="1" stop-color="#22AAAA" stop-opacity="0.6"/>
+</radialGradient>
+</defs>
+</svg><svg x="105" y="91" width="428" height="428" viewBox="0 0 428 428" overflow="visible">
+<g id="i_Ellipse 12">
+<circle cx="214" cy="214" r="214" fill="#22AAAA" fill-opacity="0.33"/>
+<circle cx="214" cy="214" r="214" fill="url(#i_paint0_radial_0_227)" fill-opacity="0.33"/>
+</g>
+<defs>
+<radialGradient id="i_paint0_radial_0_227" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(214 214) rotate(90) scale(214)">
+<stop stop-color="#F8C600" stop-opacity="0.1"/>
+<stop offset="1" stop-color="#22AAAA" stop-opacity="0.6"/>
+</radialGradient>
+</defs>
+</svg></svg>

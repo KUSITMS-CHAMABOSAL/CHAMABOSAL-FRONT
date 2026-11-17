@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router";
 import PlainLayout from "../layouts/PlainLayout";
 import RoomTabLayout from "../layouts/RoomTabLayout";
 import EntryRedirect from "./EntryRedirect";
+import OnboardingGuard from "./guards/OnboardingGuard";
 import RouteErrorBoundary from "./RouteErrorBoundary";
 
 // 경로는 화면을 만드는 이슈에서 추가합니다. 경로 표는 .claude/rules/routes.md에 있습니다.
@@ -13,45 +14,59 @@ export const router = createBrowserRouter([
     path: "/",
     ErrorBoundary: RouteErrorBoundary,
     children: [
-      { index: true, Component: EntryRedirect },
-      // 하단 탭바가 없는 화면
-      { Component: PlainLayout, children: [] },
+      // 온보딩만 가드 밖에 둬요. 처음 들어오면 나머지 화면은 모두 온보딩을 먼저 거쳐요.
       {
-        path: "rooms/:roomId",
+        Component: PlainLayout,
         children: [
-          // 하단 탭바가 있는 방 화면
           {
-            Component: RoomTabLayout,
-            children: [
-              {
-                index: true,
-                lazy: { Component: async () => (await import("@/pages/home")).HomePage },
-              },
-              {
-                path: "vote",
-                lazy: { Component: async () => (await import("@/pages/vote")).VotePage },
-              },
-              {
-                path: "storehouse",
-                lazy: {
-                  Component: async () => (await import("@/pages/storehouse")).StorehousePage,
-                },
-              },
-              {
-                path: "my",
-                lazy: { Component: async () => (await import("@/pages/myBosal")).MyBosalPage },
-              },
-            ],
+            path: "onboarding",
+            lazy: { Component: async () => (await import("@/pages/onboarding")).OnboardingPage },
           },
-          // 하단 탭바가 없는 방 화면
+        ],
+      },
+      {
+        Component: OnboardingGuard,
+        children: [
+          { index: true, Component: EntryRedirect },
           {
-            Component: PlainLayout,
+            path: "rooms/:roomId",
             children: [
+              // 하단 탭바가 있는 방 화면
               {
-                path: "storehouse/hair",
-                lazy: {
-                  Component: async () => (await import("@/pages/hairPlanting")).HairPlantingPage,
-                },
+                Component: RoomTabLayout,
+                children: [
+                  {
+                    index: true,
+                    lazy: { Component: async () => (await import("@/pages/home")).HomePage },
+                  },
+                  {
+                    path: "vote",
+                    lazy: { Component: async () => (await import("@/pages/vote")).VotePage },
+                  },
+                  {
+                    path: "storehouse",
+                    lazy: {
+                      Component: async () => (await import("@/pages/storehouse")).StorehousePage,
+                    },
+                  },
+                  {
+                    path: "my",
+                    lazy: { Component: async () => (await import("@/pages/myBosal")).MyBosalPage },
+                  },
+                ],
+              },
+              // 하단 탭바가 없는 방 화면
+              {
+                Component: PlainLayout,
+                children: [
+                  {
+                    path: "storehouse/hair",
+                    lazy: {
+                      Component: async () =>
+                        (await import("@/pages/hairPlanting")).HairPlantingPage,
+                    },
+                  },
+                ],
               },
             ],
           },

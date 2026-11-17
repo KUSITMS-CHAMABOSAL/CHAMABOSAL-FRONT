@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Outlet, useLocation, useNavigate, useParams } from "react-router";
 
+import { NotFoundPage } from "@/pages/notFound";
 import { paths } from "@/shared/config";
 
 import RoomTabBar, { type RoomTab } from "./RoomTabBar";
@@ -41,6 +42,8 @@ const RoomTabLayout = () => {
     if (tab === "my") return paths.my(id);
     return paths.room[tab](id);
   };
+
+  if (param !== undefined && roomId === undefined) return <NotFoundPage />;
 
   return (
     <>

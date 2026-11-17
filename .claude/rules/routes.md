@@ -35,3 +35,4 @@ paths:
 | `/rooms/:roomId/certify`        | Plain        | 번뇌 떨구기                                        |
 | `/rooms/:roomId/certify/result` | 하단 탭      | 인증 결과                                          |
 | `/terms`, `/privacy`            | Plain        | 약관                                               |
+| `*`, 잘못된 방 번호             | —            | 404 (홈으로 → 진입 분기)                           |

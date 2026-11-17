@@ -1,5 +1,7 @@
 import { createBrowserRouter } from "react-router";
 
+import { NotFoundPage } from "@/pages/notFound";
+
 import PlainLayout from "../layouts/PlainLayout";
 import RoomTabLayout from "../layouts/RoomTabLayout";
 import EntryRedirect from "./EntryRedirect";
@@ -28,12 +30,14 @@ export const router = createBrowserRouter([
         Component: OnboardingGuard,
         children: [
           { index: true, Component: EntryRedirect },
+          // 없는 경로예요. 탭 레이아웃도 잘못된 방 번호에 같은 화면을 써서 lazy 없이 불러와요.
+          { path: "*", Component: NotFoundPage },
+          // 하단 탭바가 있는 화면. 곳간은 방마다 달라지지 않아 방 경로 밖에 둬요.
           {
-            path: "rooms/:roomId",
+            Component: RoomTabLayout,
             children: [
-              // 하단 탭바가 있는 방 화면
               {
-                Component: RoomTabLayout,
+                path: "rooms/:roomId",
                 children: [
                   {
                     index: true,
@@ -43,24 +47,25 @@ export const router = createBrowserRouter([
                     path: "vote",
                     lazy: { Component: async () => (await import("@/pages/vote")).VotePage },
                   },
+                ],
+              },
+              // 내 보살 화면 안에서 방을 골라 닉네임 수정, 나가기를 해요.
+              {
+                path: "my/:roomId",
+                lazy: { Component: async () => (await import("@/pages/myBosal")).MyBosalPage },
+              },
+              {
+                path: "storehouse",
+                children: [
                   {
-                    path: "storehouse",
+                    index: true,
                     lazy: {
                       Component: async () => (await import("@/pages/storehouse")).StorehousePage,
                     },
                   },
+                  // 곳간에서만 들어가는 화면이라 곳간 아래에 두고 탭바만 숨겨요.
                   {
-                    path: "my",
-                    lazy: { Component: async () => (await import("@/pages/myBosal")).MyBosalPage },
-                  },
-                ],
-              },
-              // 하단 탭바가 없는 방 화면
-              {
-                Component: PlainLayout,
-                children: [
-                  {
-                    path: "storehouse/hair",
+                    path: "hair",
                     lazy: {
                       Component: async () =>
                         (await import("@/pages/hairPlanting")).HairPlantingPage,

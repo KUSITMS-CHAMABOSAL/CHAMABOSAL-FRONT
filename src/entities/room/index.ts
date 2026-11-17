@@ -1,5 +1,6 @@
 export { roomQueries } from "./api/roomQueries";
 export { useTodayQuery } from "./api/useTodayQuery";
+export * from "./config/goals";
 export * from "./config/members";
 export * from "./config/pot";
 export * from "./lib/nickname";

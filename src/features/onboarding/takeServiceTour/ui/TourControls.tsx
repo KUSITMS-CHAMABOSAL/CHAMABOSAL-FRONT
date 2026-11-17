@@ -66,7 +66,7 @@ const TourControls = ({ tone, lightRef, darkRef, onNext, onSkip }: TourControlsP
         스킵하기
       </Button>
     </div>
-    <button type="button" onClick={onNext} className="sr-only">
+    <button type="button" onClick={onNext} className="sr-only focus-visible:not-sr-only">
       다음 화면
     </button>
   </div>

@@ -14,13 +14,14 @@ const getRoomPath = (roomId: number, tab: EntryState["tab"]) => {
   return paths.room.home(roomId);
 };
 
-// 진입 분기예요. 🔖 방이 없을 때 /intro, 마지막으로 본 방(Storage)은 해당 화면 이슈에서 붙여요.
+// 진입 분기예요. 참여 중인 방이 없으면 인트로로 가요. 🔖 마지막으로 본 방(Storage)은 해당 화면 이슈에서 붙여요.
 const EntryRedirect = () => {
   const me = useMeQuery();
   const state = useLocation().state as EntryState | null;
   if (me.error) throw me.error;
-  const roomId = me.data?.rooms[0]?.roomId;
-  if (roomId === undefined) return null;
+  if (!me.data) return null;
+  const roomId = me.data.rooms[0]?.roomId;
+  if (roomId === undefined) return <Navigate to={paths.intro} replace />;
   return <Navigate to={getRoomPath(roomId, state?.tab)} replace />;
 };
 

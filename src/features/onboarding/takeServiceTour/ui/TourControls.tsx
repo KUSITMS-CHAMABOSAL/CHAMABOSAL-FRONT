@@ -18,6 +18,7 @@ interface TourControlsProps {
 /**
  * ∨와 [스킵하기]예요. 모든 화면에서 같은 자리라 넘길 때 움직이지 않아요.
  * 색이 다른 두 벌을 겹쳐 두고 넘기기가 opacity를 바꿔요.
+ * ∨는 위로 쓸어 넘기라는 표시라 눌러도 넘어가지 않아요(시안). 쓸 수 없는 스크린 리더 사용자만 숨긴 [다음 화면]으로 넘겨요.
  */
 const TourControls = ({ tone, lightRef, darkRef, onNext, onSkip }: TourControlsProps) => (
   <div className="pointer-events-auto absolute top-[560px] left-[154px] h-[94px] w-[68px]">
@@ -65,12 +66,9 @@ const TourControls = ({ tone, lightRef, darkRef, onNext, onSkip }: TourControlsP
         스킵하기
       </Button>
     </div>
-    <button
-      type="button"
-      aria-label="다음 화면"
-      onClick={onNext}
-      className="absolute top-0 left-2.5 size-12 cursor-pointer appearance-none border-0 bg-transparent p-0"
-    />
+    <button type="button" onClick={onNext} className="sr-only">
+      다음 화면
+    </button>
   </div>
 );
 

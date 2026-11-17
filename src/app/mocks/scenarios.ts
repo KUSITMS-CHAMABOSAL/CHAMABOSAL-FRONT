@@ -30,7 +30,7 @@ const certified = (
   lockReason: editMinutesLeft > 0 ? null : "TIME_OVER",
 });
 
-const member = (
+export const member = (
   memberId: number,
   nickname: string,
   color: TodayMember["color"],
@@ -64,7 +64,7 @@ const me = (roomNames: string[]): MeResponse => ({
   canCreateRoom: roomNames.length < 2,
 });
 
-const today = (roomId: number, name: string, members: TodayMember[]): TodayResponse => ({
+export const today = (roomId: number, name: string, members: TodayMember[]): TodayResponse => ({
   room: {
     roomId,
     name,
@@ -131,4 +131,23 @@ export const SCENARIOS: Record<string, () => Scenario> = {
   },
   /** 2-4 친구 기다리는중 */
   waiting: () => build(ROOMS.slice(0, 1), () => [member(1, "윤지", "PINK", true)]),
+  /** 1-1 인트로: 참여 중인 방이 없는 처음 온 사용자 */
+  newUser: () => build([], () => []),
+};
+
+/**
+ * 초대 링크로 들어가는 남의 방이에요. 토큰 `invite`로 열어요.
+ * 내 방에서 받은 토큰(`room{방 번호}`)은 그 방으로 들어가요.
+ * 막힌 화면은 토큰 `full`(가득 참), `gone`(들어갈 수 없음)으로 봐요. 방이 2개인 시나리오면 방 2개 제한이에요.
+ */
+const INVITE_ROOM_ID = 10;
+export const FULL_ROOM_ID = 20;
+export const inviteRoom = (roomId = INVITE_ROOM_ID) => {
+  const room = today(roomId, "배달 끊기 방", [
+    member(11, "예나", "PURPLE", false),
+    member(12, "예은", "MINT", false),
+  ]);
+  room.room.goal = "DELIVERY";
+  room.room.isOwner = false;
+  return room;
 };

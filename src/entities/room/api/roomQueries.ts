@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { getToday } from "./roomApi";
+import { getInvitePreview, getToday } from "./roomApi";
 
 export const roomQueries = {
   all: () => ["room"] as const,
@@ -8,5 +8,10 @@ export const roomQueries = {
     queryOptions({
       queryKey: [...roomQueries.all(), roomId, "today"],
       queryFn: () => getToday(roomId),
+    }),
+  invitePreview: (token: string) =>
+    queryOptions({
+      queryKey: [...roomQueries.all(), "invite", token],
+      queryFn: () => getInvitePreview(token),
     }),
 };

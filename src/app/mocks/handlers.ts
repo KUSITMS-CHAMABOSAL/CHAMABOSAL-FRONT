@@ -1,6 +1,9 @@
 import type { MockHandler } from "@/shared/api";
 
-import { SCENARIOS } from "./scenarios";
+import type { BosalColor } from "@/entities/bosal";
+import type { RoomGoal, TodayResponse } from "@/entities/room";
+
+import { FULL_ROOM_ID, inviteRoom, member, SCENARIOS, today } from "./scenarios";
 
 const ok = (data?: unknown, status = 200) => ({
   status,
@@ -46,6 +49,65 @@ const calendarOf = (roomId: number, month: string) => {
   });
 };
 
+const COLORS: BosalColor[] = ["PINK", "PURPLE", "MINT", "YELLOW"];
+let nextMemberId = 100;
+
+/** 서버처럼 이 방에서 아직 아무도 안 쓴 색 중 하나를 골라요. */
+const pickColor = (taken: BosalColor[]) =>
+  COLORS.find(color => !taken.includes(color)) ?? COLORS[0];
+
+// 아직 들어가지 않은 남의 방이에요. 내 방 목록(state.rooms)에 넣으면 홈 화면에 보여서 따로 둬요.
+let invited: TodayResponse | null = null;
+
+/** 초대 토큰이 가리키는 방이에요. 토큰 규칙은 `scenarios.ts`의 `inviteRoom` 주석에 있어요. */
+const findInviteRoom = (token: string) => {
+  const own = token.match(/^room(\d+)$/);
+  if (own) return state.rooms[Number(own[1])] ?? null;
+  if (token === "full") {
+    const room = inviteRoom(FULL_ROOM_ID);
+    room.members.push(member(13, "태경", "YELLOW", false), member(14, "윤지", "PINK", false));
+    return room;
+  }
+  if (token !== "invite") return null;
+  invited ??= inviteRoom();
+  return invited;
+};
+
+const isMyRoom = (roomId: number) => state.me.rooms.some(room => room.roomId === roomId);
+
+/** 서버의 판단 순서대로 입장할 수 있는지 봐요. */
+const judgeInvite = (token: string) => {
+  const room = findInviteRoom(token);
+  if (!room) return { status: "UNAVAILABLE", room: null } as const;
+  if (isMyRoom(room.room.roomId)) return { status: "ALREADY_MEMBER", room } as const;
+  if (state.me.rooms.length >= 2) return { status: "ROOM_LIMIT", room } as const;
+  if (room.members.length >= room.room.memberLimit) return { status: "ROOM_FULL", room } as const;
+  return { status: "JOINABLE", room } as const;
+};
+
+const NICKNAME = /^[가-힣a-zA-Z0-9]{1,8}$/;
+const ROOM_NAME = /^[가-힣a-zA-Z0-9 ]{1,12}$/;
+/** 서버가 절약 목표마다 내려주는 제목과 설명이에요. 배달 끊기만 API 예시에 있고 나머지는 목이에요. */
+const GOAL_TEXTS: Record<RoomGoal, { goalTitle: string; goalDescription: string }> = {
+  DELIVERY: {
+    goalTitle: "배달 끊기 방",
+    goalDescription: "배달 대신 집밥 먹고\n공양미 한 솥까지 함께 가요",
+  },
+  SNACK: {
+    goalTitle: "간식 참기 방",
+    goalDescription: "간식 대신 물 한 잔 마시고\n공양미 한 솥까지 함께 가요",
+  },
+  SHOPPING: {
+    goalTitle: "쇼핑 참기 방",
+    goalDescription: "장바구니는 비우고\n공양미 한 솥까지 함께 가요",
+  },
+  ETC: {
+    goalTitle: "자율 절약 방",
+    goalDescription: "각자 정한 유혹을 참고\n공양미 한 솥까지 함께 가요",
+  },
+};
+const isGoal = (goal: string): goal is RoomGoal => goal in GOAL_TEXTS;
+
 /** API 초안의 경로와 응답 모양을 흉내 내요. 없는 경로는 404예요. */
 export const mockHandler: MockHandler = (method, path, body) => {
   const route = `${method} ${path}`;
@@ -62,6 +124,88 @@ export const mockHandler: MockHandler = (method, path, body) => {
   }
 
   if ((match = route.match(/^POST \/api\/rooms\/(\d+)\/pokes$/))) return ok(undefined, 201);
+
+  if (route === "POST /api/rooms") {
+    const request = body as {
+      name: string;
+      goal: string;
+      memberLimit: number;
+      potGoalAmount: number;
+      nickname: string;
+    };
+    const name = request.name.trim();
+    const nickname = request.nickname.trim();
+    if (!ROOM_NAME.test(name)) return fail(400, "COMMON_002", "요청 값이 올바르지 않아요.");
+    if (!NICKNAME.test(nickname)) return fail(400, "COMMON_002", "요청 값이 올바르지 않아요.");
+    if (!isGoal(request.goal)) return fail(400, "COMMON_002", "요청 값이 올바르지 않아요.");
+    if (state.me.rooms.length >= 2) return fail(409, "ROOM_001", "참여 중인 방이 2개예요.");
+
+    const roomId = Math.max(FULL_ROOM_ID, ...state.me.rooms.map(room => room.roomId)) + 1;
+    const memberId = ++nextMemberId;
+    const color = pickColor([]);
+    const room = today(roomId, name, [member(memberId, nickname, color, true)]);
+    room.room.goal = request.goal;
+    room.room.memberLimit = request.memberLimit;
+    room.pot.goalAmount = request.potGoalAmount;
+    state.rooms[roomId] = room;
+    state.me.rooms.push({ roomId, name, nickname, color, hasUnseen: false });
+    state.me.canCreateRoom = state.me.rooms.length < 2;
+    return ok({ roomId, memberId, nickname, color }, 201);
+  }
+
+  if ((match = route.match(/^POST \/api\/rooms\/(\d+)\/members\/me\/invite-token$/))) {
+    const roomId = Number(match[1]);
+    if (!state.rooms[roomId]) return fail(404, "ROOM_005", "없거나 삭제된 방이에요.");
+    if (!isMyRoom(roomId)) return fail(403, "ROOM_002", "이 방의 멤버가 아니에요.");
+    return ok({ inviteToken: `room${roomId}` }, 201);
+  }
+
+  if ((match = route.match(/^GET \/api\/invites\/([^/]+)$/))) {
+    const { status, room } = judgeInvite(decodeURIComponent(match[1]));
+    if (!room) {
+      return ok({ status, room: null, inviterNickname: null, previousNickname: null });
+    }
+    const { roomId, name, goal, memberLimit } = room.room;
+    return ok({
+      status,
+      room: {
+        roomId,
+        name,
+        goal,
+        ...GOAL_TEXTS[goal],
+        memberCount: room.members.length,
+        memberLimit,
+      },
+      inviterNickname: room.members[0]?.nickname ?? null,
+      previousNickname: null,
+    });
+  }
+
+  if ((match = route.match(/^POST \/api\/invites\/([^/]+)\/join$/))) {
+    const { status, room } = judgeInvite(decodeURIComponent(match[1]));
+    const nickname = (body as { nickname: string }).nickname.trim();
+    if (!NICKNAME.test(nickname)) return fail(400, "COMMON_002", "요청 값이 올바르지 않아요.");
+    if (!room) return fail(403, "ROOM_006", "들어갈 수 없는 방이에요.");
+    const mine = room.members.find(item => item.isMe);
+    if (status === "ALREADY_MEMBER" && mine) {
+      const { memberId, color } = mine;
+      return ok({ roomId: room.room.roomId, memberId, nickname: mine.nickname, color });
+    }
+    if (status === "ROOM_LIMIT") return fail(409, "ROOM_001", "참여 중인 방이 2개예요.");
+    if (status === "ROOM_FULL") return fail(409, "ROOM_003", "방이 가득 찼어요.");
+    const taken = room.members.some(item => item.nickname.toLowerCase() === nickname.toLowerCase());
+    if (taken) return fail(409, "ROOM_004", "이미 쓰는 닉네임이에요.");
+
+    const memberId = ++nextMemberId;
+    const color = pickColor(room.members.map(item => item.color));
+    room.members.push(member(memberId, nickname, color, true));
+    room.room.memberCount = room.members.length;
+    const { roomId, name } = room.room;
+    state.rooms[roomId] = room;
+    state.me.rooms.push({ roomId, name, nickname, color, hasUnseen: false });
+    state.me.canCreateRoom = state.me.rooms.length < 2;
+    return ok({ roomId, memberId, nickname, color }, 201);
+  }
 
   if ((match = route.match(/^(PUT|DELETE) \/api\/certifications\/(\d+)\/reactions\/me$/))) {
     const found = findCertification(Number(match[2]));

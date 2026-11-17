@@ -33,7 +33,7 @@ const MyBosalPage = () => {
         rooms={me.data.rooms}
         room={room}
         canCreateRoom={me.data.canCreateRoom}
-        onSelectRoom={id => navigate(paths.room.my(id), { replace: true })}
+        onSelectRoom={id => navigate(paths.my(id), { replace: true })}
         // 🔖 방 만들기(/rooms/new)와 약관 화면은 각 이슈에서 연결해요.
         onCreateRoom={() => openToast("방 만들기는 준비 중이에요")}
       />

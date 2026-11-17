@@ -2,11 +2,12 @@
 export const paths = {
   root: "/",
   onboarding: "/onboarding",
+  // 곳간은 방마다 달라지지 않아요.
+  storehouse: "/storehouse",
+  hairPlanting: "/storehouse/hair",
+  my: (roomId: number) => `/my/${roomId}`,
   room: {
     home: (roomId: number) => `/rooms/${roomId}`,
     vote: (roomId: number) => `/rooms/${roomId}/vote`,
-    storehouse: (roomId: number) => `/rooms/${roomId}/storehouse`,
-    hairPlanting: (roomId: number) => `/rooms/${roomId}/storehouse/hair`,
-    my: (roomId: number) => `/rooms/${roomId}/my`,
   },
 } as const;

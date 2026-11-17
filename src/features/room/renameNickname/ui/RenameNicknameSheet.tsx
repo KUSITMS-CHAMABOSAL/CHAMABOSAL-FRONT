@@ -2,16 +2,16 @@ import { useState } from "react";
 
 import { BottomSheet, TextField } from "@toss/tds-mobile";
 
-import { NICKNAME_MAX_LENGTH } from "@/entities/room";
-import { isApiError } from "@/shared/api";
-import { useTabBarToast } from "@/shared/lib";
-
 import {
   hasInvalidCharacter,
   isSubmittableNickname,
   NICKNAME_INVALID_MESSAGE,
+  NICKNAME_MAX_LENGTH,
   NICKNAME_TAKEN_MESSAGE,
-} from "../model/nickname";
+} from "@/entities/room";
+import { isApiError } from "@/shared/api";
+import { useTabBarToast } from "@/shared/lib";
+
 import { useRenameNickname } from "../model/useRenameNickname";
 
 interface RenameNicknameSheetProps {

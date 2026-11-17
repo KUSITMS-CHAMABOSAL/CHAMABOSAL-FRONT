@@ -2,6 +2,8 @@
 export const paths = {
   root: "/",
   onboarding: "/onboarding",
+  intro: "/intro",
+  createRoom: "/rooms/new",
   // 곳간은 방마다 달라지지 않아요.
   storehouse: "/storehouse",
   hairPlanting: "/storehouse/hair",

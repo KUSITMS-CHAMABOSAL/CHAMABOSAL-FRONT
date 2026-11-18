@@ -33,6 +33,7 @@ paths:
 | `/storehouse`                      | 하단 탭      | 곳간                                                                     |
 | `/storehouse/hair`                 | 하단 바 없음 | 나발 심기 (곳간에서만 진입, 마지막 방 기억 유지)                         |
 | `/my/:roomId`                      | 하단 탭      | 내 보살 (고른 방의 닉네임 수정, 나가기, 인증 기록)                       |
+| `/settings`                        | Plain        | 설정 (내 보살의 설정 버튼으로 진입, 알림 설정, 약관, 내 데이터 삭제)     |
 | `/rooms/:roomId/certify`           | Plain        | 번뇌 떨구기                                                              |
 | `/rooms/:roomId/certify/result`    | 하단 탭      | 인증 결과                                                                |
 | `/terms`, `/privacy`               | Plain        | 약관                                                                     |

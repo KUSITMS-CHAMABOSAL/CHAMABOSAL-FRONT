@@ -68,6 +68,8 @@ const transition =
 
 interface HairGuideProps {
   onPlant: () => void;
+  /** 07 카드의 [구매하기] */
+  onBuy: () => void;
   onClose: () => void;
 }
 
@@ -75,7 +77,7 @@ interface HairGuideProps {
  * 나발이 처음 빠졌을 때 보여주는 설명이에요. 들어오면 시안 01~07을 이어서 재생하고 07에서 멈춰요.
  * 동작 줄이기를 켠 사용자에게는 바로 마지막 장면을 보여줘요.
  */
-const HairGuide = ({ onPlant, onClose }: HairGuideProps) => {
+const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
   const [scene, setScene] = useState(() => (prefersReducedMotion() ? GUIDE_LAST_SCENE : 0));
   const safeAreaBottom = useSafeAreaBottom();
 
@@ -198,13 +200,13 @@ const HairGuide = ({ onPlant, onClose }: HairGuideProps) => {
         ))}
       </div>
 
-      {/* 설명용 그림이라 눌리지 않아요. */}
+      {/* 07 장면에서만 보이고 눌려요. 숨어 있는 동안은 누르거나 읽히지 않게 해요. */}
       <div
-        aria-hidden
+        aria-hidden={!view.restored}
         className={cn(
-          "pointer-events-none absolute top-(--top) left-1/2 w-40 [transform:translate(-50%,var(--rise))]",
+          "absolute top-(--top) left-1/2 w-40 [transform:translate(-50%,var(--rise))]",
           transition,
-          !view.restored && "opacity-0",
+          !view.restored && "pointer-events-none opacity-0",
         )}
         style={
           {
@@ -235,7 +237,13 @@ const HairGuide = ({ onPlant, onClose }: HairGuideProps) => {
             </div>
           }
           action={
-            <Button size="small" variant="weak" display="full" tabIndex={-1}>
+            <Button
+              size="small"
+              variant="weak"
+              display="full"
+              tabIndex={view.restored ? undefined : -1}
+              onClick={onBuy}
+            >
               구매하기
             </Button>
           }

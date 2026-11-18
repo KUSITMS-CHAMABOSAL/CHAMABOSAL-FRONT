@@ -87,23 +87,23 @@ const judgeInvite = (token: string) => {
 
 const NICKNAME = /^[가-힣a-zA-Z0-9]{1,8}$/;
 const ROOM_NAME = /^[가-힣a-zA-Z0-9 ]{1,12}$/;
-/** 서버가 절약 목표마다 내려주는 제목과 설명이에요. 배달 끊기만 API 예시에 있고 나머지는 목이에요. */
+/** 서버가 절약 목표마다 내려주는 제목과 설명이에요. 기획 문구를 따르고, 줄바꿈 위치는 목이에요. */
 const GOAL_TEXTS: Record<RoomGoal, { goalTitle: string; goalDescription: string }> = {
   DELIVERY: {
     goalTitle: "배달 끊기 방",
-    goalDescription: "배달 대신 집밥 먹고\n공양미 한 솥까지 함께 가요",
+    goalDescription: "배달 대신 집밥 먹고\n첫 공양미 한 솥까지 함께 가요",
   },
   SNACK: {
     goalTitle: "간식 참기 방",
-    goalDescription: "간식 대신 물 한 잔 마시고\n공양미 한 솥까지 함께 가요",
+    goalDescription: "달콤한 유혹은 잠시 내려놓고\n첫 공양미 한 솥까지 함께 가요",
   },
   SHOPPING: {
     goalTitle: "쇼핑 참기 방",
-    goalDescription: "장바구니는 비우고\n공양미 한 솥까지 함께 가요",
+    goalDescription: "오늘의 지름신을 물리치고\n첫 공양미 한 솥까지 함께 가요",
   },
   ETC: {
     goalTitle: "자율 절약 방",
-    goalDescription: "각자 정한 유혹을 참고\n공양미 한 솥까지 함께 가요",
+    goalDescription: "나만의 번뇌를 내려놓고\n첫 공양미 한 솥까지 함께 가요",
   },
 };
 const isGoal = (goal: string): goal is RoomGoal => goal in GOAL_TEXTS;
@@ -125,6 +125,9 @@ export const mockHandler: MockHandler = (method, path, body) => {
 
   if ((match = route.match(/^POST \/api\/rooms\/(\d+)\/pokes$/))) return ok(undefined, 201);
 
+  if (route === "GET /api/rooms/new-color")
+    return ok({ color: COLORS[Math.floor(Math.random() * COLORS.length)] });
+
   if (route === "POST /api/rooms") {
     const request = body as {
       name: string;
@@ -132,17 +135,20 @@ export const mockHandler: MockHandler = (method, path, body) => {
       memberLimit: number;
       potGoalAmount: number;
       nickname: string;
+      color: BosalColor;
     };
     const name = request.name.trim();
     const nickname = request.nickname.trim();
     if (!ROOM_NAME.test(name)) return fail(400, "COMMON_002", "요청 값이 올바르지 않아요.");
     if (!NICKNAME.test(nickname)) return fail(400, "COMMON_002", "요청 값이 올바르지 않아요.");
     if (!isGoal(request.goal)) return fail(400, "COMMON_002", "요청 값이 올바르지 않아요.");
+    if (!COLORS.includes(request.color))
+      return fail(400, "COMMON_002", "요청 값이 올바르지 않아요.");
     if (state.me.rooms.length >= 2) return fail(409, "ROOM_001", "참여 중인 방이 2개예요.");
 
     const roomId = Math.max(FULL_ROOM_ID, ...state.me.rooms.map(room => room.roomId)) + 1;
     const memberId = ++nextMemberId;
-    const color = pickColor([]);
+    const { color } = request;
     const room = today(roomId, name, [member(memberId, nickname, color, true)]);
     room.room.goal = request.goal;
     room.room.memberLimit = request.memberLimit;

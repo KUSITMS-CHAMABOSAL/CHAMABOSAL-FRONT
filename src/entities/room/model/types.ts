@@ -114,3 +114,8 @@ export interface InvitePreview {
   /** 나간 지 6개월이 안 된 방이면 내 예전 닉네임. 지금 다른 멤버가 쓰고 있으면 null */
   previousNickname: string | null;
 }
+
+/** GET /api/rooms/new-color. 부를 때마다 새로 뽑고 서버에 저장하지 않아요. */
+export interface NewColorResponse {
+  color: BosalColor;
+}

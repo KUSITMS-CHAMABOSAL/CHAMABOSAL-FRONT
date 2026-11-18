@@ -17,19 +17,17 @@ import GoalSelector from "./GoalSelector";
 import PotGoalSlider from "./PotGoalSlider";
 
 interface CreateRoomFormProps {
-  /** 다음 단계에서 돌아왔을 때 이어서 고칠 값이에요. */
-  initialDraft?: RoomDraft;
+  /** 방을 만드는 요청을 보내는 중이에요. */
+  isPending: boolean;
   onSubmit: (draft: RoomDraft) => void;
 }
 
 /** 방 만들기 첫 화면이에요. 목표, 방 이름, 인원, 목표 공양미를 정해요. */
-const CreateRoomForm = ({ initialDraft, onSubmit }: CreateRoomFormProps) => {
-  const [goal, setGoal] = useState<RoomGoal>(initialDraft?.goal ?? "DELIVERY");
-  const [name, setName] = useState(initialDraft?.name ?? "");
-  const [memberLimit, setMemberLimit] = useState(initialDraft?.memberLimit ?? MIN_RICE_MEMBERS);
-  const [potGoalAmount, setPotGoalAmount] = useState(
-    initialDraft?.potGoalAmount ?? DEFAULT_POT_GOAL,
-  );
+const CreateRoomForm = ({ isPending, onSubmit }: CreateRoomFormProps) => {
+  const [goal, setGoal] = useState<RoomGoal>("DELIVERY");
+  const [name, setName] = useState("");
+  const [memberLimit, setMemberLimit] = useState(MIN_RICE_MEMBERS);
+  const [potGoalAmount, setPotGoalAmount] = useState(DEFAULT_POT_GOAL);
 
   return (
     <main className="flex flex-col gap-4 pb-6">
@@ -98,6 +96,7 @@ const CreateRoomForm = ({ initialDraft, onSubmit }: CreateRoomFormProps) => {
       <div aria-hidden className="h-16" />
       <FixedBottomCTA
         disabled={!isSubmittableRoomName(name)}
+        loading={isPending}
         onClick={() => onSubmit({ goal, name: name.trim(), memberLimit, potGoalAmount })}
       >
         방 만들기

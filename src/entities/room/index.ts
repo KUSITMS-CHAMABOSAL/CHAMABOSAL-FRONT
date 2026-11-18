@@ -1,4 +1,5 @@
 export { roomQueries } from "./api/roomQueries";
+export { useNewColorQuery } from "./api/useNewColorQuery";
 export { useTodayQuery } from "./api/useTodayQuery";
 export * from "./config/goals";
 export * from "./config/members";

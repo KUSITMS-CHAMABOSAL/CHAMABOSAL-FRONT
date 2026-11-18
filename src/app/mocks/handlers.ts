@@ -25,6 +25,15 @@ const findCertification = (certificationId: number) => {
   return null;
 };
 
+/** 목탁 수행 목 데이터예요. 시안처럼 받은 톡톡 합계가 201번이에요. */
+const RECEIVED_TAPS = [
+  { nickname: "예나", color: "PINK", count: 120 },
+  { nickname: "도윤", color: "MINT", count: 60 },
+  { nickname: "하린", color: "YELLOW", count: 21 },
+];
+/** 새로고침 전까지 수행을 마친 회차를 기억해요. */
+const moktakDoneRounds = new Set<number>();
+
 const pad = (value: number) => String(value).padStart(2, "0");
 const now = new Date();
 const thisMonth = `${now.getFullYear()}-${pad(now.getMonth() + 1)}`;
@@ -278,6 +287,34 @@ export const mockHandler: MockHandler = (method, path, body) => {
     state.me.rooms = [];
     state.me.canCreateRoom = true;
     return ok();
+  }
+
+  // 목탁 수행으로 바로 들어가도록 결과가 나온 상태로 줘요. 회차 ID는 방 ID와 같게 둬요.
+  if ((match = route.match(/^GET \/api\/rooms\/(\d+)\/vote$/))) {
+    const roomId = Number(match[1]);
+    if (!state.rooms[roomId]) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
+    return ok({ status: "RESULT_UNSEEN", roundId: roomId });
+  }
+
+  if ((match = route.match(/^GET \/api\/rounds\/(\d+)\/taps\/received$/))) {
+    const total = RECEIVED_TAPS.reduce((sum, tap) => sum + tap.count, 0);
+    return ok({
+      isDelivered: true,
+      deliveredAt: new Date().toISOString(),
+      totalCount: total,
+      isMoktakDone: moktakDoneRounds.has(Number(match[1])),
+      taps: RECEIVED_TAPS,
+    });
+  }
+
+  if ((match = route.match(/^POST \/api\/rounds\/(\d+)\/moktak$/))) {
+    const total = RECEIVED_TAPS.reduce((sum, tap) => sum + tap.count, 0);
+    if ((body as { count: number }).count < total)
+      return fail(400, "MOKTAK_004", "받은 톡톡보다 적게 두드렸습니다.");
+    const roundId = Number(match[1]);
+    const first = !moktakDoneRounds.has(roundId);
+    moktakDoneRounds.add(roundId);
+    return ok({ riceEarned: first ? 10 : 0 }, 201);
   }
 
   return fail(404, "COMMON_404", `목에 없는 API예요: ${route}`);

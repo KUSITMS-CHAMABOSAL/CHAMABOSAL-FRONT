@@ -21,7 +21,7 @@ const getActiveTab = (pathname: string, roomId?: number): RoomTab | undefined =>
 
 // 🔖 빨간 점(updatedTabs)은 탭 화면의 데이터가 생기면 연결합니다.
 const RoomTabLayout = () => {
-  const param = useParams().roomId;
+  const { roomId: param, roundId } = useParams();
   const id = Number(param);
   // 주소의 방 번호가 정수가 아니면(`/my/abc`) 방이 없는 것으로 봐요. NaN을 그대로 두면 아래 기억 비교가 끝나지 않아요.
   const roomId = Number.isInteger(id) ? id : undefined;
@@ -49,7 +49,8 @@ const RoomTabLayout = () => {
   return (
     <>
       <Outlet />
-      {!NO_TAB_BAR_PATHS.includes(pathname) && (
+      {/* 회차가 붙은 화면(목탁 수행)도 하단 바를 그리지 않아요. */}
+      {!NO_TAB_BAR_PATHS.includes(pathname) && roundId === undefined && (
         <RoomTabBar activeTab={activeTab} onTabClick={tab => tab !== activeTab && goToTab(tab)} />
       )}
     </>

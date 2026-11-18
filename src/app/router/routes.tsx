@@ -66,6 +66,11 @@ export const router = createBrowserRouter([
                     path: "vote",
                     lazy: { Component: async () => (await import("@/pages/vote")).VotePage },
                   },
+                  // 시안에 하단 탭바가 없어 탭바만 숨겨요.
+                  {
+                    path: "vote/:roundId/tap",
+                    lazy: { Component: async () => (await import("@/pages/vote")).TapTapPage },
+                  },
                 ],
               },
               // 내 보살 화면 안에서 방을 골라 닉네임 수정, 나가기를 해요.

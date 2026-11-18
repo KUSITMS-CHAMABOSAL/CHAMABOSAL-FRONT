@@ -14,7 +14,7 @@ const HairGuidePage = () => {
   // 설명은 한 번 보고 지나가는 화면이라, 심기 화면에서 닫으면 설명 전 화면으로 돌아가게 바꿔요.
   return (
     <HairGuide
-      onPlant={() => navigate(paths.hairPlanting, { replace: true })}
+      onPlant={() => navigate(paths.hairPlanting, { replace: true, state: { fadeIn: true } })}
       onBuy={() => navigate(paths.storehouse, { replace: true })}
       onClose={close}
     />

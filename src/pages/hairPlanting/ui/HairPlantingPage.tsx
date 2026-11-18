@@ -11,7 +11,10 @@ const HairPlantingPage = () => {
   const close = () =>
     location.key === "default" ? navigate(paths.storehouse, { replace: true }) : navigate(-1);
 
-  return <HairPlanting onClose={close} />;
+  // 나발 빠짐 설명에서 넘어오면 내용만 나타나게 해요(HairGuidePage가 state로 알려줘요).
+  const fadeIn = (location.state as { fadeIn?: boolean } | null)?.fadeIn === true;
+
+  return <HairPlanting onClose={close} fadeIn={fadeIn} />;
 };
 
 export default HairPlantingPage;

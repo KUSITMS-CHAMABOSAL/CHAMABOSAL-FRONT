@@ -3,6 +3,8 @@ import { Button, Paragraph, Tab, Top } from "@toss/tds-mobile";
 import { MIN_RICE_MEMBERS, RicePotGauge, type TodayResponse } from "@/entities/room";
 import type { MyRoom } from "@/entities/session";
 import { MIN_VOTERS } from "@/entities/vote";
+import { useCopyInviteLink } from "@/features/room/shareInvite";
+import { useTabBarToast } from "@/shared/lib";
 
 interface RoomSummaryProps {
   /** 참여 중인 방이에요. GET /api/users/me 의 rooms */
@@ -10,12 +12,16 @@ interface RoomSummaryProps {
   today: TodayResponse;
   onSelectRoom: (roomId: number) => void;
   onRoomInfo: () => void;
-  onInvite: () => void;
 }
 
 /** 홈 위쪽이에요. 참여 중인 방 탭, 방 제목, 친구 초대 안내(혼자일 때), 공양미 한 솥 진행 바를 보여줘요. */
-const RoomSummary = ({ rooms, today, onSelectRoom, onRoomInfo, onInvite }: RoomSummaryProps) => {
+const RoomSummary = ({ rooms, today, onSelectRoom, onRoomInfo }: RoomSummaryProps) => {
   const { room, pot } = today;
+  const openToast = useTabBarToast();
+  const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(
+    room.roomId,
+    openToast,
+  );
 
   return (
     <section>
@@ -63,8 +69,15 @@ const RoomSummary = ({ rooms, today, onSelectRoom, onRoomInfo, onInvite }: RoomS
               {`${MIN_RICE_MEMBERS}명부터 인증·투표 공양미가 쌓이고, ${MIN_VOTERS}명부터 투표가 열려요.`}
             </Paragraph>
           </div>
-          {/* 🔖 초대 토큰(POST …/invite-token)으로 링크를 만드는 features/room/shareInvite는 딥링크 경로가 정해지면 붙여요. */}
-          <Button size="xlarge" color="dark" variant="weak" display="block" onClick={onInvite}>
+          {/* 방을 만든 뒤 초대 화면과 같이 초대링크를 복사해요. */}
+          <Button
+            size="xlarge"
+            color="dark"
+            variant="weak"
+            display="block"
+            loading={isCopying}
+            onClick={() => copyInviteLink()}
+          >
             친구 초대하기
           </Button>
         </div>

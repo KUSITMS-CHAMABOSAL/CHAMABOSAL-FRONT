@@ -1,6 +1,6 @@
 import { BottomCTA, Paragraph } from "@toss/tds-mobile";
 
-import { MAX_JOINED_ROOMS, ROOM_GOAL_TITLE, type RoomSummary } from "@/entities/room";
+import { MAX_JOINED_ROOMS, type RoomSummary } from "@/entities/room";
 
 import TempleCard from "./TempleCard";
 
@@ -18,7 +18,7 @@ interface JoinBlockedProps {
 /** 초대 링크로 들어갈 수 없을 때 보는 화면이에요. 시안 1-6.1 방 2개, 1-6.2 들어갈 수 없는 방, 1-6.3 가득 참 */
 const JoinBlocked = ({ reason, room, onAction }: JoinBlockedProps) => (
   <main className="flex min-h-svh flex-col bg-linear-to-b from-(--adaptiveBackground) to-(--adaptiveGrey100) px-5 pt-6">
-    <TempleCard variant="closed" label={room ? ROOM_GOAL_TITLE[room.goal] : undefined} />
+    <TempleCard variant="closed" label={room?.goalTitle} />
     <div className="mt-5.75 flex flex-col items-center gap-4.5 text-center whitespace-pre-line">
       <Paragraph typography="st5" fontWeight="bold" color="var(--adaptiveGrey900)">
         {reason === "ROOM_LIMIT" ? (

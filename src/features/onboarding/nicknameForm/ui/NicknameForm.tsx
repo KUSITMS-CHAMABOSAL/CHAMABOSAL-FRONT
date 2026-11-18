@@ -4,6 +4,7 @@ import { FixedBottomCTA, TextField, Top } from "@toss/tds-mobile";
 
 import {
   hasInvalidCharacter,
+  isSameNickname,
   isSubmittableNickname,
   NICKNAME_AVAILABLE_MESSAGE,
   NICKNAME_INVALID_MESSAGE,
@@ -36,7 +37,7 @@ const NicknameForm = ({
   const nickname = trimNickname(value);
 
   const isInvalid = hasInvalidCharacter(value);
-  const isTaken = nickname === takenNickname;
+  const isTaken = takenNickname !== null && isSameNickname(nickname, takenNickname);
   const canSubmit = isSubmittableNickname(value) && !isTaken;
   const help = isInvalid
     ? NICKNAME_INVALID_MESSAGE

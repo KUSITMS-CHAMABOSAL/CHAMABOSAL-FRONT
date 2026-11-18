@@ -114,7 +114,8 @@ const JoinRoomSteps = ({ token }: JoinRoomStepsProps) => {
     return (
       <JoinBlocked
         reason={reason}
-        room={room}
+        // 참여 요청에서 들어갈 수 없다고 하면 미리보기 때 받은 방 정보도 보여주지 않아요.
+        room={reason === "UNAVAILABLE" ? null : room}
         onAction={() =>
           navigate(
             reason === "ROOM_LIMIT" && firstRoomId !== undefined

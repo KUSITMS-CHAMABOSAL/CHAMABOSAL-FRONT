@@ -4,6 +4,7 @@ import { BottomSheet, TextField } from "@toss/tds-mobile";
 
 import {
   hasInvalidCharacter,
+  isSameNickname,
   isSubmittableNickname,
   NICKNAME_INVALID_MESSAGE,
   NICKNAME_MAX_LENGTH,
@@ -39,7 +40,7 @@ const RenameNicknameSheet = ({
   const openToast = useTabBarToast();
 
   const trimmed = trimNickname(value);
-  const isTaken = trimmed === takenNickname;
+  const isTaken = takenNickname !== null && isSameNickname(trimmed, takenNickname);
   const isInvalid = hasInvalidCharacter(value);
   const errorMessage = isInvalid
     ? NICKNAME_INVALID_MESSAGE

@@ -17,6 +17,9 @@ export const GUIDE_TRANSITION_MS = 500;
  */
 export const GUIDE_CLOSE_MS = 450;
 
+/** [나발 심으러 가기]를 누르면 심기 화면 배경색으로 어두워지는 시간이에요. 심기 화면 내용이 나타나는 시간도 같아요. */
+export const GUIDE_DIM_MS = 250;
+
 /** 빈 자리 원이 나타나는 시간이에요. */
 export const GUIDE_SLOT_FADE_MS = 400;
 

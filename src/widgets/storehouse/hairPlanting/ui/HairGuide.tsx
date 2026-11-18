@@ -16,6 +16,7 @@ import slotRing from "../assets/slot_ring.png";
 import {
   GUIDE_CARD_PLUCKED,
   GUIDE_CLOSE_MS,
+  GUIDE_DIM_MS,
   GUIDE_LAST_SCENE,
   GUIDE_LAYOUT,
   GUIDE_PLUCKED_BY_SCENE,
@@ -90,20 +91,31 @@ const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
     return () => timers.forEach(window.clearTimeout);
   }, []);
 
-  const [closing, setClosing] = useState(false);
-  const closeTimer = useRef<number>(undefined);
-  useEffect(() => () => window.clearTimeout(closeTimer.current), []);
+  /** 떠나는 중인 모양이에요. 내려가기는 곳간으로, 어두워지기는 심기 화면으로 갈 때예요. */
+  const [leaving, setLeaving] = useState<"down" | "dim" | null>(null);
+  const leaveTimer = useRef<number>(undefined);
+  useEffect(() => () => window.clearTimeout(leaveTimer.current), []);
+
+  // 떠나는 동안 다시 누르면 무시해요. 동작 줄이기에서는 바로 이동해요.
+  const leave = (kind: "down" | "dim", next: () => void) => {
+    if (leaving) return;
+    if (prefersReducedMotion()) return next();
+    setLeaving(kind);
+    leaveTimer.current = window.setTimeout(next, kind === "down" ? GUIDE_CLOSE_MS : GUIDE_DIM_MS);
+  };
 
   /**
-   * 밑에 곳간이 그려져 있어서, 설명 화면을 아래로 내려보낸 뒤 이동해요. 내려가는 동안 다시 누르면 무시해요.
+   * 밑에 곳간이 그려져 있어서, 설명 화면을 아래로 내려보낸 뒤 이동해요.
    * [닫기]와 [구매하기]가 같이 써요. 둘 다 곳간으로 돌아가는 거라 시트를 닫는 모양이 맞아요.
    */
-  const slideDown = (next: () => void) => {
-    if (closing) return;
-    if (prefersReducedMotion()) return next();
-    setClosing(true);
-    closeTimer.current = window.setTimeout(next, GUIDE_CLOSE_MS);
-  };
+  const slideDown = (next: () => void) => leave("down", next);
+
+  /**
+   * 심기 화면은 곳간이 아닌 새 화면이라, 내려가면 곳간이 잠깐 보였다가 또 바뀌어요.
+   * 그래서 움직이지 않고 심기 화면 배경색으로 어두워진 뒤 이동해요. 심기 화면은 그 배경 위에서 내용만 나타나요.
+   */
+  const dimToPlant = () => leave("dim", onPlant);
+  const closing = leaving === "down";
 
   const view = getGuideView(scene);
   const plucked = GUIDE_PLUCKED_BY_SCENE[scene];
@@ -115,11 +127,13 @@ const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
       className={cn(
         "motion-safe:animate-hair-guide-enter fixed inset-0 z-20 [transform:translateY(var(--exit-y))] touch-none overflow-hidden bg-[linear-gradient(var(--adaptiveGrey900)_150px,var(--adaptiveGrey300))] transition-[transform,opacity] duration-(--guide-close) ease-[cubic-bezier(0.32,0,0.67,0)] motion-reduce:transition-none",
         closing && "pointer-events-none opacity-0",
+        leaving === "dim" && "pointer-events-none",
       )}
       style={
         {
           "--exit-y": closing ? "100%" : "0px",
           "--guide-close": `${GUIDE_CLOSE_MS}ms`,
+          "--guide-dim": `${GUIDE_DIM_MS}ms`,
           "--safe-area-bottom": `${safeAreaBottom}px`,
           "--guide-transition": `${GUIDE_TRANSITION_MS}ms`,
           "--slot-fade": `${GUIDE_SLOT_FADE_MS}ms`,
@@ -289,7 +303,7 @@ const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
         >
           모든 설정은 절약에 재미를 더하기 위한 창작적 표현이에요
         </Paragraph>
-        <Button size="medium" onClick={onPlant}>
+        <Button size="medium" onClick={dimToPlant}>
           나발 심으러 가기
         </Button>
         <TextButton
@@ -305,6 +319,14 @@ const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
           닫기
         </TextButton>
       </div>
+      {/* [나발 심으러 가기]를 누르면 심기 화면 배경색으로 덮어요. 하단 버튼(fixed)보다 위에 그려요. */}
+      <div
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-0 z-10 bg-(--adaptiveGrey900) opacity-0 transition-opacity duration-(--guide-dim) ease-in motion-reduce:transition-none",
+          leaving === "dim" && "opacity-100",
+        )}
+      />
     </main>
   );
 };

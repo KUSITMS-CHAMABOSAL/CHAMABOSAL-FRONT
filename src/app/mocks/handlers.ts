@@ -271,6 +271,11 @@ export const mockHandler: MockHandler = (method, path, body) => {
   if ((match = route.match(/^DELETE \/api\/rooms\/(\d+)\/members\/me$/))) {
     const roomId = Number(match[1]);
     if (!state.rooms[roomId]) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
+    // 초대로 들어간 방은 남의 방이라 다른 멤버는 두고 나만 빠져요. 다시 들어와도 예전 멤버가 남지 않아요.
+    if (invited?.room.roomId === roomId) {
+      invited.members = invited.members.filter(item => !item.isMe);
+      invited.room.memberCount = invited.members.length;
+    }
     delete state.rooms[roomId];
     state.me.rooms = state.me.rooms.filter(room => room.roomId !== roomId);
     state.me.canCreateRoom = true;

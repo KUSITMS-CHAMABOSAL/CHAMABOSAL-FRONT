@@ -1,4 +1,5 @@
 export { STATUS_EXPRESSION } from "./config/art";
+export * from "./config/colorName";
 export * from "./config/greyHairCurls";
 export * from "./config/hairCurls";
 export type {

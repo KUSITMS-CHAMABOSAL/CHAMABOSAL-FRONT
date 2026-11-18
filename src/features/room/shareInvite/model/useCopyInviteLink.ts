@@ -16,8 +16,15 @@ const PERMISSION_DENIED_MESSAGE = "클립보드 접근을 허용하면 초대링
 const FAILED_MESSAGE = "초대링크를 복사하지 못했어요. 잠시 후 다시 시도해 주세요.";
 
 /**
+ * 마지막으로 누른 복사 요청 번호예요. 화면이 바뀌어도 남도록 모듈에 둬요.
+ * 홈에서 방 탭을 바꿔 다른 방 링크를 복사하면, 늦게 끝난 앞 요청이 클립보드를 덮어쓰지 않게 해요.
+ */
+let latestRequest = 0;
+
+/**
  * 초대 토큰으로 토스 공유 링크를 만들어 클립보드에 복사해요.
  * 결과는 화면마다 다른 토스트(탭바 위, 화면 아래)로 알리도록 `notify`로 넘겨요.
+ * 더 새 요청이 있으면 쓰기와 토스트를 건너뛰어요.
  */
 export const useCopyInviteLink = (
   roomId: number,
@@ -25,11 +32,21 @@ export const useCopyInviteLink = (
 ) =>
   useMutation({
     mutationFn: async () => {
-      const { inviteToken } = await issueInviteToken(roomId);
-      const link = await createShareLink(deepLinks.invite(inviteToken));
-      await copyToClipboard(link);
+      const request = ++latestRequest;
+      try {
+        const { inviteToken } = await issueInviteToken(roomId);
+        const link = await createShareLink(deepLinks.invite(inviteToken));
+        if (request !== latestRequest) return false;
+        await copyToClipboard(link);
+        return true;
+      } catch (error) {
+        if (request !== latestRequest) return false;
+        throw error;
+      }
     },
-    onSuccess: () => notify(COPIED_MESSAGE, true),
+    onSuccess: copied => {
+      if (copied) notify(COPIED_MESSAGE, true);
+    },
     onError: error =>
       notify(isClipboardPermissionError(error) ? PERMISSION_DENIED_MESSAGE : FAILED_MESSAGE, false),
   });

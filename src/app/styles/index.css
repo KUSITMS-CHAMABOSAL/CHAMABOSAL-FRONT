@@ -43,6 +43,8 @@
 
 @theme {
   --animate-hair-grow: hair-grow 480ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  /* 나발 빠짐 설명이 곳간 위로 올라와요. 시간은 GUIDE_CLOSE_MS와 같고, 곡선은 닫을 때를 뒤집은 모양이에요. */
+  --animate-hair-guide-enter: hair-guide-enter 450ms cubic-bezier(0.33, 1, 0.68, 1) backwards;
   /* 내 보살 받기 등장. Figma 프로토타입: 0.4초 뒤 Smart Animate 1.8초, cubic-bezier(0.22, 1, 0.36, 1)
      기다리는 0.4초는 시작 상태로 두고(backwards), 끝나면 애니메이션을 놓아 끝 화면은 원래 스타일 그대로예요. */
   --animate-bosal-arrive: bosal-arrive 1800ms cubic-bezier(0.22, 1, 0.36, 1) 400ms backwards;
@@ -111,6 +113,13 @@
     }
   }
 
+  @keyframes hair-guide-enter {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+  }
+
   @keyframes hair-grow {
     from {
       transform: scale(0);
@@ -136,34 +145,4 @@
 
 body {
   margin: 0;
-}
-
-/*
- * 나발 빠짐 설명을 닫을 때(HairGuide)예요. 이전 화면은 바로 그리고, 그 위에서 설명 화면만 아래로 내려보내요.
- * 앱에서 View Transitions는 이 전환만 써서 root의 기본 교차 페이드를 꺼요.
- */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-}
-
-::view-transition-old(hair-guide) {
-  animation: hair-guide-exit 450ms cubic-bezier(0.32, 0, 0.67, 0) both;
-}
-
-@keyframes hair-guide-exit {
-  to {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-old(hair-guide) {
-    animation: none;
-  }
-}
-
-#root {
-  min-height: 100svh;
 }

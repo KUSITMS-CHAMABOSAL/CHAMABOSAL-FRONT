@@ -82,10 +82,21 @@ export const router = createBrowserRouter([
                 path: "storehouse",
                 children: [
                   {
-                    index: true,
                     lazy: {
                       Component: async () => (await import("@/pages/storehouse")).StorehousePage,
                     },
+                    children: [
+                      // 곳간만 볼 때는 겹쳐 띄울 화면이 없어요.
+                      { index: true, Component: () => null },
+                      // 나발 빠짐 설명은 곳간 위에 겹쳐 띄워요. 밑에 곳간이 그려져 있어야 올라오고 내려가는 전환이 자연스러워요.
+                      {
+                        path: "hair/guide",
+                        lazy: {
+                          Component: async () =>
+                            (await import("@/pages/hairPlanting")).HairGuidePage,
+                        },
+                      },
+                    ],
                   },
                   // 곳간에서만 들어가는 화면이라 곳간 아래에 두고 탭바만 숨겨요.
                   {
@@ -93,13 +104,6 @@ export const router = createBrowserRouter([
                     lazy: {
                       Component: async () =>
                         (await import("@/pages/hairPlanting")).HairPlantingPage,
-                    },
-                  },
-                  // 나발이 처음 빠졌을 때와 곳간에서 다시 볼 때 여는 설명 화면이에요.
-                  {
-                    path: "hair/guide",
-                    lazy: {
-                      Component: async () => (await import("@/pages/hairPlanting")).HairGuidePage,
                     },
                   },
                 ],

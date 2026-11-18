@@ -15,6 +15,7 @@ import slotEmpty from "../assets/slot_empty.png";
 import slotRing from "../assets/slot_ring.png";
 import {
   GUIDE_CARD_PLUCKED,
+  GUIDE_CLOSE_MS,
   GUIDE_LAST_SCENE,
   GUIDE_LAYOUT,
   GUIDE_PLUCKED_BY_SCENE,
@@ -51,24 +52,6 @@ const getGuideView = (scene: number) => ({
 });
 
 const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-/**
- * 이동한 뒤 설명 화면이 DOM에서 빠지면 끝나요. 전환 중에는 화면을 그리지 않아 rAF 대신 MutationObserver로 봐요.
- * 1초 안에 빠지지 않으면 그대로 끝내서 화면이 멈추지 않게 해요.
- */
-const untilRemoved = (element: Element) =>
-  new Promise<void>(resolve => {
-    const observer = new MutationObserver(() => {
-      if (!element.isConnected) done();
-    });
-    const timer = window.setTimeout(() => done(), 1000);
-    const done = () => {
-      observer.disconnect();
-      window.clearTimeout(timer);
-      resolve();
-    };
-    observer.observe(document.body, { childList: true, subtree: true });
-  });
 
 // 빈 자리 원은 시안대로 보살 폭의 55/346이에요. 나발 심기 화면과 같은 방식으로 자리를 잡아요.
 const slotStyle = (index: number) => {
@@ -107,20 +90,16 @@ const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
     return () => timers.forEach(window.clearTimeout);
   }, []);
 
-  const mainRef = useRef<HTMLElement>(null);
+  const [closing, setClosing] = useState(false);
+  const closeTimer = useRef<number>(undefined);
+  useEffect(() => () => window.clearTimeout(closeTimer.current), []);
 
-  /**
-   * 이전 화면으로 먼저 이동하고, 그 위에서 설명 화면의 마지막 모습만 아래로 내려보내요(View Transitions).
-   * 내려가는 모습은 `app/styles/index.css`의 `hair-guide` 전환이에요.
-   * 지원하지 않는 WebView(iOS 18 미만)와 동작 줄이기에서는 바로 닫아요.
-   */
+  // 밑에 이전 화면(곳간)이 그려져 있어서, 설명 화면을 아래로 내려보낸 뒤 이동해요. 내려가는 동안 다시 누르면 무시해요.
   const close = () => {
-    const main = mainRef.current;
-    if (!main || !("startViewTransition" in document) || prefersReducedMotion()) return onClose();
-    document.startViewTransition(() => {
-      onClose();
-      return untilRemoved(main);
-    });
+    if (closing) return;
+    if (prefersReducedMotion()) return onClose();
+    setClosing(true);
+    closeTimer.current = window.setTimeout(onClose, GUIDE_CLOSE_MS);
   };
 
   const view = getGuideView(scene);
@@ -128,11 +107,16 @@ const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
 
   return (
     <main
-      ref={mainRef}
-      // 화면 안의 `fixed` 하단 버튼도 같은 스냅샷에 담기도록 `transform`을 걸어 이 요소를 기준으로 그려요.
-      className="relative h-svh [transform:translateZ(0)] overflow-hidden bg-[linear-gradient(var(--adaptiveGrey900)_150px,var(--adaptiveGrey300))] [view-transition-name:hair-guide]"
+      // 곳간 위에 겹쳐 띄워요(하단 탭바 z-10보다 위). 열리면 아래에서 올라오고, 닫으면 내려가요.
+      // `transform`을 늘 걸어 두어 안쪽 `fixed` 하단 버튼도 이 화면을 기준으로 같이 움직여요.
+      className={cn(
+        "motion-safe:animate-hair-guide-enter fixed inset-0 z-20 [transform:translateY(var(--exit-y))] touch-none overflow-hidden bg-[linear-gradient(var(--adaptiveGrey900)_150px,var(--adaptiveGrey300))] transition-[transform,opacity] duration-(--guide-close) ease-[cubic-bezier(0.32,0,0.67,0)] motion-reduce:transition-none",
+        closing && "pointer-events-none opacity-0",
+      )}
       style={
         {
+          "--exit-y": closing ? "100%" : "0px",
+          "--guide-close": `${GUIDE_CLOSE_MS}ms`,
           "--safe-area-bottom": `${safeAreaBottom}px`,
           "--guide-transition": `${GUIDE_TRANSITION_MS}ms`,
           "--slot-fade": `${GUIDE_SLOT_FADE_MS}ms`,

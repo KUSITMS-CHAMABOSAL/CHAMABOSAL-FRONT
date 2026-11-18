@@ -11,6 +11,12 @@ export const GUIDE_LAST_SCENE = GUIDE_SCENE_AT_MS.length - 1;
 /** 장면이 바뀔 때 확대·축소, 배경, 문구, 카드가 넘어가는 시간이에요. 녹화는 370~760ms예요. */
 export const GUIDE_TRANSITION_MS = 500;
 
+/**
+ * 열 때 아래에서 올라오고 닫을 때 내려가는 시간이에요. 여는 움직임(`--animate-hair-guide-enter`)도 같은 450ms예요.
+ * 여는 곡선은 닫는 곡선을 뒤집은 모양이라, 닫기를 거꾸로 재생한 것처럼 보여요.
+ */
+export const GUIDE_CLOSE_MS = 450;
+
 /** 빈 자리 원이 나타나는 시간이에요. */
 export const GUIDE_SLOT_FADE_MS = 400;
 

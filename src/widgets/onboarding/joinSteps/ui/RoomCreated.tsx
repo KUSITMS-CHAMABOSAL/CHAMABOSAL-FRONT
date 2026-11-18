@@ -3,8 +3,7 @@ import { BottomCTA, Paragraph, useToast } from "@toss/tds-mobile";
 import { ROOM_GOAL_TITLE, type RoomGoal } from "@/entities/room";
 import { CopyInviteLinkButton, useCopyInviteLink } from "@/features/room/shareInvite";
 
-import cloud from "../assets/cloud.svg";
-import temple from "../assets/temple.svg";
+import TempleCard from "./TempleCard";
 
 interface RoomCreatedProps {
   roomId: number;
@@ -28,40 +27,7 @@ const RoomCreated = ({ roomId, goal, onGoToRoom }: RoomCreatedProps) => {
 
   return (
     <main className="flex min-h-svh flex-col bg-linear-to-b from-(--adaptiveBackground) to-(--adaptiveGrey100) px-5 pt-6">
-      {/* 그림 조각은 가운데를 기준으로 시안 위치에 둬요. 넓은 화면에서도 하늘만 늘어나요. */}
-      <div className="relative h-[257px] shrink-0 overflow-hidden rounded-xl bg-[linear-gradient(to_bottom,var(--color-temple-sky-top),var(--color-temple-sky-mid)_83.65%,var(--color-temple-sky-bottom))]">
-        <img
-          src={cloud}
-          alt=""
-          width={199}
-          height={134}
-          className="pointer-events-none absolute top-12 left-[calc(50%-167.5px)] max-w-none"
-        />
-        <img
-          src={cloud}
-          alt=""
-          width={199}
-          height={134}
-          className="pointer-events-none absolute -top-5.25 left-[calc(50%+2.5px)] max-w-none"
-        />
-        <img
-          src={temple}
-          alt=""
-          width={247}
-          height={184}
-          className="pointer-events-none absolute top-18.25 left-[calc(50%-119.5px)] max-w-none"
-        />
-        <div className="absolute inset-x-0 top-37 flex justify-center">
-          <Paragraph
-            className="rounded-xl bg-(--adaptiveGrey800) px-1.75 py-1.5 shadow-[0_0_10px_rgb(0_0_0/0.25)]"
-            typography="t7"
-            fontWeight="semibold"
-            color="var(--color-on-fill)"
-          >
-            {ROOM_GOAL_TITLE[goal]}
-          </Paragraph>
-        </div>
-      </div>
+      <TempleCard variant="open" label={ROOM_GOAL_TITLE[goal]} />
       <div className="mt-5.5 flex flex-col items-center gap-4.5 text-center">
         <Paragraph typography="st5" fontWeight="bold" color="var(--adaptiveBlue600)">
           방이 만들어졌어요!

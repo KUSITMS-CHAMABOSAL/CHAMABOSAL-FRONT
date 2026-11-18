@@ -34,6 +34,11 @@
   --color-temple-sky-top: #eaf9ff;
   --color-temple-sky-mid: #9de3ff;
   --color-temple-sky-bottom: #bcfff2;
+  /* 들어갈 수 없을 때 사원 뒤 흐린 하늘. 시안 1-6.1~1-6.3 */
+  --color-temple-gloom: #868597;
+  /* 초대 미리보기 배경 그라데이션의 중간·끝 색. 시안 1-1 */
+  --color-invite-mint: rgb(177 255 240 / 0.3);
+  --color-invite-mint-light: rgb(242 255 247 / 0.4);
 }
 
 @theme {

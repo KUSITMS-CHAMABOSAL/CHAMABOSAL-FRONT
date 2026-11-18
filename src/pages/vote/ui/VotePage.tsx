@@ -23,6 +23,9 @@ const VotePage = () => {
         >
           목탁 수행 테스트
         </Button>
+        <Button display="block" onClick={() => navigate(paths.hairGuide)}>
+          나발 빠짐 설명 테스트
+        </Button>
         <Paragraph typography="t7" color="var(--adaptiveGrey600)">
           {voteTab.error
             ? "투표 탭 상태를 받지 못했어요"

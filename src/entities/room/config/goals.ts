@@ -10,3 +10,11 @@ export const ROOM_GOAL_LABEL: Record<RoomGoal, string> = {
   SHOPPING: "쇼핑 참기",
   ETC: "자율 절약",
 };
+
+/** 절약 목표별 방 제목이에요. 서버의 `goalTitle`과 같아요(기획 방 정보 문구 표). */
+export const ROOM_GOAL_TITLE: Record<RoomGoal, string> = {
+  DELIVERY: "배달 끊기 방",
+  SNACK: "간식 참기 방",
+  SHOPPING: "쇼핑 참기 방",
+  ETC: "자율 절약 방",
+};

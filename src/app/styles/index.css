@@ -30,6 +30,10 @@
   --color-bosal-purple-flower: rgb(26 122 249 / 0.05);
   --color-bosal-mint-flower: rgb(170 241 237 / 0.4);
   --color-bosal-yellow-flower: #fff5cd;
+  /* 방을 만든 뒤 사원 그림 뒤 하늘. 시안 1-6의 이름 없는 색이에요. */
+  --color-temple-sky-top: #eaf9ff;
+  --color-temple-sky-mid: #9de3ff;
+  --color-temple-sky-bottom: #bcfff2;
 }
 
 @theme {

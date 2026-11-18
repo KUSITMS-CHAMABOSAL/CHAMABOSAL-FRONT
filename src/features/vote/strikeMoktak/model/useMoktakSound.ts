@@ -33,9 +33,20 @@ export const useMoktakSound = () => {
   useEffect(() => {
     const Context = getAudioContext();
     if (!Context) return;
-    // 탭에 바로 반응하도록 지연이 가장 짧은 모드로 열어요.
-    const audio = new Context({ latencyHint: "interactive" });
+    let audio: AudioContext;
+    try {
+      // 탭에 바로 반응하도록 지연이 가장 짧은 모드로 열어요.
+      audio = new Context({ latencyHint: "interactive" });
+    } catch {
+      // 오디오를 열지 못해도(컨텍스트 개수 한도 등) 소리 없이 칠 수 있어요.
+      return;
+    }
     context.current = audio;
+    // 터치는 손을 뗄 때(pointerup)부터 소리를 켤 수 있어요. 바로 들어와 처음 칠 때도 소리가 나게 여기서도 깨워요.
+    const unlock = () => {
+      if (audio.state === "suspended") void audio.resume();
+    };
+    window.addEventListener("pointerup", unlock);
 
     fetch(moktakSound)
       .then(response => response.arrayBuffer())
@@ -55,6 +66,7 @@ export const useMoktakSound = () => {
       });
 
     return () => {
+      window.removeEventListener("pointerup", unlock);
       context.current = null;
       sound.current = null;
       void audio.close();

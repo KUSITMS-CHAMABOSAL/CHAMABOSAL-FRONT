@@ -48,7 +48,8 @@ const CreateRoomSteps = () => {
   const [nickname, setNickname] = useState<string>();
   /** 이 화면에서 만든 방이에요. 초대 화면에서 뒤로가면 만들기 단계 대신 이 방으로 보내요. */
   const [createdRoomId, setCreatedRoomId] = useState<number>();
-  const { data: drawn, isPending: isDrawing, refetch: drawAgain } = useNewColorQuery();
+  // 실패한 뒤 다시 뽑는 동안에도 버튼이 로딩으로 기다리도록 isFetching을 봐요.
+  const { data: drawn, isFetching: isDrawing, refetch: drawAgain } = useNewColorQuery();
   const { mutate: create, isPending } = useCreateRoom();
   const { openToast } = useToast();
 

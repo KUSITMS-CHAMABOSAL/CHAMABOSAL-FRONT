@@ -13,8 +13,11 @@ export interface MyRoom {
 
 /** GET /api/users/me */
 export interface MeResponse {
+  /** 설정 화면의 알림 토글이에요. 토스 알림 동의와 별개예요. */
   isPokePushEnabled: boolean;
-  isActivityPushEnabled: boolean;
+  isResultPushEnabled: boolean;
+  isVoteOpenedPushEnabled: boolean;
+  isCertReminderPushEnabled: boolean;
   isCertReminderAgreed: boolean;
   equippedItemCodes: string[];
   /** 현재 멤버인 방. 비어 있으면 첫 화면 */

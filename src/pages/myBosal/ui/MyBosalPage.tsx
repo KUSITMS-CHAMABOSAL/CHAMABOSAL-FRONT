@@ -1,15 +1,12 @@
 import { Navigate, useNavigate, useParams } from "react-router";
 
-import { Border } from "@toss/tds-mobile";
-
 import { useMeQuery } from "@/entities/session";
 import { paths } from "@/shared/config";
 import { useTabBarToast } from "@/shared/lib";
 import { CertificationCalendar } from "@/widgets/myBosal/certificationCalendar";
 import { MyRoomPanel } from "@/widgets/myBosal/myRoomPanel";
-import { SettingsList } from "@/widgets/myBosal/settingsList";
 
-/** 내 보살 탭이에요. 고른 방의 내 보살과 인증 캘린더, 사용자 설정을 보여줘요. */
+/** 내 보살 탭이에요. 고른 방의 내 보살과 인증 캘린더를 보여주고, 설정 화면으로 가는 버튼을 둬요. */
 const MyBosalPage = () => {
   const me = useMeQuery();
   const roomId = Number(useParams().roomId);
@@ -34,17 +31,12 @@ const MyBosalPage = () => {
         room={room}
         canCreateRoom={me.data.canCreateRoom}
         onSelectRoom={id => navigate(paths.my(id), { replace: true })}
-        // 🔖 방 만들기(/rooms/new)와 약관 화면은 각 이슈에서 연결해요.
+        // 🔖 방 만들기(/rooms/new)는 각 이슈에서 연결해요.
         onCreateRoom={() => openToast("방 만들기는 준비 중이에요")}
+        onOpenSettings={() => navigate(paths.settings)}
       />
       {/* 방을 바꾸면 보던 달을 이번 달로 되돌려요. */}
       <CertificationCalendar key={roomId} roomId={roomId} />
-      <Border variant="height16" height="12px" />
-      <SettingsList
-        me={me.data}
-        onOpenTerms={() => openToast("이용약관은 준비 중이에요")}
-        onOpenPrivacy={() => openToast("개인정보처리방침은 준비 중이에요")}
-      />
     </main>
   );
 };

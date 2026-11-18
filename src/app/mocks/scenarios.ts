@@ -51,7 +51,9 @@ const PASTA = "집에 있는 재료로 파스타 해먹었어요.\n오이시~";
 
 const me = (roomNames: string[]): MeResponse => ({
   isPokePushEnabled: true,
-  isActivityPushEnabled: true,
+  isResultPushEnabled: false,
+  isVoteOpenedPushEnabled: true,
+  isCertReminderPushEnabled: true,
   isCertReminderAgreed: false,
   equippedItemCodes: [],
   rooms: roomNames.map((name, index) => ({

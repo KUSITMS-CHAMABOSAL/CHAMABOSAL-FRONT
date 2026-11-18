@@ -9,6 +9,7 @@ export const paths = {
   storehouse: "/storehouse",
   hairPlanting: "/storehouse/hair",
   my: (roomId: number) => `/my/${roomId}`,
+  settings: "/settings",
   room: {
     home: (roomId: number) => `/rooms/${roomId}`,
     vote: (roomId: number) => `/rooms/${roomId}/vote`,

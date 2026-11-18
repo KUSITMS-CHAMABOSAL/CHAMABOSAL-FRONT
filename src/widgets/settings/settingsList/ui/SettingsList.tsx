@@ -1,4 +1,4 @@
-import { ListRow, Paragraph, TableRow } from "@toss/tds-mobile";
+import { ListRow } from "@toss/tds-mobile";
 
 import type { MeResponse } from "@/entities/session";
 import { DeleteMyDataRow } from "@/features/settings/deleteMyData";
@@ -10,28 +10,28 @@ interface SettingsListProps {
   onOpenPrivacy: () => void;
 }
 
-// 🔖 시안의 제목 오른쪽 "2/2"는 뜻을 몰라 넣지 않았어요. 디자이너 확인이 필요해요.
-/** 내 보살 아래쪽 설정이에요. 알림 설정, 약관, 내 데이터 삭제를 모아요. */
+/** 설정 화면 목록이에요. 알림 설정, 약관, 내 데이터 삭제를 모아요. */
 const SettingsList = ({ me, onOpenTerms, onOpenPrivacy }: SettingsListProps) => (
-  <section className="pt-3">
-    <TableRow
-      align="space-between"
-      left={
-        <Paragraph typography="t6" fontWeight="bold" color="var(--adaptiveGrey900)">
-          설정
-        </Paragraph>
-      }
-      right={null}
-    />
+  <section>
     <NotificationSettingRow
       setting="isPokePushEnabled"
       label="콕 알림"
       checked={me.isPokePushEnabled}
     />
     <NotificationSettingRow
-      setting="isActivityPushEnabled"
-      label="인증·투표 알림"
-      checked={me.isActivityPushEnabled}
+      setting="isResultPushEnabled"
+      label="투표 결과 알림"
+      checked={me.isResultPushEnabled}
+    />
+    <NotificationSettingRow
+      setting="isVoteOpenedPushEnabled"
+      label="새 투표 알림"
+      checked={me.isVoteOpenedPushEnabled}
+    />
+    <NotificationSettingRow
+      setting="isCertReminderPushEnabled"
+      label="인증 마감 알림"
+      checked={me.isCertReminderPushEnabled}
     />
     <ListRow
       verticalPadding="large"

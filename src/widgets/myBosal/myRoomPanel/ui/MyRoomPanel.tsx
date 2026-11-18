@@ -4,6 +4,7 @@ import type { MyRoom } from "@/entities/session";
 import { LeaveRoomButton } from "@/features/room/leaveRoom";
 import { RenameNicknameButton } from "@/features/room/renameNickname";
 
+import { SettingIcon } from "../assets";
 import BosalProfile from "./BosalProfile";
 
 interface MyRoomPanelProps {
@@ -15,6 +16,7 @@ interface MyRoomPanelProps {
   canCreateRoom: boolean;
   onSelectRoom: (roomId: number) => void;
   onCreateRoom: () => void;
+  onOpenSettings: () => void;
 }
 
 /** 내 보살 위쪽이에요. 방 탭, 이 방의 내 보살, 닉네임 수정과 나가기 버튼을 보여줘요. */
@@ -24,14 +26,27 @@ const MyRoomPanel = ({
   canCreateRoom,
   onSelectRoom,
   onCreateRoom,
+  onOpenSettings,
 }: MyRoomPanelProps) => (
   <section>
-    {/* 시안은 탭이 Top 시작에서 94px 아래에 있어요. TDS 부제목 줄 높이(25.5px)를 빼고 남는 간격이에요. */}
+    {/* 시안은 탭이 Top 시작에서 112.5px 아래에 있어요. TDS 부제목 줄(25.5px)이 시안(23.5px)보다 높아서 기본 아래 여백 24px에서 2px를 줄여요. */}
     <Top
-      lowerGap={3.5}
+      lowerGap={22}
       title={<Top.TitleParagraph size={28}>내 보살</Top.TitleParagraph>}
       subtitleBottom={
         <Top.SubtitleParagraph typography="t5">내 캐릭터와 기록을 확인해요.</Top.SubtitleParagraph>
+      }
+      right={
+        // 아이콘은 24px이고 누르는 영역은 44px이에요. Top의 right는 오른쪽 여백이 없고 제목·부제목 가운데에
+        // 놓여서, 위로 붙인 뒤 시안처럼 아이콘을 오른쪽 24px, 제목 줄 가운데에 맞춰요.
+        <button
+          type="button"
+          aria-label="설정"
+          className="-mt-0.75! mr-3.5! flex cursor-pointer appearance-none self-start border-0 bg-transparent p-2.5"
+          onClick={onOpenSettings}
+        >
+          <SettingIcon aria-hidden className="size-6 text-(color:--adaptiveGrey400)" />
+        </button>
       }
     />
     <Tab
@@ -57,7 +72,8 @@ const MyRoomPanel = ({
           : []),
       ]}
     </Tab>
-    <div className="px-5 pt-8.75">
+    {/* 시안은 카드가 Top 시작에서 167px 아래예요. TDS 탭 높이가 시안(38px)과 달라 측정값으로 맞춰요. */}
+    <div className="px-5 pt-4.5">
       <BosalProfile nickname={room.nickname} color={room.color} />
     </div>
     <div className="flex gap-2.5 px-5 py-4">

@@ -1,8 +1,6 @@
 import { useState } from "react";
 
-import { ListRow } from "@toss/tds-mobile";
-
-import { useTabBarToast } from "@/shared/lib";
+import { ListRow, useToast } from "@toss/tds-mobile";
 
 import { useDeleteMyData } from "../model/useDeleteMyData";
 import DeleteMyDataDialog from "./DeleteMyDataDialog";
@@ -12,7 +10,7 @@ import DeleteMyDataDialog from "./DeleteMyDataDialog";
 const DeleteMyDataRow = () => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const { mutate: remove, isPending } = useDeleteMyData();
-  const openToast = useTabBarToast();
+  const { openToast } = useToast();
 
   const confirmDelete = () =>
     remove(undefined, {

@@ -9,7 +9,9 @@ import {
   NICKNAME_INVALID_MESSAGE,
   NICKNAME_MAX_LENGTH,
   NICKNAME_TAKEN_MESSAGE,
+  trimNickname,
 } from "@/entities/room";
+import { limitLength } from "@/shared/lib";
 
 interface NicknameFormProps {
   /** 처음 채워 둘 닉네임이에요. 나갔던 방에 다시 들어올 때 예전 닉네임을 넣어요. */
@@ -31,9 +33,10 @@ const NicknameForm = ({
   onSubmit,
 }: NicknameFormProps) => {
   const [value, setValue] = useState(initialNickname);
+  const nickname = trimNickname(value);
 
   const isInvalid = hasInvalidCharacter(value);
-  const isTaken = value === takenNickname;
+  const isTaken = nickname === takenNickname;
   const canSubmit = isSubmittableNickname(value) && !isTaken;
   const help = isInvalid
     ? NICKNAME_INVALID_MESSAGE
@@ -41,7 +44,7 @@ const NicknameForm = ({
       ? NICKNAME_TAKEN_MESSAGE
       : canSubmit
         ? NICKNAME_AVAILABLE_MESSAGE
-        : `${value.length}/${NICKNAME_MAX_LENGTH}`;
+        : `${nickname.length}/${NICKNAME_MAX_LENGTH}`;
 
   return (
     <main>
@@ -63,12 +66,12 @@ const NicknameForm = ({
         labelOption="sustain"
         placeholder="한글, 영문 대소문자, 숫자 가능"
         value={value}
-        maxLength={NICKNAME_MAX_LENGTH}
         hasError={isInvalid || isTaken}
         help={help}
-        onChange={event => setValue(event.target.value.slice(0, NICKNAME_MAX_LENGTH))}
+        onChange={event => setValue(limitLength(event.target.value, NICKNAME_MAX_LENGTH, event))}
+        onCompositionEnd={() => setValue(prev => prev.slice(0, NICKNAME_MAX_LENGTH))}
       />
-      <FixedBottomCTA disabled={!canSubmit} loading={isPending} onClick={() => onSubmit(value)}>
+      <FixedBottomCTA disabled={!canSubmit} loading={isPending} onClick={() => onSubmit(nickname)}>
         다음
       </FixedBottomCTA>
     </main>

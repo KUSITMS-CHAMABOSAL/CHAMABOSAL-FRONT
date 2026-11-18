@@ -4,6 +4,7 @@ import { FixedBottomCTA, NumericSpinner, Paragraph, TextField, Top } from "@toss
 
 import { MAX_MEMBERS, MIN_RICE_MEMBERS, type RoomGoal } from "@/entities/room";
 import { MIN_VOTERS } from "@/entities/vote";
+import { limitLength } from "@/shared/lib";
 
 import {
   DEFAULT_POT_GOAL,
@@ -58,11 +59,13 @@ const CreateRoomForm = ({ isPending, onSubmit }: CreateRoomFormProps) => {
             variant="box"
             aria-labelledby="room-name-label"
             value={name}
-            maxLength={ROOM_NAME_MAX_LENGTH}
             help={`${name.length}/${ROOM_NAME_MAX_LENGTH}`}
             onChange={event =>
-              setName(sanitizeRoomName(event.target.value).slice(0, ROOM_NAME_MAX_LENGTH))
+              setName(
+                limitLength(sanitizeRoomName(event.target.value), ROOM_NAME_MAX_LENGTH, event),
+              )
             }
+            onCompositionEnd={() => setName(prev => prev.slice(0, ROOM_NAME_MAX_LENGTH))}
           />
         </div>
       </section>

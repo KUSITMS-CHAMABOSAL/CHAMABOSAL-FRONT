@@ -59,6 +59,9 @@ const pickColor = (taken: BosalColor[]) =>
 // 아직 들어가지 않은 남의 방이에요. 내 방 목록(state.rooms)에 넣으면 홈 화면에 보여서 따로 둬요.
 let invited: TodayResponse | null = null;
 
+/** 나갔다가 다시 들어오는 경우예요. `invite`와 같은 방이고 예전 닉네임을 돌려줘요. */
+const REJOIN_TOKEN = "rejoin";
+
 /** 초대 토큰이 가리키는 방이에요. 토큰 규칙은 `scenarios.ts`의 `inviteRoom` 주석에 있어요. */
 const findInviteRoom = (token: string) => {
   const own = token.match(/^room(\d+)$/);
@@ -68,7 +71,7 @@ const findInviteRoom = (token: string) => {
     room.members.push(member(13, "태경", "YELLOW", false), member(14, "윤지", "PINK", false));
     return room;
   }
-  if (token !== "invite") return null;
+  if (token !== "invite" && token !== REJOIN_TOKEN) return null;
   invited ??= inviteRoom();
   return invited;
 };
@@ -183,7 +186,7 @@ export const mockHandler: MockHandler = (method, path, body) => {
         memberLimit,
       },
       inviterNickname: room.members[0]?.nickname ?? null,
-      previousNickname: null,
+      previousNickname: decodeURIComponent(match[1]) === REJOIN_TOKEN ? "윤지" : null,
     });
   }
 

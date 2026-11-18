@@ -6,3 +6,6 @@ export const MAX_MEMBERS = 4;
 
 /** 방 닉네임 최대 글자 수예요. */
 export const NICKNAME_MAX_LENGTH = 8;
+
+/** 한 사람이 참여할 수 있는 방 수예요. 디자인 문구 "참여중인 방이 2개예요" */
+export const MAX_JOINED_ROOMS = 2;

@@ -94,12 +94,15 @@ const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
   const closeTimer = useRef<number>(undefined);
   useEffect(() => () => window.clearTimeout(closeTimer.current), []);
 
-  // 밑에 이전 화면(곳간)이 그려져 있어서, 설명 화면을 아래로 내려보낸 뒤 이동해요. 내려가는 동안 다시 누르면 무시해요.
-  const close = () => {
+  /**
+   * 밑에 곳간이 그려져 있어서, 설명 화면을 아래로 내려보낸 뒤 이동해요. 내려가는 동안 다시 누르면 무시해요.
+   * [닫기]와 [구매하기]가 같이 써요. 둘 다 곳간으로 돌아가는 거라 시트를 닫는 모양이 맞아요.
+   */
+  const slideDown = (next: () => void) => {
     if (closing) return;
-    if (prefersReducedMotion()) return onClose();
+    if (prefersReducedMotion()) return next();
     setClosing(true);
-    closeTimer.current = window.setTimeout(onClose, GUIDE_CLOSE_MS);
+    closeTimer.current = window.setTimeout(next, GUIDE_CLOSE_MS);
   };
 
   const view = getGuideView(scene);
@@ -263,7 +266,7 @@ const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
               // full은 화면 끝까지 닿는 버튼이라 모서리가 0이 돼요. 카드 폭을 채우면서 시안처럼 둥근(8px) 건 block이에요.
               display="block"
               tabIndex={view.restored ? undefined : -1}
-              onClick={onBuy}
+              onClick={() => slideDown(onBuy)}
             >
               구매하기
             </Button>
@@ -292,7 +295,7 @@ const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
         <TextButton
           size="small"
           color="var(--adaptiveGrey900)"
-          onClick={close}
+          onClick={() => slideDown(onClose)}
           className="mt-5! px-6! py-[12.75px]!"
         >
           {/* TextButton은 내용을 글자 span 안에 넣어서 아이콘을 인라인으로 붙여요. */}

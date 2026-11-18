@@ -14,7 +14,6 @@ const OnboardingPage = () => {
   const { state } = useLocation();
 
   // 온보딩으로 돌아오지 않도록 기록을 바꿔요.
-  // 🔖 인트로(/intro) 화면이 생기면 진입 분기에서 방이 없는 사용자를 인트로로 보내요. 방 참여 이슈에서 처리해요.
   return <ServiceTour onFinish={() => navigate(getReturnPath(state), { replace: true })} />;
 };
 

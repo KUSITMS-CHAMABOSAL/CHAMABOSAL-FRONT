@@ -2,16 +2,18 @@ import { useState } from "react";
 
 import { BottomSheet, TextField } from "@toss/tds-mobile";
 
-import { NICKNAME_MAX_LENGTH } from "@/entities/room";
-import { isApiError } from "@/shared/api";
-import { useTabBarToast } from "@/shared/lib";
-
 import {
   hasInvalidCharacter,
+  isSameNickname,
   isSubmittableNickname,
   NICKNAME_INVALID_MESSAGE,
+  NICKNAME_MAX_LENGTH,
   NICKNAME_TAKEN_MESSAGE,
-} from "../model/nickname";
+  trimNickname,
+} from "@/entities/room";
+import { isApiError } from "@/shared/api";
+import { limitLength, useTabBarToast } from "@/shared/lib";
+
 import { useRenameNickname } from "../model/useRenameNickname";
 
 interface RenameNicknameSheetProps {
@@ -37,17 +39,18 @@ const RenameNicknameSheet = ({
   const { mutate: rename, isPending } = useRenameNickname(roomId);
   const openToast = useTabBarToast();
 
-  const isTaken = value === takenNickname;
+  const trimmed = trimNickname(value);
+  const isTaken = takenNickname !== null && isSameNickname(trimmed, takenNickname);
   const isInvalid = hasInvalidCharacter(value);
   const errorMessage = isInvalid
     ? NICKNAME_INVALID_MESSAGE
     : isTaken
       ? NICKNAME_TAKEN_MESSAGE
       : null;
-  const canSave = isSubmittableNickname(value) && value !== nickname && !isTaken;
+  const canSave = isSubmittableNickname(value) && trimmed !== nickname && !isTaken;
 
   const save = () => {
-    const submitted = value;
+    const submitted = trimmed;
     rename(submitted, {
       onSuccess: onClose,
       onError: error => {
@@ -73,11 +76,11 @@ const RenameNicknameSheet = ({
       <TextField
         variant="box"
         value={value}
-        maxLength={NICKNAME_MAX_LENGTH}
         hasError={errorMessage !== null}
-        help={errorMessage ?? `${value.length}/${NICKNAME_MAX_LENGTH}`}
+        help={errorMessage ?? `${trimmed.length}/${NICKNAME_MAX_LENGTH}`}
         aria-label="방 닉네임"
-        onChange={event => setValue(event.target.value.slice(0, NICKNAME_MAX_LENGTH))}
+        onChange={event => setValue(limitLength(event.target.value, NICKNAME_MAX_LENGTH, event))}
+        onCompositionEnd={() => setValue(prev => prev.slice(0, NICKNAME_MAX_LENGTH))}
       />
     </BottomSheet>
   );

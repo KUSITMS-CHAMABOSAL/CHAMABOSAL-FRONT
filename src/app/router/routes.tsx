@@ -30,6 +30,25 @@ export const router = createBrowserRouter([
         Component: OnboardingGuard,
         children: [
           { index: true, Component: EntryRedirect },
+          {
+            Component: PlainLayout,
+            children: [
+              {
+                path: "intro",
+                lazy: { Component: async () => (await import("@/pages/intro")).IntroPage },
+              },
+              {
+                path: "rooms/new",
+                lazy: {
+                  Component: async () => (await import("@/pages/createRoom")).CreateRoomPage,
+                },
+              },
+              {
+                path: "invite",
+                lazy: { Component: async () => (await import("@/pages/invite")).InvitePage },
+              },
+            ],
+          },
           // 없는 경로예요. 탭 레이아웃도 잘못된 방 번호에 같은 화면을 써서 lazy 없이 불러와요.
           { path: "*", Component: NotFoundPage },
           // 하단 탭바가 있는 화면. 곳간은 방마다 달라지지 않아 방 경로 밖에 둬요.

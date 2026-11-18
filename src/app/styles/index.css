@@ -12,10 +12,104 @@
   --color-on-fill-opacity-10: rgb(255 255 255 / 0.1);
   /* 온보딩 곳간 목업의 보살 카드 테두리. */
   --color-mockup-border: #acb1b9;
+  /* 인트로 배경 그라데이션. Figma color/secondary-mint/100과 중간 단계 */
+  --color-mint-75: #e7fdf1;
+  --color-mint-100: #ccfbe0;
+  /* 방 만들기에서 고른 절약 목표. Figma color/secondary-mint/50, button/secondary-fill-pressed, text/secondary-darker */
+  --color-mint-50: #e5fff0;
+  --color-mint-500: #23bc6b;
+  --color-mint-700: #199451;
+  /* 내 보살 받기 배경 그라데이션 끝 색. Figma color/primary-purple/200 외에는 이름 없는 색이에요. */
+  --color-bosal-pink-glow: rgb(255 208 218 / 0.3);
+  --color-purple-200: #c2c3ff;
+  --color-bosal-mint-glow: #abf2ee;
+  --color-bosal-yellow-mid: #fffbeb;
+  --color-bosal-yellow-glow: #ffe3c5;
+  /* 내 보살 받기 위쪽 꽃 색. 투명도까지 시안 값이에요. */
+  --color-bosal-pink-flower: rgb(255 204 212 / 0.3);
+  --color-bosal-purple-flower: rgb(26 122 249 / 0.05);
+  --color-bosal-mint-flower: rgb(170 241 237 / 0.4);
+  --color-bosal-yellow-flower: #fff5cd;
+  /* 방을 만든 뒤 사원 그림 뒤 하늘. 시안 1-6의 이름 없는 색이에요. */
+  --color-temple-sky-top: #eaf9ff;
+  --color-temple-sky-mid: #9de3ff;
+  --color-temple-sky-bottom: #bcfff2;
+  /* 들어갈 수 없을 때 사원 뒤 흐린 하늘. 시안 1-6.1~1-6.3 */
+  --color-temple-gloom: #868597;
+  /* 초대 미리보기 배경 그라데이션의 중간·끝 색. 시안 1-1 */
+  --color-invite-mint: rgb(177 255 240 / 0.3);
+  --color-invite-mint-light: rgb(242 255 247 / 0.4);
 }
 
 @theme {
   --animate-hair-grow: hair-grow 480ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  /* 내 보살 받기 등장. Figma 프로토타입: 0.4초 뒤 Smart Animate 1.8초, cubic-bezier(0.22, 1, 0.36, 1)
+     기다리는 0.4초는 시작 상태로 두고(backwards), 끝나면 애니메이션을 놓아 끝 화면은 원래 스타일 그대로예요. */
+  --animate-bosal-arrive: bosal-arrive 1800ms cubic-bezier(0.22, 1, 0.36, 1) 400ms backwards;
+  --animate-bosal-arrive-text: fade-in 1800ms cubic-bezier(0.22, 1, 0.36, 1) 400ms backwards;
+
+  /* 시작 프레임의 보살은 140px 위에서 투명해요. */
+  @keyframes bosal-arrive {
+    from {
+      transform: translateY(-140px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /*
+   * 초대 미리보기 봉투. Figma 프로토타입(1-1 세 프레임):
+   * 0.8초 뒤 덮개가 납작해지고(0.45초, cubic-bezier(0.45, 0, 0.55, 1)),
+   * 0.05초 뒤 덮개·꽃·배지가 사라지며 제목이 올라와요(0.6초, cubic-bezier(0.22, 1, 0.36, 1)).
+   * 사라지는 요소는 원래 스타일을 끝 상태(투명)로 두고 기다리는 동안만 시작 상태를 붙잡아요(backwards).
+   */
+  --animate-envelope-flap: envelope-flap 1100ms linear 800ms backwards;
+  --animate-envelope-fade-out: fade-out 600ms cubic-bezier(0.22, 1, 0.36, 1) 1300ms backwards;
+  --animate-envelope-text-in: rise-in 600ms cubic-bezier(0.22, 1, 0.36, 1) 1300ms backwards;
+
+  /* 덮개 삼각형 높이 90 → 49. 0~41%(0.45초) 납작해지고, 45%(0.5초)부터 사라져요. */
+  @keyframes envelope-flap {
+    0% {
+      transform: scaleY(1);
+      opacity: 1;
+      animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+    }
+    40.9% {
+      transform: scaleY(0.544);
+      opacity: 1;
+    }
+    45.45% {
+      transform: scaleY(0.544);
+      opacity: 1;
+      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    100% {
+      transform: scaleY(0.544);
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  /* 시안에서 제목·설명은 12px 아래에서 투명하게 시작해요. */
+  @keyframes rise-in {
+    from {
+      transform: translateY(12px);
+      opacity: 0;
+    }
+  }
 
   @keyframes hair-grow {
     from {

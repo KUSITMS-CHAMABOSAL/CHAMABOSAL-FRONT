@@ -2,6 +2,9 @@
 export const paths = {
   root: "/",
   onboarding: "/onboarding",
+  intro: "/intro",
+  createRoom: "/rooms/new",
+  invite: (code: string) => `/invite?code=${encodeURIComponent(code)}`,
   // 곳간은 방마다 달라지지 않아요.
   storehouse: "/storehouse",
   hairPlanting: "/storehouse/hair",

@@ -60,6 +60,8 @@ const calendarOf = (roomId: number, month: string) => {
 
 const COLORS: BosalColor[] = ["PINK", "PURPLE", "MINT", "YELLOW"];
 let nextMemberId = 100;
+/** 마지막으로 만든 방 ID예요. 초대 방(10, 20) 뒤부터 쓰고, 나가거나 데이터를 지워도 되돌리지 않아 ID가 다시 쓰이지 않아요. */
+let lastRoomId = FULL_ROOM_ID;
 
 /** 서버처럼 이 방에서 아직 아무도 안 쓴 색 중 하나를 골라요. */
 const pickColor = (taken: BosalColor[]) =>
@@ -159,7 +161,8 @@ export const mockHandler: MockHandler = (method, path, body) => {
     if (state.me.rooms.length >= MAX_JOINED_ROOMS)
       return fail(409, "ROOM_001", "참여 중인 방이 2개예요.");
 
-    const roomId = Math.max(FULL_ROOM_ID, ...state.me.rooms.map(room => room.roomId)) + 1;
+    const roomId = Math.max(lastRoomId, ...state.me.rooms.map(room => room.roomId)) + 1;
+    lastRoomId = roomId;
     const memberId = ++nextMemberId;
     const { color } = request;
     const room = today(roomId, name, [member(memberId, nickname, color, true)]);

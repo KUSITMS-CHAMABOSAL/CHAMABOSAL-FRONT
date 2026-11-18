@@ -136,6 +136,7 @@ const JoinRoomSteps = ({ token }: JoinRoomStepsProps) => {
     return (
       <InvitePreview
         room={room}
+        inviterNickname={preview.data.inviterNickname}
         onJoin={() => navigate(paths.invite(token), { state: { step: "nickname" } })}
       />
     );

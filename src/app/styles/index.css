@@ -62,6 +62,55 @@
     }
   }
 
+  /*
+   * 초대 미리보기 봉투. Figma 프로토타입(1-1 세 프레임):
+   * 0.8초 뒤 덮개가 납작해지고(0.45초, cubic-bezier(0.45, 0, 0.55, 1)),
+   * 0.05초 뒤 덮개·꽃·배지가 사라지며 제목이 올라와요(0.6초, cubic-bezier(0.22, 1, 0.36, 1)).
+   * 사라지는 요소는 원래 스타일을 끝 상태(투명)로 두고 기다리는 동안만 시작 상태를 붙잡아요(backwards).
+   */
+  --animate-envelope-flap: envelope-flap 1100ms linear 800ms backwards;
+  --animate-envelope-fade-out: fade-out 600ms cubic-bezier(0.22, 1, 0.36, 1) 1300ms backwards;
+  --animate-envelope-text-in: rise-in 600ms cubic-bezier(0.22, 1, 0.36, 1) 1300ms backwards;
+
+  /* 덮개 삼각형 높이 90 → 49. 0~41%(0.45초) 납작해지고, 45%(0.5초)부터 사라져요. */
+  @keyframes envelope-flap {
+    0% {
+      transform: scaleY(1);
+      opacity: 1;
+      animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+    }
+    40.9% {
+      transform: scaleY(0.544);
+      opacity: 1;
+    }
+    45.45% {
+      transform: scaleY(0.544);
+      opacity: 1;
+      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    100% {
+      transform: scaleY(0.544);
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  /* 시안에서 제목·설명은 12px 아래에서 투명하게 시작해요. */
+  @keyframes rise-in {
+    from {
+      transform: translateY(12px);
+      opacity: 0;
+    }
+  }
+
   @keyframes hair-grow {
     from {
       transform: scale(0);

@@ -119,7 +119,9 @@ const Moktak = ({ disabled = false, onStrike }: MoktakProps) => {
       disabled={disabled}
       onPointerDown={onPointerDown}
       onClick={onClick}
-      className="relative mx-auto block h-[480px] w-[375px] shrink-0 cursor-pointer touch-manipulation appearance-none border-0 bg-transparent p-0 outline-none! select-none [-webkit-tap-highlight-color:transparent] focus-visible:outline-2! focus-visible:outline-offset-[-2px] focus-visible:outline-(color:--adaptiveBlue500)! focus-visible:outline-solid! disabled:cursor-default"
+      // 가운데 맞춤은 margin이 아니라 self-center로 해요. TDS 전역 CSS가 button의 margin을 0으로 덮고,
+      // 화면이 375px보다 좁을 때도 넘친 부분이 양쪽으로 같게 잘려요.
+      className="relative block h-[480px] w-[375px] shrink-0 cursor-pointer touch-manipulation appearance-none self-center border-0 bg-transparent p-0 outline-none! select-none [-webkit-tap-highlight-color:transparent] focus-visible:outline-2! focus-visible:outline-offset-[-2px] focus-visible:outline-(color:--adaptiveBlue500)! focus-visible:outline-solid! disabled:cursor-default"
     >
       {/* 물결은 시안의 가장 큰 빛(지름 598) 크기로 그려 두고 줄였다 키워요. 퍼질 때 흐려지지 않아요. */}
       <div

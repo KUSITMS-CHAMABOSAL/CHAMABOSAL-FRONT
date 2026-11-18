@@ -49,7 +49,16 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       # tsc -b → vite build → ait build
-      - run: pnpm build
+      # 서버 주소는 저장소 Variables에서 받아 번들에 넣습니다. 비어 있으면 요청이 미니앱 자기 주소로 가서 실패하므로 막습니다.
+      - name: Build
+        env:
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
+        run: |
+          if [ -z "$VITE_API_BASE_URL" ]; then
+            echo "::error::저장소 Variables에 VITE_API_BASE_URL이 없습니다. Settings > Secrets and variables > Actions > Variables에 등록하세요."
+            exit 1
+          fi
+          pnpm build
 
       # 공개 저장소라 로그·요약·Artifact는 누구나 볼 수 있습니다.
       # 테스트 링크와 QR은 GitHub에 남기지 않고 디스코드로만 보냅니다.

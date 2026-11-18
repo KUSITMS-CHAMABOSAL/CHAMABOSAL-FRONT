@@ -32,6 +32,7 @@ paths:
 | `/rooms/:roomId/vote/:roundId/tap` | 하단 바 없음 | 정신 차려! 톡톡 (그 회차에 받은 톡톡만큼 목탁 수행, 끝나면 완료 화면)    |
 | `/storehouse`                      | 하단 탭      | 곳간                                                                     |
 | `/storehouse/hair`                 | 하단 바 없음 | 나발 심기 (곳간에서만 진입, 마지막 방 기억 유지)                         |
+| `/storehouse/hair/guide`           | 하단 바 없음 | 나발 빠짐 설명 (처음 빠졌을 때, 곳간에서 다시 보기)                      |
 | `/my/:roomId`                      | 하단 탭      | 내 보살 (고른 방의 닉네임 수정, 나가기, 인증 기록)                       |
 | `/rooms/:roomId/certify`           | Plain        | 번뇌 떨구기                                                              |
 | `/rooms/:roomId/certify/result`    | 하단 탭      | 인증 결과                                                                |

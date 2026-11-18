@@ -56,7 +56,7 @@ const ReceiveBosal = ({ nickname, color, onReceive }: ReceiveBosalProps) => (
         {`${nickname}보살`}
       </Paragraph>
       <Paragraph typography="t6" fontWeight="semibold" color="var(--adaptiveGrey600)">
-        {`${nickname}님께 ${BOSAL_COLOR_NAME[color]}보살이 찾아왔어요!`}
+        {`${nickname}님에게 ${BOSAL_COLOR_NAME[color]}보살이 찾아왔어요!`}
       </Paragraph>
     </div>
     <div aria-hidden className="min-h-8 grow" />

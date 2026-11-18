@@ -240,7 +240,7 @@ const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
       <div
         aria-hidden={!view.restored}
         className={cn(
-          "absolute top-(--top) left-1/2 w-40 [transform:translate(-50%,var(--rise))]",
+          "absolute top-(--top) left-1/2 w-40 [transform:translate(-50%,var(--rise))] rounded-[10px] bg-(--adaptiveBackground) shadow-[0_2px_15px_var(--adaptiveGreyOpacity200)]",
           transition,
           !view.restored && "pointer-events-none opacity-0",
         )}
@@ -252,7 +252,7 @@ const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
         }
       >
         <ItemCard
-          className="bg-(--adaptiveBackground) shadow-[0_2px_15px_var(--adaptiveGreyOpacity200)]"
+          // 시안 배경은 흰색 위에 2% 회색이라, 흰 바탕은 감싼 요소에 두고 카드의 회색을 그대로 써요.
           name="나발 심기"
           price={HAIR_PLANT_PRICE}
           status="보유 0개"
@@ -276,7 +276,8 @@ const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
             <Button
               size="small"
               variant="weak"
-              display="full"
+              // full은 화면 끝까지 닿는 버튼이라 모서리가 0이 돼요. 카드 폭을 채우면서 시안처럼 둥근(8px) 건 block이에요.
+              display="block"
               tabIndex={view.restored ? undefined : -1}
               onClick={onBuy}
             >

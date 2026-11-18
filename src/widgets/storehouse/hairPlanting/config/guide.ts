@@ -29,8 +29,8 @@ export const GUIDE_PLUCKED_BY_SCENE: readonly ReadonlySet<number>[] = [
   [7, 20, 25, 29, 37],
 ].map(indexes => new Set(indexes));
 
-/** 07 카드 썸네일은 맨 위 한 자리만 비어 있어요. */
-export const GUIDE_CARD_PLUCKED: ReadonlySet<number> = new Set([7]);
+/** 07 카드 썸네일은 시안처럼 머리카락을 모두 그리고, 맨 위 가닥 위에 점선 링만 얹어요. */
+export const GUIDE_CARD_PLUCKED: ReadonlySet<number> = new Set();
 
 /**
  * 시안(375px)의 크기와 위치예요. 위치는 토스 상단 바(94px) 아래부터 잰 값이에요.

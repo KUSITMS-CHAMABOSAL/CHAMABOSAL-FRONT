@@ -53,18 +53,30 @@ export const POSE = {
  * 세 겹이 시간차를 두고 뒤따라서 퍼지는 동안 시안처럼 세 겹이 겹쳐 보여요.
  * 연타하면 앞 물결이 끝나기 전에 새 물결이 겹쳐 이어져요.
  */
+/**
+ * 물결은 이 크기(px)로 작게 그려 시안 크기(598)까지 키워요. 부드러운 그라데이션이라 키워도 티가 나지 않고,
+ * 물결마다 생기는 합성 레이어 메모리가 크게 줄어요(598로 그리면 연타 중 기기에서 수백 MB).
+ */
+const RIPPLE_DRAW_SIZE = 150;
+const toDrawScale = (designScale: number) => `scale(${(designScale * 598) / RIPPLE_DRAW_SIZE})`;
+
 export const RIPPLE = {
+  drawSize: RIPPLE_DRAW_SIZE,
   /** 물결 한 겹이 퍼져 사라지기까지예요. 치는 속도와 상관없이 같아요. */
   durationMs: 1100,
   /** 세 겹이 앞 겹을 뒤따르는 간격이에요. 첫 겹이 598에 닿을 때 시안처럼 498, 408 크기가 되게 맞췄어요. */
   followMs: [0, 75, 130],
-  /** 동시에 남겨 두는 물결 수예요. 넘으면 가장 오래된 것부터 지워 연타해도 쌓이지 않아요. */
+  /**
+   * 동시에 그리는 물결 수예요. 넘으면 새 물결을 건너뛰어요.
+   * 오래된 물결을 지우면 아직 진한 물결이 갑자기 사라져 보이고, 이때는 화면이 이미 물결로 차 있어요.
+   */
   maxWaves: 12,
   /** 물이 퍼지듯 처음엔 빠르고 바깥으로 갈수록 느려져요. */
   easing: "cubic-bezier(0.2, 0.6, 0.35, 1)",
+  /** 시안 크기 기준 0.3배 → 1배(598) → 1.15배로 퍼지며, 1배에 닿은 뒤 사라져요. */
   keyframes: [
-    { transform: "scale(0.3)", opacity: 1 },
-    { transform: "scale(1)", opacity: 1, offset: 0.6 },
-    { transform: "scale(1.15)", opacity: 0 },
+    { transform: toDrawScale(0.3), opacity: 1 },
+    { transform: toDrawScale(1), opacity: 1, offset: 0.6 },
+    { transform: toDrawScale(1.15), opacity: 0 },
   ],
 } as const;

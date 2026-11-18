@@ -38,15 +38,19 @@ const swing = (element: HTMLElement | null, pose: Pose, duration: number) => {
 /**
  * 방망이가 닿는 순간부터 물결 세 겹을 뒤따라 퍼뜨려요.
  * 물결마다 요소를 새로 만들어서 연타해도 앞 물결이 끊기지 않고, 끝나면 지워요.
+ * 물결은 작게(`RIPPLE.drawSize`) 그려 가운데에서 키워요.
  */
 const ripple = (layer: HTMLElement | null, delayMs: number) => {
   if (!layer) return;
   RIPPLE.followMs.forEach(followMs => {
-    while (layer.childElementCount >= RIPPLE.maxWaves) layer.firstElementChild?.remove();
+    if (layer.childElementCount >= RIPPLE.maxWaves) return;
     const wave = document.createElement("img");
     wave.src = glowRing;
     wave.alt = "";
-    wave.className = "absolute inset-0 block size-full opacity-0";
+    wave.width = RIPPLE.drawSize;
+    wave.height = RIPPLE.drawSize;
+    wave.className =
+      "absolute top-1/2 left-1/2 -mt-[75px] -ml-[75px] block size-[150px] max-w-none opacity-0";
     layer.append(wave);
     const animation = wave.animate([...RIPPLE.keyframes], {
       duration: RIPPLE.durationMs,
@@ -123,7 +127,7 @@ const Moktak = ({ disabled = false, onStrike }: MoktakProps) => {
       // 화면이 375px보다 좁을 때도 넘친 부분이 양쪽으로 같게 잘려요.
       className="relative block h-[480px] w-[375px] shrink-0 cursor-pointer touch-manipulation appearance-none self-center border-0 bg-transparent p-0 outline-none! select-none [-webkit-tap-highlight-color:transparent] focus-visible:outline-2! focus-visible:outline-offset-[-2px] focus-visible:outline-(color:--adaptiveBlue500)! focus-visible:outline-solid! disabled:cursor-default"
     >
-      {/* 물결은 시안의 가장 큰 빛(지름 598) 크기로 그려 두고 줄였다 키워요. 퍼질 때 흐려지지 않아요. */}
+      {/* 물결 층은 시안의 가장 큰 빛(지름 598) 자리예요. 물결은 그 가운데에서 작게 그려 키워요. */}
       <div
         ref={rippleRef}
         aria-hidden

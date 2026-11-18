@@ -5,6 +5,7 @@ export default defineConfig({
   brand: {
     primaryColor: "#3182F6", // 화면에 노출될 앱의 기본 색상으로 바꿔주세요.
   },
-  permissions: [],
+  // 초대 링크 복사(Clipboard.setText)에 써요.
+  permissions: [{ name: "clipboard", access: "write" }],
   webBundleDir: "dist",
 });

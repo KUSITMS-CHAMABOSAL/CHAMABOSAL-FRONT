@@ -115,6 +115,14 @@ export interface InvitePreview {
   previousNickname: string | null;
 }
 
+/** 방에 들어간 내 멤버 정보예요. 방 만들기(POST /api/rooms)와 초대로 참여(POST /api/invites/{token}/join)가 같이 돌려줘요. */
+export interface RoomMembership {
+  roomId: number;
+  memberId: number;
+  nickname: string;
+  color: BosalColor;
+}
+
 /** GET /api/rooms/new-color. 부를 때마다 새로 뽑고 서버에 저장하지 않아요. */
 export interface NewColorResponse {
   color: BosalColor;

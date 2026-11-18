@@ -1,7 +1,7 @@
 import type { MockHandler } from "@/shared/api";
 
 import type { BosalColor } from "@/entities/bosal";
-import type { RoomGoal, TodayResponse } from "@/entities/room";
+import { MAX_JOINED_ROOMS, type RoomGoal, type TodayResponse } from "@/entities/room";
 
 import { FULL_ROOM_ID, inviteRoom, member, SCENARIOS, today } from "./scenarios";
 
@@ -83,7 +83,7 @@ const judgeInvite = (token: string) => {
   const room = findInviteRoom(token);
   if (!room) return { status: "UNAVAILABLE", room: null } as const;
   if (isMyRoom(room.room.roomId)) return { status: "ALREADY_MEMBER", room } as const;
-  if (state.me.rooms.length >= 2) return { status: "ROOM_LIMIT", room } as const;
+  if (state.me.rooms.length >= MAX_JOINED_ROOMS) return { status: "ROOM_LIMIT", room } as const;
   if (room.members.length >= room.room.memberLimit) return { status: "ROOM_FULL", room } as const;
   return { status: "JOINABLE", room } as const;
 };
@@ -147,7 +147,8 @@ export const mockHandler: MockHandler = (method, path, body) => {
     if (!isGoal(request.goal)) return fail(400, "COMMON_002", "요청 값이 올바르지 않아요.");
     if (!COLORS.includes(request.color))
       return fail(400, "COMMON_002", "요청 값이 올바르지 않아요.");
-    if (state.me.rooms.length >= 2) return fail(409, "ROOM_001", "참여 중인 방이 2개예요.");
+    if (state.me.rooms.length >= MAX_JOINED_ROOMS)
+      return fail(409, "ROOM_001", "참여 중인 방이 2개예요.");
 
     const roomId = Math.max(FULL_ROOM_ID, ...state.me.rooms.map(room => room.roomId)) + 1;
     const memberId = ++nextMemberId;
@@ -158,7 +159,7 @@ export const mockHandler: MockHandler = (method, path, body) => {
     room.pot.goalAmount = request.potGoalAmount;
     state.rooms[roomId] = room;
     state.me.rooms.push({ roomId, name, nickname, color, hasUnseen: false });
-    state.me.canCreateRoom = state.me.rooms.length < 2;
+    state.me.canCreateRoom = state.me.rooms.length < MAX_JOINED_ROOMS;
     return ok({ roomId, memberId, nickname, color }, 201);
   }
 
@@ -212,7 +213,7 @@ export const mockHandler: MockHandler = (method, path, body) => {
     const { roomId, name } = room.room;
     state.rooms[roomId] = room;
     state.me.rooms.push({ roomId, name, nickname, color, hasUnseen: false });
-    state.me.canCreateRoom = state.me.rooms.length < 2;
+    state.me.canCreateRoom = state.me.rooms.length < MAX_JOINED_ROOMS;
     return ok({ roomId, memberId, nickname, color }, 201);
   }
 

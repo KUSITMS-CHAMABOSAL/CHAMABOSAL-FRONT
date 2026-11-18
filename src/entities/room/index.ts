@@ -8,6 +8,7 @@ export * from "./config/pot";
 export * from "./lib/nickname";
 export type {
   InviteStatus,
+  RoomMembership,
   RoomGoal,
   RoomSummary,
   TodayCertification,

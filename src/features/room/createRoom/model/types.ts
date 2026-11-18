@@ -15,11 +15,3 @@ export interface CreateRoomRequest extends RoomDraft {
   /** GET /api/rooms/new-color에서 뽑은 색이에요. */
   color: BosalColor;
 }
-
-/** POST /api/rooms 응답이에요. */
-export interface CreateRoomResponse {
-  roomId: number;
-  memberId: number;
-  nickname: string;
-  color: BosalColor;
-}

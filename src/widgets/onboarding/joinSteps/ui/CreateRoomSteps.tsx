@@ -3,7 +3,7 @@ import { startTransition, useState } from "react";
 import { useToast } from "@toss/tds-mobile";
 import { Navigate, useLocation, useNavigate } from "react-router";
 
-import { ROOM_GOALS, type RoomGoal, useNewColorQuery } from "@/entities/room";
+import { MAX_JOINED_ROOMS, ROOM_GOALS, type RoomGoal, useNewColorQuery } from "@/entities/room";
 import { NicknameForm } from "@/features/onboarding/nicknameForm";
 import { CreateRoomForm, useCreateRoom } from "@/features/room/createRoom";
 import { isApiError } from "@/shared/api";
@@ -121,7 +121,7 @@ const CreateRoomSteps = () => {
             onError: error =>
               openToast(
                 isApiError(error, "ROOM_001")
-                  ? "참여 중인 방이 2개라 방을 더 만들 수 없어요."
+                  ? `참여 중인 방이 ${MAX_JOINED_ROOMS}개라 방을 더 만들 수 없어요.`
                   : "방을 만들지 못했어요. 잠시 후 다시 시도해 주세요.",
               ),
           },

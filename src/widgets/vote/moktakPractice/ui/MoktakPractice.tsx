@@ -84,8 +84,9 @@ const MoktakPractice = ({
     if (counted.current >= goal) finish(counted.current);
   };
 
-  // 이미 마친 회차는 바로 완료 화면이에요. 다시 받은 값도 반영하되, 치기 시작했다면 이번 저장 결과를 따라요.
-  if (completed || (alreadyDone && count === 0))
+  // 이미 마친 회차는 바로 완료 화면이에요. 치는 중에는 이번 저장 결과를 따르되,
+  // 저장에 실패했는데 서버가 이미 마쳤다고 하면(다른 기기 등) 완료 화면으로 넘어가요.
+  if (completed || (alreadyDone && (count === 0 || saveFailed)))
     return <PracticeComplete onClaimBonus={onClaimBonus} onClose={onClose} />;
 
   return (

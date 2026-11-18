@@ -2,6 +2,12 @@
 export const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL ?? "";
 
 /**
+ * 로그인을 뺀 API를 목 데이터로 응답할지예요. `.env`의 `VITE_API_MOCK=true`일 때만 켜져요.
+ * 값이 없는 테스트 번들과 운영 빌드는 실서버를 써요.
+ */
+export const API_MOCK: boolean = import.meta.env.VITE_API_MOCK === "true";
+
+/**
  * 개발 서버에서 실서버 테스트 토큰(POST /api/auth/test-token)을 받을 때 써요. `.env`의 `VITE_TEST_TOKEN_KEY`, `VITE_TEST_USER`
  * 운영 빌드에서는 항상 비어 있어 번들에 들어가지 않아요.
  */

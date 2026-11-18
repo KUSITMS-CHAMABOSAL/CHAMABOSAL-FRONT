@@ -9,6 +9,11 @@ import { CreateRoomForm, useCreateRoom } from "@/features/room/createRoom";
 import { isApiError } from "@/shared/api";
 import { paths } from "@/shared/config";
 
+import {
+  getCreateRoomFlowRoomId,
+  markCreateRoomFlowDone,
+  newCreateRoomFlowId,
+} from "../model/createRoomFlow";
 import ReceiveBosal from "./ReceiveBosal";
 import RoomCreated from "./RoomCreated";
 
@@ -20,6 +25,14 @@ type Step =
 
 const isGoal = (value: unknown): value is RoomGoal =>
   typeof value === "string" && (ROOM_GOALS as readonly string[]).includes(value);
+
+const getFlowId = (state: unknown) =>
+  typeof state === "object" &&
+  state !== null &&
+  "flowId" in state &&
+  typeof state.flowId === "string"
+    ? state.flowId
+    : undefined;
 
 /** 단계는 기록(location.state)에 둬요. 만든 방은 새로고침해도 초대 화면을 다시 그릴 수 있게 함께 둬요. */
 const getStep = (state: unknown): Step => {
@@ -41,6 +54,7 @@ const getStep = (state: unknown): Step => {
  * 닉네임 → 내 보살 받기 → 방 만들기 → 초대 공유 단계예요. 단계를 기록에 남겨 토스 뒤로가기로 이전 단계에 돌아가요.
  * 보살 색은 들어오자마자 뽑아 두고, 보살 받기에서 보여준 색을 방을 만들 때 그대로 보내요.
  * 방을 만든 뒤에는 뒤로가기로 만들기 단계에 돌아가지 않고 그 방 홈으로 가요.
+ * 방 홈으로 나갔다가 뒤로가기로 돌아와 화면이 다시 그려져도, 흐름 ID로 끝난 흐름인지 알아봐요.
  */
 const CreateRoomSteps = () => {
   const navigate = useNavigate();
@@ -54,6 +68,9 @@ const CreateRoomSteps = () => {
   const { openToast } = useToast();
 
   const step = getStep(state);
+  const flowId = getFlowId(state);
+  /** 처음 그릴 때 이 흐름이 이미 방을 만들었는지예요. 화면에 있는 동안은 아래 createdRoomId로 봐요. */
+  const [doneRoomId] = useState(() => (flowId ? getCreateRoomFlowRoomId(flowId) : undefined));
 
   if (step.kind === "created") {
     return (
@@ -65,8 +82,14 @@ const CreateRoomSteps = () => {
     );
   }
 
-  if (createdRoomId !== undefined) {
-    return <Navigate to={paths.room.home(createdRoomId)} replace />;
+  const roomIdToLeaveFor = createdRoomId ?? doneRoomId;
+  if (roomIdToLeaveFor !== undefined) {
+    return <Navigate to={paths.room.home(roomIdToLeaveFor)} replace />;
+  }
+
+  // 새로 들어온 흐름이면 기록에 흐름 ID를 붙이고 닉네임부터 시작해요.
+  if (flowId === undefined) {
+    return <Navigate to={paths.createRoom} replace state={{ flowId: newCreateRoomFlowId() }} />;
   }
 
   // 새로고침으로 닉네임을 잃었거나 색을 아직 못 받았으면 닉네임부터 다시 해요.
@@ -83,7 +106,7 @@ const CreateRoomSteps = () => {
             void drawAgain();
             return;
           }
-          navigate(paths.createRoom, { state: { step: "bosal" } });
+          navigate(paths.createRoom, { state: { step: "bosal", flowId } });
         }}
       />
     );
@@ -94,7 +117,7 @@ const CreateRoomSteps = () => {
       <ReceiveBosal
         nickname={nickname}
         color={drawn.color}
-        onReceive={() => navigate(paths.createRoom, { state: { step: "form" } })}
+        onReceive={() => navigate(paths.createRoom, { state: { step: "form", flowId } })}
       />
     );
   }
@@ -109,6 +132,7 @@ const CreateRoomSteps = () => {
             onSuccess: ({ roomId }) => {
               // 라우터 이동은 전환으로 반영돼요. 만든 방 기록도 같은 전환에 넣어야
               // 초대 화면으로 바뀌기 전에 홈으로 보내는 분기가 먼저 그려지지 않아요.
+              markCreateRoomFlowDone(flowId, roomId);
               startTransition(() => {
                 setCreatedRoomId(roomId);
                 // 폼 기록을 초대 화면으로 바꿔서, 앞으로 가기로 폼에 다시 오지 않게 해요.

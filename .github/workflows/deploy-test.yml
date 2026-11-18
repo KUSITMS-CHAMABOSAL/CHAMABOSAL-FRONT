@@ -80,6 +80,8 @@ jobs:
 
           # 가린 값은 step output으로 넘기면 GitHub이 버리므로 임시 파일로 넘깁니다.
           printf '%s' "$SCHEME" > "$RUNNER_TEMP/scheme"
+          # 디스코드 메시지에도 같은 메모를 보여주려고 넘깁니다.
+          printf '%s' "${MEMO:0:1000}" > "$RUNNER_TEMP/memo"
           echo "### 테스트 번들 업로드 완료 (\`${GITHUB_SHA::7}\`)" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Send QR to Discord
@@ -97,7 +99,10 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq qrencode > /dev/null
           qrencode -s 8 -m 2 -o "$RUNNER_TEMP/qr.png" "$SCHEME"
 
+          MEMO=$(cat "$RUNNER_TEMP/memo")
+
           CONTENT="**새 테스트 번들**"
+          [ -n "$MEMO" ] && CONTENT+=$'\n'"$MEMO"
           CONTENT+=$'\n'"휴대폰 카메라로 QR을 찍으면 토스 앱에서 열려요."
           CONTENT+=$'\n```\n'"$SCHEME"$'\n```'
 

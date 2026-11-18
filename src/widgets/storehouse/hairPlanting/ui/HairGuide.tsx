@@ -1,4 +1,4 @@
-import { type CSSProperties, useEffect, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 
 import { Button, Paragraph, TextButton } from "@toss/tds-mobile";
 
@@ -52,6 +52,24 @@ const getGuideView = (scene: number) => ({
 
 const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+/**
+ * 이동한 뒤 설명 화면이 DOM에서 빠지면 끝나요. 전환 중에는 화면을 그리지 않아 rAF 대신 MutationObserver로 봐요.
+ * 1초 안에 빠지지 않으면 그대로 끝내서 화면이 멈추지 않게 해요.
+ */
+const untilRemoved = (element: Element) =>
+  new Promise<void>(resolve => {
+    const observer = new MutationObserver(() => {
+      if (!element.isConnected) done();
+    });
+    const timer = window.setTimeout(() => done(), 1000);
+    const done = () => {
+      observer.disconnect();
+      window.clearTimeout(timer);
+      resolve();
+    };
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
+
 // 빈 자리 원은 시안대로 보살 폭의 55/346이에요. 나발 심기 화면과 같은 방식으로 자리를 잡아요.
 const slotStyle = (index: number) => {
   const [cx, cy] = GREY_HAIR_CURLS[index];
@@ -89,12 +107,30 @@ const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
     return () => timers.forEach(window.clearTimeout);
   }, []);
 
+  const mainRef = useRef<HTMLElement>(null);
+
+  /**
+   * 이전 화면으로 먼저 이동하고, 그 위에서 설명 화면의 마지막 모습만 아래로 내려보내요(View Transitions).
+   * 내려가는 모습은 `app/styles/index.css`의 `hair-guide` 전환이에요.
+   * 지원하지 않는 WebView(iOS 18 미만)와 동작 줄이기에서는 바로 닫아요.
+   */
+  const close = () => {
+    const main = mainRef.current;
+    if (!main || !("startViewTransition" in document) || prefersReducedMotion()) return onClose();
+    document.startViewTransition(() => {
+      onClose();
+      return untilRemoved(main);
+    });
+  };
+
   const view = getGuideView(scene);
   const plucked = GUIDE_PLUCKED_BY_SCENE[scene];
 
   return (
     <main
-      className="relative h-svh overflow-hidden bg-[linear-gradient(var(--adaptiveGrey900)_150px,var(--adaptiveGrey300))]"
+      ref={mainRef}
+      // 화면 안의 `fixed` 하단 버튼도 같은 스냅샷에 담기도록 `transform`을 걸어 이 요소를 기준으로 그려요.
+      className="relative h-svh [transform:translateZ(0)] overflow-hidden bg-[linear-gradient(var(--adaptiveGrey900)_150px,var(--adaptiveGrey300))] [view-transition-name:hair-guide]"
       style={
         {
           "--safe-area-bottom": `${safeAreaBottom}px`,
@@ -271,7 +307,7 @@ const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
         <TextButton
           size="small"
           color="var(--adaptiveGrey900)"
-          onClick={onClose}
+          onClick={close}
           className="mt-5! px-6! py-[12.75px]!"
         >
           {/* TextButton은 내용을 글자 span 안에 넣어서 아이콘을 인라인으로 붙여요. */}

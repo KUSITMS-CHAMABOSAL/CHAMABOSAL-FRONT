@@ -138,6 +138,32 @@ body {
   margin: 0;
 }
 
+/*
+ * 나발 빠짐 설명을 닫을 때(HairGuide)예요. 이전 화면은 바로 그리고, 그 위에서 설명 화면만 아래로 내려보내요.
+ * 앱에서 View Transitions는 이 전환만 써서 root의 기본 교차 페이드를 꺼요.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+::view-transition-old(hair-guide) {
+  animation: hair-guide-exit 450ms cubic-bezier(0.32, 0, 0.67, 0) both;
+}
+
+@keyframes hair-guide-exit {
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(hair-guide) {
+    animation: none;
+  }
+}
+
 #root {
   min-height: 100svh;
 }

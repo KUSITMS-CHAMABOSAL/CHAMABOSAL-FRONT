@@ -135,6 +135,7 @@ const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
           "--guide-close": `${GUIDE_CLOSE_MS}ms`,
           "--guide-dim": `${GUIDE_DIM_MS}ms`,
           "--safe-area-bottom": `${safeAreaBottom}px`,
+          "--design-height": `${GUIDE_LAYOUT.screenHeight}px`,
           "--guide-transition": `${GUIDE_TRANSITION_MS}ms`,
           "--slot-fade": `${GUIDE_SLOT_FADE_MS}ms`,
         } as CSSProperties
@@ -290,7 +291,7 @@ const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
 
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 flex flex-col items-center pt-[57px] pb-[calc(16px+var(--safe-area-bottom))]",
+          "fixed inset-x-0 bottom-0 flex flex-col items-center pt-[57px] pb-[calc(16px+var(--safe-area-bottom)+max(0px,100svh-var(--design-height)))]",
           transition,
           !view.showActions && "pointer-events-none opacity-0",
         )}

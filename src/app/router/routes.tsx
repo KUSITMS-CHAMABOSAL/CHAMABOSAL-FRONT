@@ -95,6 +95,13 @@ export const router = createBrowserRouter([
                         (await import("@/pages/hairPlanting")).HairPlantingPage,
                     },
                   },
+                  // 나발이 처음 빠졌을 때와 곳간에서 다시 볼 때 여는 설명 화면이에요.
+                  {
+                    path: "hair/guide",
+                    lazy: {
+                      Component: async () => (await import("@/pages/hairPlanting")).HairGuidePage,
+                    },
+                  },
                 ],
               },
             ],

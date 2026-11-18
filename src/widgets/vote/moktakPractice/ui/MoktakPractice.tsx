@@ -37,7 +37,7 @@ const MoktakPractice = ({
 }: MoktakPracticeProps) => {
   const [count, setCount] = useState(0);
   const [quitOpen, setQuitOpen] = useState(false);
-  const [completed, setCompleted] = useState(alreadyDone);
+  const [completed, setCompleted] = useState(false);
   /** 완료를 저장하지 못했어요. 갇히지 않게 [종료하기]를 다시 보여줘요. */
   const [saveFailed, setSaveFailed] = useState(false);
   const { mutate: complete } = useCompleteMoktak(roundId);
@@ -65,10 +65,11 @@ const MoktakPractice = ({
       },
       onError: error => {
         sending.current = false;
-        // 수행 중 톡톡이 더 왔어요. 받은 톡톡을 다시 받으면 목표가 늘어 이어서 칠 수 있어요.
-        if (isApiError(error, "MOKTAK_004")) return;
         setSaveFailed(true);
-        openToast("수행 결과를 저장하지 못했어요. 잠시 후 다시 시도해 주세요");
+        // 수행 중 톡톡이 더 왔어요. 받은 톡톡을 다시 받으면 목표가 늘어 이어서 칠 수 있고,
+        // 다시 받지 못해도 [종료하기]로 나갈 수 있어요.
+        if (isApiError(error, "MOKTAK_004")) return;
+        openToast("수행 결과를 저장하지 못했어요");
       },
     });
   };
@@ -83,7 +84,9 @@ const MoktakPractice = ({
     if (counted.current >= goal) finish(counted.current);
   };
 
-  if (completed) return <PracticeComplete onClaimBonus={onClaimBonus} onClose={onClose} />;
+  // 이미 마친 회차는 바로 완료 화면이에요. 다시 받은 값도 반영하되, 치기 시작했다면 이번 저장 결과를 따라요.
+  if (completed || (alreadyDone && count === 0))
+    return <PracticeComplete onClaimBonus={onClaimBonus} onClose={onClose} />;
 
   return (
     <main className={cn("relative flex min-h-svh flex-col overflow-hidden", PRACTICE_BACKGROUND)}>

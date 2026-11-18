@@ -1,9 +1,9 @@
 import { Paragraph } from "@toss/tds-mobile";
 
 import { BosalImage, type BosalColor } from "@/entities/bosal";
+import { TwirlyFlower } from "@/shared/assets/illustrations";
 import { cn } from "@/shared/lib";
 
-import twirlyFlower from "../assets/twirly_flower.svg";
 import { PROFILE_GRADIENT } from "../config/profileBackground";
 
 /** 시안의 보살 높이예요. 원본(139)보다 작게 그려요. */
@@ -22,12 +22,9 @@ const BosalProfile = ({ nickname, color }: BosalProfileProps) => (
       PROFILE_GRADIENT[color],
     )}
   >
-    <img
-      src={twirlyFlower}
-      alt=""
-      width={162}
-      height={162}
-      className="pointer-events-none absolute top-12 left-px max-w-none select-none"
+    <TwirlyFlower
+      aria-hidden
+      className="text-on-fill/30 pointer-events-none absolute top-12 left-px"
     />
     <BosalImage color={color} expression="default" height={ART_HEIGHT} className="relative" />
     <div className="relative mt-2 flex w-42 flex-col items-center gap-1.5 text-center">

@@ -15,6 +15,8 @@ const QuitPracticeSheet = ({ open, onQuit, onClose }: QuitPracticeSheetProps) =>
   <BottomSheet
     open={open}
     onClose={onClose}
+    // 시안은 설명과 버튼 사이가 20px이에요. 본문 아래 여백(13px)에 더해 20px이 되게 기본값(34px)을 줄여요.
+    ctaContentGap={7}
     header={
       <>
         <img src={handPalm} alt="" className="mx-auto box-content block size-20 p-2.5" />

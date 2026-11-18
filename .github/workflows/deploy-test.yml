@@ -63,7 +63,14 @@ jobs:
             exit 1
           fi
 
-          SCHEME=$(pnpm exec ait deploy --api-key "$AIT_API_KEY" --scheme-only | tail -n 1)
+          # 콘솔 번들 목록에서 구분하도록 PR 제목을 메모로 남깁니다. 머지 커밋은 본문 첫 줄이 PR 제목입니다.
+          # 커밋 메시지는 GitHub 표현식으로 끼워 넣지 않고 여기서 읽어, 셸 명령으로 실행되지 않게 합니다.
+          # "feat: 방 만들기와 초대로 참여" → "방 만들기와 초대로 참여" (ait deploy -m은 최대 1000자)
+          SUBJECT=$(git log -1 --format=%s)
+          TITLE=$(git log -1 --format=%b | head -n 1)
+          MEMO=$(printf '%s' "${TITLE:-$SUBJECT}" | sed -E 's/^[a-z]+(\([^)]*\))?!?: //')
+
+          SCHEME=$(pnpm exec ait deploy --api-key "$AIT_API_KEY" --scheme-only -m "${MEMO:0:1000}" | tail -n 1)
 
           if [[ "$SCHEME" != intoss-private://* ]]; then
             echo "::error::업로드 결과에서 테스트 링크를 찾지 못했습니다."

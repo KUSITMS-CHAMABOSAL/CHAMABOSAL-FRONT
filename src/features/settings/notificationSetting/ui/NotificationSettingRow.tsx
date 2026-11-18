@@ -1,6 +1,4 @@
-import { ListRow, Switch } from "@toss/tds-mobile";
-
-import { useTabBarToast } from "@/shared/lib";
+import { ListRow, Switch, useToast } from "@toss/tds-mobile";
 
 import type { NotificationSettingKey } from "../model/types";
 import { useUpdateNotificationSetting } from "../model/useUpdateNotificationSetting";
@@ -15,7 +13,7 @@ interface NotificationSettingRowProps {
 /** 알림 설정 한 줄이에요. 스위치를 누르면 바로 서버에 저장해요. */
 const NotificationSettingRow = ({ setting, label, checked }: NotificationSettingRowProps) => {
   const { mutate: update } = useUpdateNotificationSetting();
-  const openToast = useTabBarToast();
+  const { openToast } = useToast();
 
   return (
     <ListRow

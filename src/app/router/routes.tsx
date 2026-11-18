@@ -47,6 +47,10 @@ export const router = createBrowserRouter([
                 path: "invite",
                 lazy: { Component: async () => (await import("@/pages/invite")).InvitePage },
               },
+              {
+                path: "settings",
+                lazy: { Component: async () => (await import("@/pages/settings")).SettingsPage },
+              },
             ],
           },
           // 없는 경로예요. 탭 레이아웃도 잘못된 방 번호에 같은 화면을 써서 lazy 없이 불러와요.

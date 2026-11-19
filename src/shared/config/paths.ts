@@ -8,6 +8,7 @@ export const paths = {
   // 곳간은 방마다 달라지지 않아요.
   storehouse: "/storehouse",
   hairPlanting: "/storehouse/hair",
+  hairGuide: "/storehouse/hair/guide",
   my: (roomId: number) => `/my/${roomId}`,
   settings: "/settings",
   room: {

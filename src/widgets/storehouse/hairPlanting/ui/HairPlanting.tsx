@@ -20,6 +20,7 @@ import {
   PLANT_ZOOM_SHIFT,
   TOAST_GAP,
 } from "../config/motion";
+import { GUIDE_DIM_MS } from "../config/guide";
 
 /** 머리카락 자리를 `--slot-x`, `--slot-y` 변수로 넘겨요. 빈 자리 원은 시안대로 보살 폭의 55/346이에요. */
 const slotStyle = (index: number) => {
@@ -46,13 +47,17 @@ type Phase = "select" | "zoom" | "planted";
 
 interface HairPlantingProps {
   onClose: () => void;
+  /** 나발 빠짐 설명에서 넘어왔을 때예요. 설명이 이 화면 배경색으로 어두워진 뒤라, 배경은 그대로 두고 내용만 나타나게 해요. */
+  fadeIn?: boolean;
 }
 
 /**
  * 비어 있는 자리를 골라 공양미로 나발을 심어요.
  * 심으면 고른 자리로 확대해 새 나발이 돋아나는 걸 보여주고, 다시 원래 크기로 돌아와요.
  */
-const HairPlanting = ({ onClose }: HairPlantingProps) => {
+const HairPlanting = ({ onClose, fadeIn = false }: HairPlantingProps) => {
+  const fadeInClass = fadeIn && "motion-safe:animate-[fade-in_var(--fade-in)_ease-out]";
+
   const { plucked, rice, plant } = useHairPlanting();
   const [selected, setSelected] = useState<number | null>(null);
   const [phase, setPhase] = useState<Phase>("select");
@@ -106,13 +111,19 @@ const HairPlanting = ({ onClose }: HairPlantingProps) => {
   return (
     <main
       className="relative flex h-svh flex-col overflow-hidden bg-(--adaptiveGrey900)"
-      style={{ "--safe-area-bottom": `${safeAreaBottom}px` } as CSSProperties}
+      style={
+        {
+          "--safe-area-bottom": `${safeAreaBottom}px`,
+          "--fade-in": `${GUIDE_DIM_MS}ms`,
+        } as CSSProperties
+      }
     >
       {/* TDS 글자 줄 높이가 시안보다 1~2px 커서 간격(13px)과 공양미 박스 높이(39px)를 고정해 시안 위치에 맞춰요. */}
       <header
         className={cn(
           "flex flex-col items-center gap-[13px] px-[43px] pt-8 transition-opacity duration-500 motion-reduce:transition-none",
           !isSelecting && "opacity-50",
+          fadeInClass,
         )}
       >
         <Paragraph
@@ -153,7 +164,12 @@ const HairPlanting = ({ onClose }: HairPlantingProps) => {
         시안처럼 보살 아래 73px(다리)는 화면 밖으로 잘리게 화면 아래에 붙여요. 화면이 길면 머리 위 여백이 늘고,
         짧으면 문구와 겹치지 않게 문구 아래 31.5px에서 멈추고 다리가 더 가려져요.
       */}
-      <div className="flex min-h-0 flex-1 flex-col justify-end-safe px-3.5 pt-[31.5px]">
+      <div
+        className={cn(
+          "flex min-h-0 flex-1 flex-col justify-end-safe px-3.5 pt-[31.5px]",
+          fadeInClass,
+        )}
+      >
         {/*
           시안처럼 머리를 가로 가운데에 두고 확대해요. 가장자리 자리를 골랐을 때만 그 자리가 보이게 밀어요.
           밀기와 확대를 `transform` 하나로 묶어 같이 전환해요. Tailwind의 translate-x-*, scale-*는 개별 변환 속성이라
@@ -223,6 +239,7 @@ const HairPlanting = ({ onClose }: HairPlantingProps) => {
           // 그라데이션은 터치를 통과시켜서 그 밑에 깔린 빈 자리도 누를 수 있게 하고, 버튼만 눌려요.
           "pointer-events-none fixed inset-x-0 bottom-0 flex flex-col items-center gap-5 pt-[57px] pb-[calc(16px+var(--safe-area-bottom))] transition-opacity duration-300 motion-reduce:transition-none",
           isSelecting ? "[&>button]:pointer-events-auto" : "opacity-0",
+          fadeInClass,
         )}
       >
         <img src={bottomFade} alt="" className="absolute inset-0 -z-10 size-full" />

@@ -22,6 +22,8 @@ import OutfitSlots from "./OutfitSlots";
 interface BosalClosetProps {
   /** 나발 심기 화면으로 가요. */
   onPlantHair: () => void;
+  /** 나발 빠짐 설명을 다시 봐요. */
+  onHairGuide: () => void;
 }
 
 const isWorn = (item: ClosetItem, outfit: Outfit) => {
@@ -59,7 +61,7 @@ const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: r
 const isVisible = (item: ClosetItem, tab: ClosetTab) =>
   tab === "all" || ITEM_TAB[item.kind] === tab;
 
-const BosalCloset = ({ onPlantHair }: BosalClosetProps) => {
+const BosalCloset = ({ onPlantHair, onHairGuide }: BosalClosetProps) => {
   const stageRef = useRef<HTMLDivElement>(null);
   const [tab, setTab] = useState<ClosetTab>("all");
   const { outfit, toggleHat, toggleFaceItem, toggleExpression } = useOutfit();
@@ -140,7 +142,7 @@ const BosalCloset = ({ onPlantHair }: BosalClosetProps) => {
         {/* 탭마다 카드를 새로 마운트하면 저사양 기기에서 프레임이 튀어서, 모두 마운트해 두고 숨김만 바꿔요. */}
         <div ref={gridRef} className="grid grid-cols-2 gap-3.5 px-5">
           <div className={cn(tab !== "all" && "hidden")}>
-            <HairPlantCard onPlant={onPlantHair} />
+            <HairPlantCard onPlant={onPlantHair} onGuide={onHairGuide} />
           </div>
           {DEMO_ITEMS.map(item => (
             <div key={item.id} className={cn(!isVisible(item, tab) && "hidden")}>

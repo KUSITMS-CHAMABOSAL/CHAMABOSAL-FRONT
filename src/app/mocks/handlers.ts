@@ -325,5 +325,23 @@ export const mockHandler: MockHandler = (method, path, body) => {
     return ok({ riceEarned: first ? 10 : 0 }, 201);
   }
 
+  // 이마 톡톡으로 바로 들어가도록 시안처럼 민지보살이 지목된 결과로 줘요.
+  if ((match = route.match(/^GET \/api\/rounds\/(\d+)\/result$/))) {
+    return ok({
+      roundId: Number(match[1]),
+      resultType: "PICKED",
+      picked: { memberId: 2, nickname: "민지", color: "MINT", isLeft: false },
+      isMePicked: false,
+      canTap: true,
+    });
+  }
+
+  if (route.match(/^POST \/api\/rounds\/\d+\/taps\/start$/)) return ok(undefined, 201);
+
+  if (route.match(/^POST \/api\/rounds\/\d+\/taps$/)) {
+    const tapped = (body as { count: number }).count > 0;
+    return ok({ riceEarned: tapped ? 5 : 0, potEarned: tapped ? 5 : 0 }, 201);
+  }
+
   return fail(404, "COMMON_404", `목에 없는 API예요: ${route}`);
 };

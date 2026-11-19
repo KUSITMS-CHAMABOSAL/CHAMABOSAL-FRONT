@@ -75,6 +75,12 @@ export const router = createBrowserRouter([
                     path: "vote/:roundId/tap",
                     lazy: { Component: async () => (await import("@/pages/vote")).TapTapPage },
                   },
+                  {
+                    path: "vote/:roundId/forehead",
+                    lazy: {
+                      Component: async () => (await import("@/pages/vote")).ForeheadTapPage,
+                    },
+                  },
                 ],
               },
               // 내 보살 화면 안에서 방을 골라 닉네임 수정, 나가기를 해요.

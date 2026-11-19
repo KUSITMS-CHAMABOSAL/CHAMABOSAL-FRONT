@@ -10,6 +10,10 @@ export type VoteTabStatus =
   | "VOTING"
   | "VOTED"
   | "RESULT_UNSEEN"
+  /** 결과를 본 뒤 톡톡을 보낼 수 있어요. */
+  | "TAP"
+  /** 지목된 본인이 목탁 수행을 해야 해요. */
+  | "MOKTAK"
   | "RESULT_SEEN";
 
 /**
@@ -45,4 +49,36 @@ export interface ReceivedTapsResponse {
 export interface MoktakCompleteResponse {
   /** 번뇌 완료 보상이에요. 처음 완료하면 10, 이미 완료했거나 방 인원이 1명이면 0 */
   riceEarned: number;
+}
+
+export type RoundResultType = "PICKED" | "ALL_BOSAL" | "ALL_SAFE" | "DEFENDED";
+
+/** 결과에서 지목된 보살이에요. */
+export interface PickedMember {
+  memberId: number;
+  nickname: string;
+  color: BosalColor;
+  isLeft: boolean;
+}
+
+/**
+ * GET /api/rounds/{roundId}/result. 발표된 회차의 결과예요.
+ * 지금은 이마 톡톡에 쓰는 필드만 두고, 나머지(득표 수, 방어권 등)는 결과 화면 이슈에서 채워요.
+ */
+export interface RoundResultResponse {
+  roundId: number;
+  resultType: RoundResultType;
+  /** PICKED·DEFENDED일 때만 있어요. */
+  picked: PickedMember | null;
+  isMePicked: boolean;
+  /** 그 회차에 투표했고 아직 톡톡할 수 있으면 true예요. */
+  canTap: boolean;
+}
+
+/** POST /api/rounds/{roundId}/taps */
+export interface TapSendResponse {
+  /** 1번 이상이면 5, 건너뛰면 0. 방 인원이 1명이면 0 */
+  riceEarned: number;
+  /** 한 솥에 들어간 석. riceEarned와 같아요. */
+  potEarned: number;
 }

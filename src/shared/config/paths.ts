@@ -15,5 +15,6 @@ export const paths = {
     home: (roomId: number) => `/rooms/${roomId}`,
     vote: (roomId: number) => `/rooms/${roomId}/vote`,
     tapTap: (roomId: number, roundId: number) => `/rooms/${roomId}/vote/${roundId}/tap`,
+    foreheadTap: (roomId: number, roundId: number) => `/rooms/${roomId}/vote/${roundId}/forehead`,
   },
 } as const;

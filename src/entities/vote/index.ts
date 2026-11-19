@@ -10,6 +10,7 @@ export type {
   ReceivedTapsResponse,
   RoundResultResponse,
   RoundResultType,
+  TapSendResponse,
   VoteTabStatus,
   VoteTabStatusResponse,
 } from "./model/types";

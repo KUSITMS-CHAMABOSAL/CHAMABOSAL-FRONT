@@ -70,3 +70,11 @@ export interface RoundResultResponse {
   /** 그 회차에 투표했고 아직 톡톡할 수 있으면 true예요. */
   canTap: boolean;
 }
+
+/** POST /api/rounds/{roundId}/taps */
+export interface TapSendResponse {
+  /** 1번 이상이면 5, 건너뛰면 0. 방 인원이 1명이면 0 */
+  riceEarned: number;
+  /** 한 솥에 들어간 석. riceEarned와 같아요. */
+  potEarned: number;
+}

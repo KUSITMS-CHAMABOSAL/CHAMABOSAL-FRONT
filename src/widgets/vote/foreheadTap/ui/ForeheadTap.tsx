@@ -166,7 +166,9 @@ const ForeheadTap = ({ roundId, nickname, onQuit }: ForeheadTapProps) => {
         style={{ "--top": `${STAGE.bosalTop}px` } as CSSProperties}
       >
         {/* 시안처럼 꼬리 끝이 머리 위쪽에 닿게, 상자와 대상 사이를 꼬리 높이(11px)만 둬요. */}
+        {/* 툴팁은 body에 따로 그려지고 안쪽에서 탭을 받아서, 떠 있어도 톡톡이 지나가게 막아요. */}
         <Tooltip
+          className="pointer-events-none! [&_*]:pointer-events-none!"
           open={tooltipOpen}
           placement="top"
           offset={11}

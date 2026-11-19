@@ -11,6 +11,8 @@ export const paths = {
   hairGuide: "/storehouse/hair/guide",
   my: (roomId: number) => `/my/${roomId}`,
   settings: "/settings",
+  // 🔖 공양미 가득 인터랙션 임시 확인용이에요.
+  potFullPreview: "/dev/pot-full",
   room: {
     home: (roomId: number) => `/rooms/${roomId}`,
     vote: (roomId: number) => `/rooms/${roomId}/vote`,

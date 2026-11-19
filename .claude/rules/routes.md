@@ -37,5 +37,6 @@ paths:
 | `/settings`                        | Plain        | 설정 (내 보살의 설정 버튼으로 진입, 알림 설정, 약관, 내 데이터 삭제)     |
 | `/rooms/:roomId/certify`           | Plain        | 번뇌 떨구기                                                              |
 | `/rooms/:roomId/certify/result`    | 하단 탭      | 인증 결과                                                                |
+| `/dev/pot-full`                    | Plain        | 🔖 공양미 가득 인터랙션 임시 확인 (인증 결과 화면에 붙이면 삭제)         |
 | `/terms`, `/privacy`               | Plain        | 약관                                                                     |
 | `*`, 잘못된 방 번호                | —            | 404 (홈으로 → 진입 분기)                                                 |

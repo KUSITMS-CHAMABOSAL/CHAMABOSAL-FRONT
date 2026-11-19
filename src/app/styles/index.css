@@ -41,6 +41,23 @@
   --color-invite-mint-light: rgb(242 255 247 / 0.4);
 }
 
+/* 요소마다 --delay를 받는 애니메이션이라 inline에 둬요. 공양미 가득 순위 카드가 차례로 올라와요.
+   끝 모양이 원래 스타일과 같아 지연 동안만 시작 모양을 붙잡아요(backwards). */
+@theme inline {
+  --animate-rank-in: rank-in 480ms cubic-bezier(0.2, 0.8, 0.2, 1) var(--delay, 0ms) backwards;
+
+  @keyframes rank-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
 @theme {
   --animate-hair-grow: hair-grow 480ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
   /* 나발 빠짐 설명이 곳간 위로 올라와요. 시간은 GUIDE_CLOSE_MS와 같고, 곡선은 닫을 때를 뒤집은 모양이에요. */

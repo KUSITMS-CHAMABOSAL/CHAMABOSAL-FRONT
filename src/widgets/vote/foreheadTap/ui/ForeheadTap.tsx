@@ -110,7 +110,7 @@ const ForeheadTap = ({ roundId, nickname, onQuit }: ForeheadTapProps) => {
   };
 
   return (
-    <main className="relative min-h-svh overflow-hidden bg-[linear-gradient(var(--adaptiveBackground)_25%,var(--color-forehead-tap-bottom))]">
+    <main className="relative min-h-svh overflow-hidden bg-[linear-gradient(var(--adaptiveBackground)_109px,var(--color-forehead-tap-bottom))]">
       {/* 화면 아무 곳이나 쳐도 이마를 톡톡해요. 제목과 [종료하기]는 이 위에 그려요. */}
       <button
         type="button"
@@ -156,8 +156,16 @@ const ForeheadTap = ({ roundId, nickname, onQuit }: ForeheadTapProps) => {
       <Top
         className="pointer-events-none relative z-10"
         subtitleTop={<Top.SubtitleParagraph size={13}>오늘의 투표 결과</Top.SubtitleParagraph>}
-        title={<Top.TitleParagraph size={28}>정신 차려! 톡톡</Top.TitleParagraph>}
-        subtitleBottom={<Top.SubtitleParagraph>무제한으로 톡톡할 수 있어요</Top.SubtitleParagraph>}
+        title={
+          <Top.TitleParagraph size={28} color="var(--adaptiveGrey900)">
+            정신 차려! 톡톡
+          </Top.TitleParagraph>
+        }
+        subtitleBottom={
+          <Top.SubtitleParagraph fontWeight="regular">
+            무제한으로 톡톡할 수 있어요
+          </Top.SubtitleParagraph>
+        }
       />
 
       {/* 툴팁 꼬리가 보살 머리 위쪽 끝을 가리켜요. */}

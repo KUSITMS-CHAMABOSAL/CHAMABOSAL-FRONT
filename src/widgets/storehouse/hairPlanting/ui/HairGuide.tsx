@@ -126,8 +126,8 @@ const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
       // `transform`을 늘 걸어 두어 안쪽 `fixed` 하단 버튼도 이 화면을 기준으로 같이 움직여요.
       className={cn(
         "motion-safe:animate-hair-guide-enter fixed inset-0 z-20 [transform:translateY(var(--exit-y))] touch-none overflow-hidden bg-[linear-gradient(var(--adaptiveGrey900)_150px,var(--adaptiveGrey300))] transition-[transform,opacity] duration-(--guide-close) ease-[cubic-bezier(0.32,0,0.67,0)] motion-reduce:transition-none",
-        closing && "pointer-events-none opacity-0",
-        leaving === "dim" && "pointer-events-none",
+        // 떠나는 동안에도 입력을 막아 밑의 곳간과 탭바가 눌리지 않게 해요.
+        closing && "opacity-0",
       )}
       style={
         {
@@ -291,9 +291,11 @@ const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
 
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 flex flex-col items-center pt-[57px] pb-[calc(16px+var(--safe-area-bottom)+max(0px,100svh-var(--design-height)))]",
+          // 낮은 화면에서 07 카드의 [구매하기]와 겹쳐도 가로채지 않게, 영역은 터치를 통과시키고 버튼만 받아요.
+          "pointer-events-none fixed inset-x-0 bottom-0 flex flex-col items-center pt-[57px] pb-[calc(16px+var(--safe-area-bottom)+max(0px,100svh-var(--design-height)))]",
           transition,
-          !view.showActions && "pointer-events-none opacity-0",
+          view.showActions && "[&_button]:pointer-events-auto",
+          !view.showActions && "opacity-0",
         )}
       >
         <img src={bottomFade} alt="" className="absolute inset-0 -z-10 size-full" />

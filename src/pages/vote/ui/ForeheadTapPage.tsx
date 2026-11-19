@@ -23,7 +23,9 @@ const ForeheadTapPage = () => {
   if (!canTap || !picked) return <Navigate to={paths.room.vote(roomId)} replace />;
 
   return (
+    // 회차가 바뀌면 새로 그려서, 앞 회차 횟수를 보내고 0부터 다시 세요.
     <ForeheadTap
+      key={roundId}
       roundId={roundId}
       nickname={picked.nickname}
       onQuit={() => navigate(paths.room.vote(roomId), { replace: true })}

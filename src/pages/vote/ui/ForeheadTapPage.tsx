@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router";
+import { Navigate, useNavigate, useParams } from "react-router";
 
 import { useRoundResultQuery } from "@/entities/vote";
 import { paths } from "@/shared/config";
@@ -12,13 +12,15 @@ const ForeheadTapPage = () => {
   const navigate = useNavigate();
   const result = useRoundResultQuery(roundId);
 
-  // 🔖 로딩, 톡톡할 수 없는 결과(canTap false: 지목 없음·방어됨·투표 안 함 등) 시안이 없어 아직 따로 그리지 않아요.
+  // 🔖 로딩 시안이 없어 아직 따로 그리지 않아요.
   if (!result.data) {
     if (result.error) throw result.error;
     return null;
   }
-  const { picked } = result.data;
-  if (!picked) return null;
+  // 이미 보냈거나 지목 없음·방어됨·투표 안 함·시간 지남이면 쳐도 저장되지 않아서 투표 탭으로 돌려보내요.
+  // 🔖 안내 문구 시안이 없어 조용히 돌아가요.
+  const { picked, canTap } = result.data;
+  if (!canTap || !picked) return <Navigate to={paths.room.vote(roomId)} replace />;
 
   return (
     <ForeheadTap

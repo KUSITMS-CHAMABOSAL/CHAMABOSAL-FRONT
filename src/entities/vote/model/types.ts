@@ -10,6 +10,10 @@ export type VoteTabStatus =
   | "VOTING"
   | "VOTED"
   | "RESULT_UNSEEN"
+  /** 결과를 본 뒤 톡톡을 보낼 수 있어요. */
+  | "TAP"
+  /** 지목된 본인이 목탁 수행을 해야 해요. */
+  | "MOKTAK"
   | "RESULT_SEEN";
 
 /**

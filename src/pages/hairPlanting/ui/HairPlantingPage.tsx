@@ -7,12 +7,15 @@ const HairPlantingPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 곳간에서 들어왔으면 뒤로 돌아가고, 이 화면으로 바로 열렸으면 곳간으로 바꿔요.
-  const close = () =>
-    location.key === "default" ? navigate(paths.storehouse, { replace: true }) : navigate(-1);
-
   // 나발 빠짐 설명에서 넘어오면 내용만 나타나게 해요(HairGuidePage가 state로 알려줘요).
-  const fadeIn = (location.state as { fadeIn?: boolean } | null)?.fadeIn === true;
+  const state = location.state as { fadeIn?: boolean; openedDirectly?: boolean } | null;
+  const fadeIn = state?.fadeIn === true;
+
+  // 곳간에서 들어왔으면 뒤로 돌아가고, 이 화면이나 설명 화면으로 바로 열렸으면 곳간으로 바꿔요.
+  const close = () =>
+    location.key === "default" || state?.openedDirectly === true
+      ? navigate(paths.storehouse, { replace: true })
+      : navigate(-1);
 
   return <HairPlanting onClose={close} fadeIn={fadeIn} />;
 };

@@ -23,6 +23,13 @@ const VotePage = () => {
         >
           목탁 수행 테스트
         </Button>
+        <Button
+          display="block"
+          disabled={roundId === null}
+          onClick={() => roundId !== null && navigate(paths.room.foreheadTap(roomId, roundId))}
+        >
+          이마 톡톡 테스트
+        </Button>
         <Paragraph typography="t7" color="var(--adaptiveGrey600)">
           {voteTab.error
             ? "투표 탭 상태를 받지 못했어요"

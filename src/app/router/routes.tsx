@@ -51,6 +51,14 @@ export const router = createBrowserRouter([
                 path: "settings",
                 lazy: { Component: async () => (await import("@/pages/settings")).SettingsPage },
               },
+              // 🔖 공양미 가득 인터랙션 임시 확인용이에요. 인증 결과 화면에 붙이면 지워요.
+              {
+                path: "dev/pot-full",
+                lazy: {
+                  Component: async () =>
+                    (await import("@/pages/potFullPreview")).PotFullPreviewPage,
+                },
+              },
             ],
           },
           // 없는 경로예요. 탭 레이아웃도 잘못된 방 번호에 같은 화면을 써서 lazy 없이 불러와요.

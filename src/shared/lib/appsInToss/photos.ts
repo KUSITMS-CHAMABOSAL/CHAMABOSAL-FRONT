@@ -30,8 +30,16 @@ const toPhoto = ({ dataUri }: ImageResponse): PickedPhoto => {
  */
 const CAMERA_CANCEL_CODES: unknown[] = ["CANCELED", "E_CAPTURE_FAILED"];
 
-const isCameraCanceled = (error: unknown) =>
-  error instanceof Error && "code" in error && CAMERA_CANCEL_CODES.includes(error.code);
+/**
+ * 권한이 거부된 채 부르면 실기기는 SDK 권한 에러 클래스 대신 코드만 있는 에러를 줘요(devtools 목 기준).
+ * iOS는 `NOT_ALLOWED`, Android는 `E_OS_PERMISSION_DENIED`예요.
+ */
+const PERMISSION_DENIED_CODES: unknown[] = ["NOT_ALLOWED", "E_OS_PERMISSION_DENIED"];
+
+const hasCode = (error: unknown, codes: unknown[]) =>
+  error instanceof Error && "code" in error && codes.includes(error.code);
+
+const isCameraCanceled = (error: unknown) => hasCode(error, CAMERA_CANCEL_CODES);
 
 /** 카메라로 한 장 찍어요. 찍지 않고 닫으면 null이에요. `camera` 권한이 있어야 해요. */
 export const takePhoto = async () => {
@@ -52,4 +60,6 @@ export const pickAlbumPhoto = async () => {
 
 /** 사용자가 카메라나 앨범 권한을 거부했어요. */
 export const isPhotoPermissionError = (error: unknown) =>
-  error instanceof OpenCameraPermissionError || error instanceof FetchAlbumPhotosPermissionError;
+  error instanceof OpenCameraPermissionError ||
+  error instanceof FetchAlbumPhotosPermissionError ||
+  hasCode(error, PERMISSION_DENIED_CODES);

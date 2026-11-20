@@ -304,6 +304,34 @@ export const mockHandler: MockHandler = (method, path, body) => {
     );
   }
 
+  if ((match = route.match(/^GET \/api\/rooms\/(\d+)\/pots\/(\d+)$/))) {
+    const today = state.rooms[Number(match[1])];
+    if (!today) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
+    // 시안처럼 같은 석이 있어서 같은 순위가 나와요.
+    const amounts = [84, 77, 77, 62];
+    const contributions = today.members.map((item, index) => ({
+      rank: amounts.indexOf(amounts[index]) + 1,
+      memberId: item.memberId,
+      nickname: item.nickname,
+      color: item.color,
+      equippedItemCodes: item.equippedItemCodes,
+      amount: amounts[index],
+    }));
+    return ok({
+      seq: Number(match[2]),
+      goalAmount: today.pot.goalAmount,
+      rewardAmount: today.pot.goalAmount / 10,
+      contributions,
+    });
+  }
+
+  if ((match = route.match(/^PUT \/api\/rooms\/(\d+)\/members\/me\/seen-pot$/))) {
+    const today = state.rooms[Number(match[1])];
+    if (!today) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
+    today.entry.hasUnseenPotCelebration = false;
+    return ok();
+  }
+
   if ((match = route.match(/^DELETE \/api\/certifications\/(\d+)$/))) {
     const found = findCertification(Number(match[1]));
     if (!found) return ok({ riceRecalled: 0, potRecalled: 0 });

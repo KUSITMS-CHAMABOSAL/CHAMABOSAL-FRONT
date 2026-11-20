@@ -163,6 +163,19 @@ export const SCENARIOS: Record<string, () => Scenario> = {
   /** 04 인증: 아무도 인증 전이라 등록해도 투표가 열리지 않아요 (나는 윤지) */
   certifyFirst: () =>
     build(ROOMS, () => fourMembers(1).map(item => ({ ...item, certification: null }))),
+  /** 04 인증: 등록하면 솥이 가득 차서 방 홈에서 한 솥 축하가 떠요 (나는 윤지, 마지막 인증) */
+  potAlmostFull: () => {
+    const scenario = build(ROOMS, () => fourMembers(1));
+    scenario.rooms[1].pot.amount = 295;
+    return scenario;
+  },
+  /** 04 인증: 방 홈에 들어가면 안 본 한 솥 축하가 바로 떠요 (나는 예나) */
+  potFull: () => {
+    const scenario = build(ROOMS, () => fourMembers(2));
+    scenario.rooms[1].room.potCompletedCount = 1;
+    scenario.rooms[1].entry.hasUnseenPotCelebration = true;
+    return scenario;
+  },
   /** 04 인증: 사진 업로드가 3초 걸려서 올리는 중 로더를 볼 수 있어요 (나는 윤지) */
   slowUpload: () => ({ ...build(ROOMS, () => fourMembers(1)), uploadDelayMs: 3000 }),
   /** 04 인증: 사진을 고르면 업로드가 실패해요 (나는 윤지) */

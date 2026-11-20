@@ -21,5 +21,7 @@ export const paths = {
     certifyWrite: (roomId: number, result?: CertificationResult) =>
       `/rooms/${roomId}/certify/write${result ? `?result=${result}` : ""}`,
     certifyResult: (roomId: number) => `/rooms/${roomId}/certify/result`,
+    /** 한 솥 축하예요. `seq`는 몇 번째 솥인지예요. */
+    pot: (roomId: number, seq: number) => `/rooms/${roomId}/pots/${seq}`,
   },
 } as const;

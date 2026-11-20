@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Outlet, useLocation, useNavigate, useParams } from "react-router";
+import { Navigate, Outlet, useLocation, useNavigate, useParams } from "react-router";
 
+import { useTodayQuery } from "@/entities/room";
 import { NotFoundPage } from "@/pages/notFound";
 import { paths } from "@/shared/config";
 
@@ -35,6 +36,9 @@ const RoomTabLayout = () => {
   const pathname = useLocation().pathname.replace(/\/+$/, "");
   const navigate = useNavigate();
   const activeTab = getActiveTab(pathname, roomId);
+  const isRoomHome = roomId !== undefined && pathname === paths.room.home(roomId);
+  // 홈과 같은 쿼리라 따로 요청하지 않아요. 홈 화면에서만 받아요.
+  const today = useTodayQuery(isRoomHome ? roomId : undefined);
 
   // 곳간 주소에는 방이 없어요. 곳간에서 방 탭으로 돌아갈 때 쓰려고 마지막으로 본 방을 기억해요.
   // 내 보살에서 고른 방도 같은 `roomId`라 홈과 투표로 이어져요.
@@ -51,6 +55,11 @@ const RoomTabLayout = () => {
   };
 
   if (param !== undefined && roomId === undefined) return <NotFoundPage />;
+
+  // 솥을 다 채웠는데 축하를 안 봤으면 방 홈보다 먼저 띄워요. 투표·톡톡으로 채워도 방 홈에 오면 떠요.
+  // 🔖 받은 톡톡(entry.unplayedTapRoundId), 결과(unseenResultRoundId) 진입을 붙이면 이 앞에 둬요.
+  if (isRoomHome && today.data?.entry.hasUnseenPotCelebration)
+    return <Navigate to={paths.room.pot(roomId, today.data.room.potCompletedCount)} replace />;
 
   return (
     <>

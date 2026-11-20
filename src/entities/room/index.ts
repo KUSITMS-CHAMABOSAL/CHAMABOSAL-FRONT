@@ -1,6 +1,7 @@
 export { roomQueries } from "./api/roomQueries";
 export { useInvitePreviewQuery } from "./api/useInvitePreviewQuery";
 export { useNewColorQuery } from "./api/useNewColorQuery";
+export { usePotCelebrationQuery } from "./api/usePotCelebrationQuery";
 export { useTodayQuery } from "./api/useTodayQuery";
 export * from "./config/goals";
 export * from "./config/members";
@@ -9,6 +10,8 @@ export { canCertify } from "./lib/certify";
 export * from "./lib/nickname";
 export type {
   InviteStatus,
+  PotCelebration,
+  PotContribution,
   RoomMembership,
   RoomGoal,
   RoomSummary,

@@ -5,6 +5,7 @@ export { useTodayQuery } from "./api/useTodayQuery";
 export * from "./config/goals";
 export * from "./config/members";
 export * from "./config/pot";
+export { canCertify } from "./lib/certify";
 export * from "./lib/nickname";
 export type {
   InviteStatus,

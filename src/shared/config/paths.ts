@@ -1,3 +1,5 @@
+import type { CertificationResult } from "@/shared/types";
+
 // 경로 문자열은 이 빌더로만 만듭니다. 화면을 추가할 때 app/router/routes.tsx와 함께 추가합니다.
 export const paths = {
   root: "/",
@@ -14,5 +16,10 @@ export const paths = {
     home: (roomId: number) => `/rooms/${roomId}`,
     vote: (roomId: number) => `/rooms/${roomId}/vote`,
     tapTap: (roomId: number, roundId: number) => `/rooms/${roomId}/vote/${roundId}/tap`,
+    certify: (roomId: number) => `/rooms/${roomId}/certify`,
+    /** 결과를 빼면 쿼리 없는 경로예요. 탭바를 숨길 화면인지 볼 때 써요. */
+    certifyWrite: (roomId: number, result?: CertificationResult) =>
+      `/rooms/${roomId}/certify/write${result ? `?result=${result}` : ""}`,
+    certifyResult: (roomId: number) => `/rooms/${roomId}/certify/result`,
   },
 } as const;

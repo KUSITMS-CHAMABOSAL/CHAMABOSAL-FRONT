@@ -30,6 +30,25 @@ const certified = (
   lockReason: editMinutesLeft > 0 ? null : "TIME_OVER",
 });
 
+/** 방금 등록한 인증이에요. 마지막 인증이면 바로 투표가 시작돼서 수정할 수 없어요. */
+export const newCertification = (
+  result: "ENDURED" | "FAILED",
+  memo: string,
+  spentAmount: number | null,
+  hasPhoto: boolean,
+  isVoteStarted: boolean,
+): NonNullable<TodayMember["certification"]> => ({
+  certificationId: ++nextCertificationId,
+  result,
+  memo,
+  spentAmount,
+  imageUrl: hasPhoto ? photo : null,
+  certifiedAt: minutesFromNow(0),
+  myReaction: null,
+  editableUntil: minutesFromNow(10),
+  lockReason: isVoteStarted ? "VOTE_STARTED" : null,
+});
+
 export const member = (
   memberId: number,
   nickname: string,
@@ -66,6 +85,11 @@ const me = (roomNames: string[]): MeResponse => ({
   canCreateRoom: roomNames.length < 2,
 });
 
+/** 서버처럼 나만 인증 전이고 3명 이상일 때만 true예요. 3명 미만 방은 다 인증해도 투표가 열리지 않아요. */
+export const isLastCertifier = (members: TodayMember[]) =>
+  members.length >= 3 &&
+  members.every(item => (item.isMe ? !item.certification : item.certification));
+
 export const today = (roomId: number, name: string, members: TodayMember[]): TodayResponse => ({
   room: {
     roomId,
@@ -84,9 +108,10 @@ export const today = (roomId: number, name: string, members: TodayMember[]): Tod
     status: "CERTIFYING",
     certifiedCount: members.filter(item => item.certification).length,
     isAllCertified: members.every(item => item.certification),
+    isCertificationOpen: true,
   },
   members,
-  me: { isLastCertifier: false, receivedPokeCount: 2 },
+  me: { isLastCertifier: isLastCertifier(members), receivedPokeCount: 2 },
   entry: { unplayedTapRoundId: null, unseenResultRoundId: null, hasUnseenPotCelebration: false },
 });
 
@@ -104,6 +129,10 @@ export interface Scenario {
   me: MeResponse;
   /** roomId별 오늘 탭이에요. 없는 방은 ROOM_005로 응답해요. */
   rooms: Record<number, TodayResponse>;
+  /** 인증 사진 업로드를 실패시켜요. */
+  failUpload?: boolean;
+  /** 인증 사진 업로드를 이만큼 늦춰요. 올리는 중 화면을 볼 때 써요. */
+  uploadDelayMs?: number;
 }
 
 // 방마다 멤버와 인증을 새로 만들어요. 같은 객체를 나누면 한 방의 리액션·삭제가 다른 방에도 반영돼요.
@@ -131,6 +160,13 @@ export const SCENARIOS: Record<string, () => Scenario> = {
     delete scenario.rooms[1];
     return scenario;
   },
+  /** 04 인증: 아무도 인증 전이라 등록해도 투표가 열리지 않아요 (나는 윤지) */
+  certifyFirst: () =>
+    build(ROOMS, () => fourMembers(1).map(item => ({ ...item, certification: null }))),
+  /** 04 인증: 사진 업로드가 3초 걸려서 올리는 중 로더를 볼 수 있어요 (나는 윤지) */
+  slowUpload: () => ({ ...build(ROOMS, () => fourMembers(1)), uploadDelayMs: 3000 }),
+  /** 04 인증: 사진을 고르면 업로드가 실패해요 (나는 윤지) */
+  uploadFail: () => ({ ...build(ROOMS, () => fourMembers(1)), failUpload: true }),
   /** 2-4 친구 기다리는중 */
   waiting: () => build(ROOMS.slice(0, 1), () => [member(1, "윤지", "PINK", true)]),
   /** 1-1 인트로: 참여 중인 방이 없는 처음 온 사용자 */

@@ -3,7 +3,7 @@ import type { MockHandler } from "@/shared/api";
 import type { BosalColor } from "@/entities/bosal";
 import { MAX_JOINED_ROOMS, type RoomGoal, type TodayResponse } from "@/entities/room";
 
-import { FULL_ROOM_ID, inviteRoom, member, SCENARIOS, today } from "./scenarios";
+import { FULL_ROOM_ID, inviteRoom, member, newCertification, SCENARIOS, today } from "./scenarios";
 
 const ok = (data?: unknown, status = 200) => ({
   status,
@@ -31,6 +31,9 @@ const RECEIVED_TAPS = [
   { nickname: "도윤", color: "MINT", count: 60 },
   { nickname: "하린", color: "YELLOW", count: 21 },
 ];
+/** 발급한 인증 사진 업로드 URL 수예요. 키가 겹치지 않게 써요. */
+let uploadCount = 0;
+
 /** 새로고침 전까지 수행을 마친 회차를 기억해요. */
 const moktakDoneRounds = new Set<number>();
 
@@ -235,6 +238,70 @@ export const mockHandler: MockHandler = (method, path, body) => {
     found.member.certification.myReaction =
       match[1] === "PUT" ? (body as { type: "RICE" | "MOKTAK" }).type : null;
     return ok();
+  }
+
+  if (route === "POST /api/certifications/upload-urls") {
+    const id = ++uploadCount;
+    return ok(
+      { uploadUrl: `mock://upload/${id}`, imageKey: `tmp/1/mock-${id}`, expiresIn: 300 },
+      201,
+    );
+  }
+
+  // presigned URL 업로드예요. 실서버는 저장소로 바로 가요.
+  if (route.startsWith("PUT mock://upload/")) {
+    const result = state.failUpload ? fail(500, "UPLOAD_FAILED", "업로드에 실패했어요.") : ok();
+    if (!state.uploadDelayMs) return result;
+    return new Promise<typeof result>(resolve =>
+      setTimeout(() => resolve(result), state.uploadDelayMs),
+    );
+  }
+
+  if ((match = route.match(/^POST \/api\/rooms\/(\d+)\/certifications$/))) {
+    const today = state.rooms[Number(match[1])];
+    if (!today) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
+    const mine = today.members.find(item => item.isMe);
+    if (!mine) return fail(403, "ROOM_002", "이 방 멤버가 아닙니다.");
+    if (mine.certification) return fail(409, "CERT_001", "이미 인증했습니다.");
+    const { result, memo, spentAmount, imageKey } = body as {
+      result: "ENDURED" | "FAILED";
+      memo: string;
+      spentAmount?: number;
+      imageKey?: string;
+    };
+    const memoLength = [...new Intl.Segmenter("ko", { granularity: "grapheme" }).segment(memo)]
+      .length;
+    if (!memo.trim() || memoLength > 50) return fail(400, "COMMON_002", "입력값 오류");
+    const amount = result === "FAILED" ? (spentAmount ?? 0) : null;
+    if (amount !== null && (amount < 1 || amount > 999_999))
+      return fail(400, "COMMON_002", "입력값 오류");
+
+    const isVoteStarted = today.me.isLastCertifier;
+    mine.certification = newCertification(result, memo, amount, !!imageKey, isVoteStarted);
+    today.me.isLastCertifier = false;
+    today.round.certifiedCount += 1;
+    today.round.isAllCertified = today.members.every(item => item.certification);
+    if (isVoteStarted) today.round.status = "VOTING";
+    // 2명부터 공양미가 쌓여요. 솥을 다 채우면 넘친 석으로 다음 솥이 시작돼요.
+    const earned = today.members.length >= 2 ? 10 : 0;
+    today.pot.amount += earned;
+    if (today.pot.amount >= today.pot.goalAmount) {
+      today.pot.amount -= today.pot.goalAmount;
+      today.room.potCompletedCount += 1;
+      today.entry.hasUnseenPotCelebration = true;
+    }
+    return ok(
+      {
+        certificationId: mine.certification.certificationId,
+        roundDate: todayDate,
+        certifiedAt: mine.certification.certifiedAt,
+        editableUntil: mine.certification.editableUntil,
+        riceEarned: earned,
+        potEarned: earned,
+        isVoteStarted,
+      },
+      201,
+    );
   }
 
   if ((match = route.match(/^DELETE \/api\/certifications\/(\d+)$/))) {

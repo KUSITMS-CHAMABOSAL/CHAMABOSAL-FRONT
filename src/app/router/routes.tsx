@@ -75,6 +75,31 @@ export const router = createBrowserRouter([
                     path: "vote/:roundId/tap",
                     lazy: { Component: async () => (await import("@/pages/vote")).TapTapPage },
                   },
+                  {
+                    path: "certify",
+                    children: [
+                      {
+                        index: true,
+                        lazy: {
+                          Component: async () => (await import("@/pages/certify")).CertifyPage,
+                        },
+                      },
+                      // 시안에 하단 탭바가 없어 탭바만 숨겨요.
+                      {
+                        path: "write",
+                        lazy: {
+                          Component: async () => (await import("@/pages/certify")).CertifyWritePage,
+                        },
+                      },
+                      {
+                        path: "result",
+                        lazy: {
+                          Component: async () =>
+                            (await import("@/pages/certify")).CertifyResultPage,
+                        },
+                      },
+                    ],
+                  },
                 ],
               },
               // 내 보살 화면 안에서 방을 골라 닉네임 수정, 나가기를 해요.

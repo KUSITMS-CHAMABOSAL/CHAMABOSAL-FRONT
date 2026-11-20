@@ -32,6 +32,8 @@ export interface TodayRound {
   status: RoundStatus;
   certifiedCount: number;
   isAllCertified: boolean;
+  /** 지금 인증할 수 있어요. 이전 회차 투표가 끝나야 열려요. */
+  isCertificationOpen: boolean;
 }
 
 export interface TodayCertification {
@@ -63,6 +65,7 @@ export interface TodayMember {
 }
 
 export interface TodayMe {
+  /** 내가 등록하면 바로 투표가 시작돼요. 3명 미만 방은 투표가 열리지 않아 늘 false예요. */
   isLastCertifier: boolean;
   /** 이번 회차에 받은 콕 수 */
   receivedPokeCount: number;

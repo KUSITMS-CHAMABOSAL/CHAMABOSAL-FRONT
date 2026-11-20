@@ -16,12 +16,14 @@ export const useConfirmPotSeen = (roomId: number) => {
   const todayKey = roomQueries.today(roomId).queryKey;
   return useMutation({
     mutationFn: (seq: number) => confirmPotSeen(roomId, seq),
-    onSettled: (_data, error) => {
+    onSettled: async (_data, error) => {
+      // 받는 중이던 오늘 탭이 나중에 도착해 꺼 둔 표시를 다시 켜지 않게 먼저 멈춰요.
+      await queryClient.cancelQueries({ queryKey: todayKey });
       queryClient.setQueryData<TodayResponse>(
         todayKey,
         today => today && { ...today, entry: { ...today.entry, hasUnseenPotCelebration: false } },
       );
-      return error ? undefined : queryClient.invalidateQueries({ queryKey: todayKey });
+      if (!error) await queryClient.invalidateQueries({ queryKey: todayKey });
     },
   });
 };

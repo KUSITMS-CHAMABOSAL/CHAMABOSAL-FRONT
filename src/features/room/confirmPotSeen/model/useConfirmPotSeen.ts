@@ -19,6 +19,9 @@ export const useConfirmPotSeen = (roomId: number) => {
     onSettled: async (_data, error) => {
       // 받는 중이던 오늘 탭이 나중에 도착해 꺼 둔 표시를 다시 켜지 않게 먼저 멈춰요.
       await queryClient.cancelQueries({ queryKey: todayKey });
+      // 이 화면은 오늘 탭을 쓰지 않아 오래 머물면 캐시에서 지워져요. 그러면 끌 표시가 없으니 실패했을 때는 먼저 받아 둬요.
+      // 받지 못하면 홈도 오늘 탭을 못 받아 다시 이 화면으로 오지 않아요.
+      if (error) await queryClient.ensureQueryData(roomQueries.today(roomId)).catch(() => {});
       queryClient.setQueryData<TodayResponse>(
         todayKey,
         today => today && { ...today, entry: { ...today.entry, hasUnseenPotCelebration: false } },

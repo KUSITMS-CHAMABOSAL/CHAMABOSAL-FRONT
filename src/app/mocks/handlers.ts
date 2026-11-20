@@ -279,7 +279,8 @@ export const mockHandler: MockHandler = (method, path, body) => {
     const isVoteStarted = today.me.isLastCertifier;
     mine.certification = newCertification(result, memo, amount, !!imageKey, isVoteStarted);
     today.me.isLastCertifier = false;
-    today.round.certifiedCount += 1;
+    // 인증을 지웠다가 다시 올려도 수가 늘어나지 않게 지금 목록에서 세요.
+    today.round.certifiedCount = today.members.filter(item => item.certification).length;
     today.round.isAllCertified = today.members.every(item => item.certification);
     if (isVoteStarted) today.round.status = "VOTING";
     // 2명부터 공양미가 쌓여요. 솥을 다 채우면 넘친 석으로 다음 솥이 시작돼요.

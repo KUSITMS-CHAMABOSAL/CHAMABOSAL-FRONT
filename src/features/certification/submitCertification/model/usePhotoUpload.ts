@@ -16,10 +16,13 @@ export const usePhotoUpload = () => {
   const [photo, setPhoto] = useState<PhotoState>({ status: "empty" });
   // 올리는 중에 지우거나 다시 고르면 이전 업로드 결과를 버려요.
   const attempt = useRef(0);
+  // 고르기가 겹치면 마지막으로 연 것만 써요. 고르다 취소하면 올리던 사진은 그대로 둬요.
+  const lastPick = useRef(0);
 
   const pick = async (source: PhotoSource) => {
+    const pickId = ++lastPick.current;
     const picked = source === "camera" ? await takePhoto() : await pickAlbumPhoto();
-    if (!picked) return;
+    if (!picked || pickId !== lastPick.current) return;
 
     const id = ++attempt.current;
     const { previewUrl, file } = picked;

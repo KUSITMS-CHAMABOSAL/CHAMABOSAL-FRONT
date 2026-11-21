@@ -43,10 +43,12 @@ interface ReactionButtonsProps {
   value: ReactionType | null;
   /** 고른 리액션을 다시 누르면 null(취소)이에요. */
   onChange: (reaction: ReactionType | null) => void;
+  /** 리액션별 수예요. 시안 "잘 참았어요 1" */
+  counts: Record<ReactionType, number>;
   disabled?: boolean;
 }
 
-const ReactionButtons = ({ value, onChange, disabled }: ReactionButtonsProps) => {
+const ReactionButtons = ({ value, onChange, counts, disabled }: ReactionButtonsProps) => {
   const floats = useRef<Partial<Record<ReactionType, HTMLSpanElement | null>>>({});
 
   const select = (reaction: ReactionType) => {
@@ -94,7 +96,7 @@ const ReactionButtons = ({ value, onChange, disabled }: ReactionButtonsProps) =>
               fontWeight="semibold"
               color={isSelected ? style.selectedText : "var(--adaptiveGreyOpacity700)"}
             >
-              {label}
+              {`${label} ${counts[option]}`}
             </Paragraph>
           </button>
         );

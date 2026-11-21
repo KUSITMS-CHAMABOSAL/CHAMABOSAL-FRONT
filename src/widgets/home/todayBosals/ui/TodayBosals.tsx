@@ -74,6 +74,7 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
         ) : (
           <ReactionButtons
             value={view.certification.myReaction}
+            counts={{ GOOD: view.certification.goodCount, BAD: view.certification.badCount }}
             disabled={isReacting}
             onChange={reaction =>
               react(

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { useNavigate } from "react-router";
 
 import { Button } from "@toss/tds-mobile";
@@ -12,10 +12,12 @@ import LeaveRoomDialog from "./LeaveRoomDialog";
 interface LeaveRoomButtonProps {
   roomId: number;
   roomName: string;
+  /** 기본 [나가기] 버튼 대신 그릴 트리거예요. 누르면 `open`을 불러요. */
+  children?: (open: () => void) => ReactNode;
 }
 
 /** [나가기] 버튼과 확인 다이얼로그예요. 나가면 진입 분기로 가서 남은 방이나 첫 화면을 보여줘요. */
-const LeaveRoomButton = ({ roomId, roomName }: LeaveRoomButtonProps) => {
+const LeaveRoomButton = ({ roomId, roomName, children }: LeaveRoomButtonProps) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const { mutate: leave, isPending } = useLeaveRoom(roomId);
   const navigate = useNavigate();
@@ -32,15 +34,19 @@ const LeaveRoomButton = ({ roomId, roomName }: LeaveRoomButtonProps) => {
 
   return (
     <>
-      <Button
-        size="xlarge"
-        color="danger"
-        variant="weak"
-        display="block"
-        onClick={() => setIsConfirmOpen(true)}
-      >
-        나가기
-      </Button>
+      {children ? (
+        children(() => setIsConfirmOpen(true))
+      ) : (
+        <Button
+          size="xlarge"
+          color="danger"
+          variant="weak"
+          display="block"
+          onClick={() => setIsConfirmOpen(true)}
+        >
+          나가기
+        </Button>
+      )}
       <LeaveRoomDialog
         open={isConfirmOpen}
         roomName={roomName}

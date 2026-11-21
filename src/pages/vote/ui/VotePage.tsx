@@ -10,7 +10,7 @@ const VotePage = () => {
   const roomId = Number(useParams().roomId);
   const navigate = useNavigate();
   const voteTab = useVoteTabQuery(roomId);
-  const roundId = voteTab.data?.roundId ?? null;
+  const roundId = voteTab.data && "roundId" in voteTab.data ? voteTab.data.roundId : null;
 
   return (
     <main className="min-h-svh bg-(--adaptiveBackground)">

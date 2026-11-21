@@ -1,12 +1,13 @@
 import type { TodayMember, TodayResponse } from "@/entities/room";
 import type { MeResponse } from "@/entities/session";
+import type { VoteTabStatus } from "@/entities/vote";
 
 import photo from "./assets/certification_photo.jpg";
 
 // 개발 서버 목 데이터예요. 주소에 ?demo=이름 을 붙여 시안 상태를 골라요. 이름은 SCENARIOS의 키예요.
 // 응답 모양은 API 초안(https://api.chamabosal.com/dev/openapi.yaml)과 같아요.
 
-const minutesFromNow = (minutes: number) => {
+export const minutesFromNow = (minutes: number) => {
   // 서버처럼 시간대 없는 KST 문자열로 만들어요.
   const date = new Date(Date.now() + minutes * 60_000);
   const pad = (value: number) => String(value).padStart(2, "0");
@@ -133,6 +134,8 @@ export interface Scenario {
   failUpload?: boolean;
   /** 인증 사진 업로드를 이만큼 늦춰요. 올리는 중 화면을 볼 때 써요. */
   uploadDelayMs?: number;
+  /** 투표 탭 상태를 이걸로 고정해요. 없으면 방 인원과 회차 상태로 정해요. */
+  voteStatus?: VoteTabStatus;
 }
 
 // 방마다 멤버와 인증을 새로 만들어요. 같은 객체를 나누면 한 방의 리액션·삭제가 다른 방에도 반영돼요.
@@ -142,6 +145,16 @@ const build = (roomNames: string[], makeMembers: () => TodayMember[]): Scenario 
     roomNames.map((name, index) => [index + 1, today(index + 1, name, makeMembers())]),
   ),
 });
+
+/** 회차가 투표 중인 방이에요. 인증한 멤버만 투표권이 있어요. */
+const voteRound = (makeMembers: () => TodayMember[]): Scenario => {
+  const scenario = build(ROOMS, makeMembers);
+  for (const room of Object.values(scenario.rooms)) {
+    room.round.status = "VOTING";
+    room.round.isCertificationOpen = false;
+  }
+  return scenario;
+};
 
 export const SCENARIOS: Record<string, () => Scenario> = {
   /** 2-0 디폴트, 2-1 넘겼을 때_친구 (나는 예나) */
@@ -180,6 +193,22 @@ export const SCENARIOS: Record<string, () => Scenario> = {
   slowUpload: () => ({ ...build(ROOMS, () => fourMembers(1)), uploadDelayMs: 3000 }),
   /** 04 인증: 사진을 고르면 업로드가 실패해요 (나는 윤지) */
   uploadFail: () => ({ ...build(ROOMS, () => fourMembers(1)), failUpload: true }),
+  /** 05 투표: 투표 중 (나는 예나, 윤지는 미인증 후보) */
+  voting: () => voteRound(() => fourMembers(2)),
+  /** 05 투표: 인증하지 않아 투표권이 없어요 (나는 윤지) */
+  voteNoRight: () => voteRound(() => fourMembers(1)),
+  /** 05 투표: 투표 완료 */
+  voted: () => ({ ...voteRound(() => fourMembers(2)), voteStatus: "VOTED" }),
+  /** 05 투표: 투표가 시작된 뒤 들어와 명단에 없어요 */
+  voteNotInList: () => ({ ...voteRound(() => fourMembers(2)), voteStatus: "NOT_IN_LIST" }),
+  /** 05 투표: 결과를 아직 안 봤어요 */
+  voteResult: () => ({ ...build(ROOMS, () => fourMembers(2)), voteStatus: "RESULT_UNSEEN" }),
+  /** 05 투표: 결과를 봤어요 */
+  voteResultSeen: () => ({ ...build(ROOMS, () => fourMembers(2)), voteStatus: "RESULT_SEEN" }),
+  /** 05 투표: 결과를 보고 이마 톡톡을 보낼 수 있어요 */
+  voteTap: () => ({ ...build(ROOMS, () => fourMembers(2)), voteStatus: "TAP" }),
+  /** 05 투표: 지목돼서 목탁 수행을 해야 해요 */
+  voteMoktak: () => ({ ...build(ROOMS, () => fourMembers(2)), voteStatus: "MOKTAK" }),
   /** 2-4 친구 기다리는중 */
   waiting: () => build(ROOMS.slice(0, 1), () => [member(1, "윤지", "PINK", true)]),
   /** 1-1 인트로: 참여 중인 방이 없는 처음 온 사용자 */

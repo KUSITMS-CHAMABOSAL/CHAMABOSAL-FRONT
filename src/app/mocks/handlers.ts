@@ -2,8 +2,17 @@ import type { MockHandler } from "@/shared/api";
 
 import type { BosalColor } from "@/entities/bosal";
 import { MAX_JOINED_ROOMS, type RoomGoal, type TodayResponse } from "@/entities/room";
+import { MIN_VOTERS, type VoteCandidate, type VoteTabStatusResponse } from "@/entities/vote";
 
-import { FULL_ROOM_ID, inviteRoom, member, newCertification, SCENARIOS, today } from "./scenarios";
+import {
+  FULL_ROOM_ID,
+  inviteRoom,
+  member,
+  minutesFromNow,
+  newCertification,
+  SCENARIOS,
+  today,
+} from "./scenarios";
 
 const ok = (data?: unknown, status = 200) => ({
   status,
@@ -124,6 +133,90 @@ const GOAL_TEXTS: Record<RoomGoal, { goalTitle: string; goalDescription: string 
   },
 };
 const isGoal = (goal: string): goal is RoomGoal => goal in GOAL_TEXTS;
+
+/** 서버처럼 투표 명단에서 후보를 만들어요. 투표권이 없으면 나도 후보로 보여요. */
+const candidatesOf = (room: TodayResponse, includeMe: boolean): VoteCandidate[] =>
+  room.members
+    .filter(item => includeMe || !item.isMe)
+    .map(({ memberId, nickname, color, equippedItemCodes, certification }) => ({
+      memberId,
+      nickname,
+      color,
+      equippedItemCodes,
+      certification: certification && {
+        result: certification.result,
+        memo: certification.memo,
+        spentAmount: certification.spentAmount,
+        imageUrl: certification.imageUrl,
+        certifiedAt: certification.certifiedAt,
+      },
+    }));
+
+/** 투표 탭 상태예요. 시나리오가 고정하지 않으면 방 인원과 회차 상태로 정해요. 시안처럼 마감까지 2시간 17분 남아요. */
+const voteTabOf = (room: TodayResponse): VoteTabStatusResponse => {
+  // 오늘 탭에 회차가 없어도 화면을 볼 수 있게 방 ID를 회차 ID로 써요.
+  const round = { roundId: room.round.roundId ?? room.room.roomId, roundDate: todayDate };
+  const closesAt = minutesFromNow(137);
+  const voterCount = room.members.filter(item => item.certification).length;
+  const amICertified = room.members.some(item => item.isMe && item.certification);
+  const status =
+    state.voteStatus ??
+    (room.round.status === "VOTING"
+      ? amICertified
+        ? "VOTING"
+        : "NO_VOTING_RIGHT"
+      : room.members.length < MIN_VOTERS
+        ? "UNDER_THREE"
+        : "BEFORE_FIRST_VOTE");
+
+  switch (status) {
+    case "UNDER_THREE":
+      return { status, memberCount: room.members.length, memberLimit: room.room.memberLimit };
+    case "BEFORE_FIRST_VOTE": {
+      const uncertified = room.members.filter(item => !item.isMe && !item.certification);
+      const [first] = uncertified;
+      return {
+        status,
+        uncertifiedCount: uncertified.length,
+        firstUncertifiedMember: first
+          ? { memberId: first.memberId, nickname: first.nickname, color: first.color }
+          : null,
+      };
+    }
+    case "NOT_IN_LIST":
+      return { status, ...round, closesAt };
+    case "NO_VOTING_RIGHT":
+      return { status, ...round, closesAt, candidates: candidatesOf(room, true) };
+    case "VOTING":
+      return {
+        status,
+        ...round,
+        closesAt,
+        votedCount: 1,
+        voterCount,
+        candidates: candidatesOf(room, false),
+      };
+    case "VOTED":
+      return {
+        status,
+        ...round,
+        closesAt,
+        votedCount: voterCount,
+        voterCount: room.members.length,
+      };
+    case "RESULT_UNSEEN":
+    case "RESULT_SEEN":
+      return { status, ...round };
+    case "TAP":
+      return { status, ...round, tapClosesAt: minutesFromNow(180) };
+    case "MOKTAK":
+      return {
+        status,
+        ...round,
+        moktakCount: RECEIVED_TAPS.reduce((sum, tap) => sum + tap.count, 0),
+      };
+  }
+};
 
 /** API 초안의 경로와 응답 모양을 흉내 내요. 없는 경로는 404예요. */
 export const mockHandler: MockHandler = (method, path, body) => {
@@ -393,11 +486,10 @@ export const mockHandler: MockHandler = (method, path, body) => {
     return ok();
   }
 
-  // 목탁 수행으로 바로 들어가도록 결과가 나온 상태로 줘요. 회차 ID는 방 ID와 같게 둬요.
   if ((match = route.match(/^GET \/api\/rooms\/(\d+)\/vote$/))) {
-    const roomId = Number(match[1]);
-    if (!state.rooms[roomId]) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
-    return ok({ status: "RESULT_UNSEEN", roundId: roomId });
+    const room = state.rooms[Number(match[1])];
+    if (!room) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
+    return ok(voteTabOf(room));
   }
 
   if ((match = route.match(/^GET \/api\/rounds\/(\d+)\/taps\/received$/))) {

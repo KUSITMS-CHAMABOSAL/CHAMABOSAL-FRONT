@@ -1,5 +1,5 @@
 export { cn } from "./cn";
-export { formatTime, minutesUntil } from "./formatDateTime";
+export { formatClock, formatTime, minutesUntil, secondsUntil } from "./formatDateTime";
 export { formatWon } from "./formatWon";
 export { limitLength } from "./limitLength";
 export { useTabBarToast } from "./useTabBarToast";

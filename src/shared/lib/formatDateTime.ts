@@ -8,3 +8,13 @@ export const formatTime = (dateTime: string) =>
 /** 마감 시각까지 남은 분이에요. 1분 미만이 남아도 1로 올리고, 지났으면 0이에요. */
 export const minutesUntil = (dateTime: string, now = Date.now()) =>
   Math.max(0, Math.ceil((new Date(dateTime).getTime() - now) / 60_000));
+
+/** 마감 시각까지 남은 초예요. 지났으면 0이에요. */
+export const secondsUntil = (dateTime: string, now = Date.now()) =>
+  Math.max(0, Math.floor((new Date(dateTime).getTime() - now) / 1000));
+
+/** 남은 초를 "02:17:50"처럼 시·분·초로 보여줘요. */
+export const formatClock = (seconds: number) => {
+  const pad = (value: number) => String(value).padStart(2, "0");
+  return `${pad(Math.floor(seconds / 3600))}:${pad(Math.floor(seconds / 60) % 60)}:${pad(seconds % 60)}`;
+};

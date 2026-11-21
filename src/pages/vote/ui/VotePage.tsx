@@ -1,34 +1,23 @@
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 
-import { Button, Paragraph } from "@toss/tds-mobile";
+import { getVoteView, useVoteTabQuery } from "@/entities/vote";
+import { VoteBoard } from "@/widgets/vote/voteBoard";
 
-import { useVoteTabQuery } from "@/entities/vote";
-import { paths } from "@/shared/config";
-
-// 탭 이동을 위한 빈 화면이에요. 투표 화면 이슈에서 채워요.
+/** 투표 탭이에요. 방의 투표 상태에 맞는 화면을 보여줘요. */
 const VotePage = () => {
   const roomId = Number(useParams().roomId);
-  const navigate = useNavigate();
-  const voteTab = useVoteTabQuery(roomId);
-  const roundId = voteTab.data && "roundId" in voteTab.data ? voteTab.data.roundId : null;
+  const { data, error, refetch } = useVoteTabQuery(roomId);
+
+  if (!data) {
+    if (error) throw error;
+    // 🔖 로딩 시안이 없어 아직 아무것도 그리지 않아요.
+    return null;
+  }
 
   return (
-    <main className="min-h-svh bg-(--adaptiveBackground)">
-      {/* 🔖 실기기 테스트용 임시 진입 버튼이에요. 빌드에도 들어가니 투표 화면을 만들 때 꼭 지워요. */}
-      <div className="flex flex-col gap-2 p-6">
-        <Button
-          display="block"
-          disabled={roundId === null}
-          onClick={() => roundId !== null && navigate(paths.room.tapTap(roomId, roundId))}
-        >
-          목탁 수행 테스트
-        </Button>
-        <Paragraph typography="t7" color="var(--adaptiveGrey600)">
-          {voteTab.error
-            ? "투표 탭 상태를 받지 못했어요"
-            : `투표 탭 상태: ${voteTab.data?.status ?? "불러오는 중"} / 회차 ${roundId ?? "없음"}`}
-        </Paragraph>
-      </div>
+    // 높이를 화면만큼 잡지 않아요. 아래에 하단 탭바 자리가 따로 붙어서, 잡으면 그만큼 스크롤이 생겨요.
+    <main className="bg-(--adaptiveBackground)">
+      <VoteBoard roomId={roomId} view={getVoteView(data)} onVoteClosed={refetch} />
     </main>
   );
 };

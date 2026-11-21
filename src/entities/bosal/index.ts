@@ -11,6 +11,7 @@ export type {
 } from "./model/types";
 export { default as BosalCard } from "./ui/BosalCard";
 export { default as BosalFigure } from "./ui/BosalFigure";
+export { default as BosalHead } from "./ui/BosalHead";
 export { default as BosalGreyFigure } from "./ui/BosalGreyFigure";
 export { default as BosalImage } from "./ui/BosalImage";
 export { default as BosalSilhouette } from "./ui/BosalSilhouette";

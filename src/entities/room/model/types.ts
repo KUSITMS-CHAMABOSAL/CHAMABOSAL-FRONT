@@ -32,6 +32,8 @@ export interface TodayRound {
   status: RoundStatus;
   certifiedCount: number;
   isAllCertified: boolean;
+  /** 지금 인증할 수 있어요. 이전 회차 투표가 끝나야 열려요. */
+  isCertificationOpen: boolean;
 }
 
 export interface TodayCertification {
@@ -63,6 +65,7 @@ export interface TodayMember {
 }
 
 export interface TodayMe {
+  /** 내가 등록하면 바로 투표가 시작돼요. 3명 미만 방은 투표가 열리지 않아 늘 false예요. */
   isLastCertifier: boolean;
   /** 이번 회차에 받은 콕 수 */
   receivedPokeCount: number;
@@ -121,6 +124,26 @@ export interface RoomMembership {
   memberId: number;
   nickname: string;
   color: BosalColor;
+}
+
+/** 한 솥에 넣은 멤버별 석이에요. 같은 석이면 같은 순위(1, 1, 3)이고 먼저 넣은 멤버가 앞이에요. */
+export interface PotContribution {
+  rank: number;
+  memberId: number;
+  nickname: string;
+  color: BosalColor;
+  equippedItemCodes: string[];
+  amount: number;
+}
+
+/** GET /api/rooms/{roomId}/pots/{seq}. 다 채운 솥의 축하 화면이에요. */
+export interface PotCelebration {
+  seq: number;
+  goalAmount: number;
+  /** 멤버 전원이 받은 개인 공양미 (목표의 10%) */
+  rewardAmount: number;
+  /** 넣은 석이 많은 순. 넣은 기록이 있는 현재 멤버만 와요. */
+  contributions: PotContribution[];
 }
 
 /** GET /api/rooms/new-color. 부를 때마다 새로 뽑고 서버에 저장하지 않아요. */

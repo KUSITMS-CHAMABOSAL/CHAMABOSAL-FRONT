@@ -41,7 +41,7 @@ const HomePage = () => {
           <TodayBosals
             key={roomId}
             today={today.data}
-            onCertify={notReady("인증")}
+            onCertify={() => navigate(paths.room.certify(roomId))}
             onEditCertification={notReady("인증 수정")}
           />
         </>

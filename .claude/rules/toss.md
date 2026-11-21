@@ -36,7 +36,7 @@ SDK는 3.x이고 `@apps-in-toss/web-framework`는 `shared/lib/appsInToss/`에서
 - 설정 파일은 `apps-in-toss.config.ts`입니다. `granite.config.ts`는 2.x 파일이라 만들지 않습니다.
 - `brand.primaryColor`는 문서상 deprecated지만 SDK 3.9.0의 `ait build`가 필수로 검사합니다. 지우지 않습니다.
 - 권한(`permissions`)은 그 권한을 쓰는 기능의 PR에서 함께 추가합니다. 선언된 권한은 검수에 쓰이므로 쓰지 않는 권한은 선언하지 않습니다.
-  - 예정: `photos: read`(인증 사진), `clipboard: write`(초대 링크 복사), `camera: access`(디자인에 카메라 촬영이 확정될 때만 🔖)
+  - 선언: `clipboard: write`(초대 링크 복사), `camera: access`(인증 사진 촬영), `photos: read`(인증 사진 앨범 선택)
 - 설정을 바꾸면 `vite build`가 아니라 `pnpm build` 전체(`tsc -b && vite build && ait build`)로 검증합니다.
 
 ## 기기 저장

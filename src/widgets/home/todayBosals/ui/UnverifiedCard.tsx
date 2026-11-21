@@ -65,7 +65,7 @@ const UnverifiedCard = ({ member, pokes = 0 }: UnverifiedCardProps) => {
           color="var(--adaptiveGrey900)"
           className="truncate"
         >
-          {member?.name ?? "중생"}
+          {member?.name ?? "초대받은 중생"}
         </Paragraph>
       </div>
       <Paragraph typography="t6" color="var(--adaptiveGrey900)" className="whitespace-pre-line">

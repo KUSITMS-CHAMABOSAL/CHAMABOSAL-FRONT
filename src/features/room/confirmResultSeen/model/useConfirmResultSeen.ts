@@ -19,6 +19,9 @@ export const useConfirmResultSeen = (roomId: number) => {
     mutationFn: (roundId: number) => confirmResultSeen(roomId, roundId),
     onSettled: async (_data, error, roundId) => {
       await queryClient.cancelQueries({ queryKey: todayKey });
+      // 오늘 탭은 방 홈에서만 받아서 투표 탭으로 바로 오면 캐시에 없을 수 있어요. 그러면 끌 표시가 없으니 실패했을 때는 먼저 받아 둬요.
+      // 받지 못하면 홈도 오늘 탭을 못 받아 다시 투표 탭으로 오지 않아요(한 솥 축하와 같아요).
+      if (error) await queryClient.ensureQueryData(roomQueries.today(roomId)).catch(() => {});
       queryClient.setQueryData<TodayResponse>(todayKey, today =>
         today?.entry.unseenResultRoundId != null && today.entry.unseenResultRoundId <= roundId
           ? { ...today, entry: { ...today.entry, unseenResultRoundId: null } }

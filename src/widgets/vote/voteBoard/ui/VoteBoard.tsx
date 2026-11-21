@@ -10,6 +10,7 @@ import { useTabBarToast } from "@/shared/lib";
 
 import { VOTE_EMOJI } from "../config/emoji";
 import EmojiFigure from "./EmojiFigure";
+import NoVote from "./NoVote";
 import RoomTabs from "./RoomTabs";
 import VoteHeader from "./VoteHeader";
 import VoteResult from "./VoteResult";
@@ -157,6 +158,8 @@ const VoteContent = ({ roomId, view, onVoteClosed }: VoteContentProps) => {
       return <Navigate to={paths.room.tapTap(roomId, view.roundId)} replace />;
     case "result":
       return <VoteResult roomId={roomId} roundId={view.roundId} isSeen={view.isSeen} />;
+    case "noVote":
+      return <NoVote roomId={roomId} />;
   }
 };
 

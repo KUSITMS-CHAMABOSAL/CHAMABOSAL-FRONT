@@ -1,6 +1,6 @@
 import type { VoteCandidate, VoteMemberSummary, VoteTabStatusResponse } from "../model/types";
 
-/** 투표 탭에 그릴 화면이에요. 서버 상태 10가지를 화면 7가지로 묶어요. */
+/** 투표 탭에 그릴 화면이에요. 서버 상태 11가지를 화면 8가지로 묶어요. */
 export type VoteView =
   | { kind: "underThree" }
   | { kind: "beforeFirstVote"; firstUncertifiedMember: VoteMemberSummary | null }
@@ -16,7 +16,8 @@ export type VoteView =
   | { kind: "voted"; closesAt: string; votedCount: number; voterCount: number }
   /** 결과를 아직 안 봤거나, 봤거나, 본 뒤 이마 톡톡을 보낼 수 있을 때 모두 결과 화면이에요. */
   | { kind: "result"; roundId: number; isSeen: boolean }
-  | { kind: "moktak"; roundId: number };
+  | { kind: "moktak"; roundId: number }
+  | { kind: "noVote" };
 
 export const getVoteView = (tab: VoteTabStatusResponse): VoteView => {
   switch (tab.status) {
@@ -48,5 +49,7 @@ export const getVoteView = (tab: VoteTabStatusResponse): VoteView => {
       return { kind: "result", roundId: tab.roundId, isSeen: tab.status !== "RESULT_UNSEEN" };
     case "MOKTAK":
       return { kind: "moktak", roundId: tab.roundId };
+    case "NO_VOTE":
+      return { kind: "noVote" };
   }
 };

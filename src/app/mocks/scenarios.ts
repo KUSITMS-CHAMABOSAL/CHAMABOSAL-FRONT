@@ -229,6 +229,8 @@ export const SCENARIOS: Record<string, () => Scenario> = {
     scenario.rooms[1].entry.unseenResultRoundId = scenario.rooms[1].round.roundId;
     return { ...scenario, voteStatus: "RESULT_UNSEEN" };
   },
+  /** 05 투표: 인증한 보살이 없어 투표가 열리지 않았어요. 나는 아직 인증하지 않아 [오늘의 인증하러 가기]로 인증할 수 있어요 */
+  voteNoVote: () => ({ ...build(ROOMS, () => fourMembers(1)), voteStatus: "NO_VOTE" }),
   /** 05 투표: 결과를 봤어요 */
   voteResultSeen: () => ({ ...build(ROOMS, () => fourMembers(2)), voteStatus: "RESULT_SEEN" }),
   /** 05 투표: 결과를 보고 이마 톡톡을 보낼 수 있어요 */

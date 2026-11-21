@@ -214,6 +214,8 @@ const voteTabOf = (room: TodayResponse): VoteTabStatusResponse => {
       return { status, ...round };
     case "TAP":
       return { status, ...round, tapClosesAt: minutesFromNow(180) };
+    case "NO_VOTE":
+      return { status, ...round };
     case "MOKTAK":
       return {
         status,

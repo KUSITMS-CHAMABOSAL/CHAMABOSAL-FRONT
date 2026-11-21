@@ -69,7 +69,9 @@ export type VoteTabStatusResponse =
   /** 결과를 봤고 지금 이마 톡톡을 보낼 수 있어요. */
   | ({ status: "TAP"; tapClosesAt: string } & VoteRound)
   /** 지목된 내가 받은 톡톡만큼 목탁 수행을 해야 해요. */
-  | ({ status: "MOKTAK"; moktakCount: number } & VoteRound);
+  | ({ status: "MOKTAK"; moktakCount: number } & VoteRound)
+  /** 인증한 보살이 없어 투표가 열리지 않았어요. 인증도 콕도 없던 날은 회차가 없어 회차 ID가 null이에요. */
+  | { status: "NO_VOTE"; roundId: number | null; roundDate: string };
 
 export type VoteTabStatus = VoteTabStatusResponse["status"];
 

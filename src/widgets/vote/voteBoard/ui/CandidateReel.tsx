@@ -19,7 +19,8 @@ const CARD_WIDTH = 162;
  * 끝까지 흘러가도 화면이 비지 않게 후보를 이어 붙여 그리고, 같은 후보가 반복되는 카드는 화면 읽기에서 빼요.
  */
 const CandidateReel = ({ candidates }: CandidateReelProps) => {
-  const rounds = Math.ceil(REEL_MIN_CARDS / candidates.length);
+  // 후보가 없으면 0으로 나누지 않게 카드를 그리지 않아요.
+  const rounds = candidates.length ? Math.ceil(REEL_MIN_CARDS / candidates.length) : 0;
   const cards = Array.from({ length: rounds }, () => candidates).flat();
   const style = {
     "--reel-gap": `${REEL_PITCH_PX - CARD_WIDTH}px`,
@@ -28,12 +29,12 @@ const CandidateReel = ({ candidates }: CandidateReelProps) => {
 
   return (
     <div className="overflow-hidden py-3">
-      {/* 첫 카드가 화면 가운데에서 시작해요. */}
+      {/* 첫 카드가 화면 가운데에서 시작해요. 카드가 없어도 카드 높이를 차지해 단상 자리가 그대로예요. */}
       <ul
         role="list"
         aria-label="오늘의 후보"
         style={style}
-        className="motion-safe:animate-vote-reel m-0! flex w-max list-none gap-(--reel-gap) p-0! pl-[calc(50vw-81px)]!"
+        className="motion-safe:animate-vote-reel m-0! flex min-h-[168px] w-max list-none gap-(--reel-gap) p-0! pl-[calc(50vw-81px)]!"
       >
         {cards.map((candidate, index) => {
           const tilt = REEL_TILTS[index % REEL_TILTS.length];

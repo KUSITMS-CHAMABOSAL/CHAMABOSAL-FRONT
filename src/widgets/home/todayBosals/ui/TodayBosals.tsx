@@ -2,15 +2,16 @@ import { useRef, useState } from "react";
 
 import { Button, IconButton, Paragraph } from "@toss/tds-mobile";
 
-import { BosalCard, BosalStatusBadge, EmptyBosalCard } from "@/entities/bosal";
+import { BosalCard, BosalStatusBadge, EmptyBosalCard, InviteSeatCard } from "@/entities/bosal";
 import { CertificationCard } from "@/entities/certification";
-import type { TodayMember, TodayResponse } from "@/entities/room";
+import { MAX_MEMBERS, type TodayMember, type TodayResponse } from "@/entities/room";
 import { EditCertificationActions } from "@/features/certification/editCertification";
 import {
   ReactionButtons,
   useReactCertification,
 } from "@/features/certification/reactCertification";
 import { PokeButton, usePokeMember } from "@/features/member/pokeMember";
+import { useCopyInviteLink } from "@/features/room/shareInvite";
 import { formatTime, formatWon, useTabBarToast } from "@/shared/lib";
 
 import { getBosalCardView, getBosalName, getBosalStatus } from "../lib/getBosalCardView";
@@ -42,6 +43,7 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
     openToast("콕 찌르지 못했어요. 잠시 후 다시 시도해 주세요"),
   );
   const { mutate: react, isPending: isReacting } = useReactCertification(roomId);
+  const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(roomId, openToast);
   const slots = Array.from({ length: memberLimit }, (_, index) => today.members[index] ?? null);
 
   const goToPage = (page: number) => {
@@ -142,19 +144,27 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
       >
         <div data-page={0} className="flex w-full shrink-0 snap-center justify-center">
           <div className="grid w-[296px] grid-cols-2 gap-2.5">
-            {slots.map((member, index) =>
-              member ? (
-                <BosalCard
-                  key={member.memberId}
-                  name={getBosalName(member)}
-                  color={member.color}
-                  status={getBosalStatus(member)}
-                  // 🔖 서버는 내가 받은 콕 수만 줘요. 다른 보살의 콕 뱃지는 표시하지 않아요.
-                  pokes={member.isMe ? today.me.receivedPokeCount : 0}
-                />
-              ) : (
-                <EmptyBosalCard key={`empty-${index}`} />
-              ),
+            {Array.from({ length: MAX_MEMBERS }, (_, index) => today.members[index] ?? null).map(
+              (member, index) =>
+                // 격자는 늘 네 칸이에요. 정원 밖 칸은 친구 초대 칸이에요.
+                index >= memberLimit ? (
+                  <InviteSeatCard
+                    key={`invite-${index}`}
+                    disabled={isCopying}
+                    onClick={() => copyInviteLink()}
+                  />
+                ) : member ? (
+                  <BosalCard
+                    key={member.memberId}
+                    name={getBosalName(member)}
+                    color={member.color}
+                    status={getBosalStatus(member)}
+                    // 🔖 서버는 내가 받은 콕 수만 줘요. 다른 보살의 콕 뱃지는 표시하지 않아요.
+                    pokes={member.isMe ? today.me.receivedPokeCount : 0}
+                  />
+                ) : (
+                  <EmptyBosalCard key={`empty-${index}`} />
+                ),
             )}
           </div>
         </div>

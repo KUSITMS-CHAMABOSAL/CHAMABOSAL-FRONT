@@ -36,7 +36,9 @@ paths:
 | `/storehouse/hair/guide`                | 하단 바 없음 | 나발 빠짐 설명 (처음 빠졌을 때, 곳간에서 다시 보기)                        |
 | `/my/:roomId`                           | 하단 탭      | 내 보살 (고른 방의 닉네임 수정, 나가기, 인증 기록)                         |
 | `/settings`                             | Plain        | 설정 (내 보살의 설정 버튼으로 진입, 알림 설정, 약관, 내 데이터 삭제)       |
-| `/rooms/:roomId/certify`                | Plain        | 번뇌 떨구기                                                                |
-| `/rooms/:roomId/certify/result`         | 하단 탭      | 인증 결과                                                                  |
+| `/rooms/:roomId/certify`                | 하단 탭      | 번뇌 떠올리기 (홈의 인증 버튼으로 진입, 참았어요·못 참았어요 고르기)       |
+| `/rooms/:roomId/certify/write`          | 하단 바 없음 | 인증 작성 (`?result=`, 폼에서 결과 바꾸기, 등록 전 확인 시트)              |
+| `/rooms/:roomId/certify/result`         | 하단 탭      | 인증 완료 (등록 응답을 state로 받음, 없으면 방 홈으로)                     |
+| `/rooms/:roomId/pots/:seq`              | Plain        | 한 솥 축하 (방 홈에 안 본 축하가 있으면 먼저 띄움)                         |
 | `/terms`, `/privacy`                    | Plain        | 약관                                                                       |
 | `*`, 잘못된 방 번호                     | —            | 404 (홈으로 → 진입 분기)                                                   |

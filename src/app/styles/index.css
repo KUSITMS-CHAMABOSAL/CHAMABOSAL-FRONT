@@ -43,6 +43,19 @@
   --color-forehead-tap-bottom: #999999;
 }
 
+/* 한 솥 축하 순위는 4등부터 1등까지 차례로 올라오며 나타나요(Figma 프로토타입, 값은 potCelebration/config/motion.ts).
+   시작 시점·올라오는 거리·곡선이 등수마다 달라 요소마다 --rank-delay, --rank-rise, --rank-ease로 넘겨서 inline이어야 해요. */
+@theme inline {
+  --animate-pot-rank-in: pot-rank-in 300ms var(--rank-ease) var(--rank-delay) backwards;
+
+  @keyframes pot-rank-in {
+    from {
+      opacity: 0;
+      transform: translateY(var(--rank-rise));
+    }
+  }
+}
+
 @theme {
   --animate-hair-grow: hair-grow 480ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
   /* 나발 빠짐 설명이 곳간 위로 올라와요. 시간은 GUIDE_CLOSE_MS와 같고, 곡선은 닫을 때를 뒤집은 모양이에요. */

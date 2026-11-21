@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { getInvitePreview, getNewColor, getToday } from "./roomApi";
+import { getInvitePreview, getNewColor, getPotCelebration, getToday } from "./roomApi";
 
 export const roomQueries = {
   all: () => ["room"] as const,
@@ -8,6 +8,13 @@ export const roomQueries = {
     queryOptions({
       queryKey: [...roomQueries.all(), roomId, "today"],
       queryFn: () => getToday(roomId),
+    }),
+  /** 다 채운 솥은 바뀌지 않아요. */
+  pot: (roomId: number, seq: number) =>
+    queryOptions({
+      queryKey: [...roomQueries.all(), roomId, "pot", seq],
+      queryFn: () => getPotCelebration(roomId, seq),
+      staleTime: Infinity,
     }),
   invitePreview: (token: string) =>
     queryOptions({

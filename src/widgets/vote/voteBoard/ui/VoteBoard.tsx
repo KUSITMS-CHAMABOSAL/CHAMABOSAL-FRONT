@@ -1,6 +1,8 @@
+import type { CSSProperties } from "react";
 import { Navigate, useNavigate } from "react-router";
 import { Result } from "@toss/tds-mobile";
 
+import type { MyRoom } from "@/entities/session";
 import type { VoteView } from "@/entities/vote";
 import { useCopyInviteLink } from "@/features/room/shareInvite";
 import { paths } from "@/shared/config";
@@ -8,20 +10,47 @@ import { useTabBarToast } from "@/shared/lib";
 
 import { VOTE_EMOJI } from "../config/emoji";
 import EmojiFigure from "./EmojiFigure";
+import RoomTabs from "./RoomTabs";
 import VoteHeader from "./VoteHeader";
 
 interface VoteBoardProps {
   roomId: number;
+  /** 참여 중인 방이에요. 둘이면 위에 방 탭을 그려요. */
+  rooms: MyRoom[];
   view: VoteView;
+  onSelectRoom: (roomId: number) => void;
   /** 투표 마감 시각이 지나면 불러요. 투표 탭 상태를 다시 받아요. */
   onVoteClosed: () => void;
 }
 
 // 안내는 시안처럼 화면 높이의 20.6%(812 시안에서 상단 바 아래 148px)부터 놓여요.
-const NOTICE_TOP = "pt-[20.6svh]";
+// 방 탭이 있어도 시안은 안내 자리를 그대로 둬서, 탭 높이만큼 빼요.
+const NOTICE_TOP = "pt-[calc(20.6svh-var(--room-tabs-height,0px))]";
+/** TDS Tab(small) 높이예요. 브라우저에서 잰 값이에요(시안은 38px). */
+const ROOM_TABS_HEIGHT = "37px";
 
-/** 투표 탭이에요. 상태마다 안내, 투표, 결과 화면을 골라 보여줘요. */
-const VoteBoard = ({ roomId, view, onVoteClosed }: VoteBoardProps) => {
+/** 투표 탭이에요. 위에 방 탭을 두고, 상태마다 안내, 투표, 결과 화면을 골라 보여줘요. */
+const VoteBoard = ({ roomId, rooms, view, onSelectRoom, onVoteClosed }: VoteBoardProps) => {
+  const roomTabs = <RoomTabs rooms={rooms} roomId={roomId} onSelectRoom={onSelectRoom} />;
+
+  return (
+    <div
+      style={{ "--room-tabs-height": rooms.length > 1 ? ROOM_TABS_HEIGHT : "0px" } as CSSProperties}
+    >
+      {roomTabs}
+      <VoteContent roomId={roomId} view={view} onVoteClosed={onVoteClosed} />
+    </div>
+  );
+};
+
+interface VoteContentProps {
+  roomId: number;
+  view: VoteView;
+  onVoteClosed: () => void;
+}
+
+/** 방 탭 아래 내용이에요. */
+const VoteContent = ({ roomId, view, onVoteClosed }: VoteContentProps) => {
   const navigate = useNavigate();
   const openToast = useTabBarToast();
   const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(roomId, openToast);

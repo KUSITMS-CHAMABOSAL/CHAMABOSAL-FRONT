@@ -12,6 +12,7 @@ import { VOTE_EMOJI } from "../config/emoji";
 import EmojiFigure from "./EmojiFigure";
 import RoomTabs from "./RoomTabs";
 import VoteHeader from "./VoteHeader";
+import Voting from "./Voting";
 
 interface VoteBoardProps {
   roomId: number;
@@ -33,6 +34,19 @@ const ROOM_TABS_HEIGHT = "37px";
 const VoteBoard = ({ roomId, rooms, view, onSelectRoom, onVoteClosed }: VoteBoardProps) => {
   const roomTabs = <RoomTabs rooms={rooms} roomId={roomId} onSelectRoom={onSelectRoom} />;
 
+  // 후보 고르기 단계는 시안에 방 탭이 없어서 Voting이 미리보기에서만 그려요.
+  if (view.kind === "voting")
+    return (
+      <Voting
+        roomId={roomId}
+        roomTabs={roomTabs}
+        closesAt={view.closesAt}
+        candidates={view.candidates}
+        canVote={view.canVote}
+        onVoteClosed={onVoteClosed}
+      />
+    );
+
   return (
     <div
       style={{ "--room-tabs-height": rooms.length > 1 ? ROOM_TABS_HEIGHT : "0px" } as CSSProperties}
@@ -45,7 +59,7 @@ const VoteBoard = ({ roomId, rooms, view, onSelectRoom, onVoteClosed }: VoteBoar
 
 interface VoteContentProps {
   roomId: number;
-  view: VoteView;
+  view: Exclude<VoteView, { kind: "voting" }>;
   onVoteClosed: () => void;
 }
 
@@ -139,8 +153,7 @@ const VoteContent = ({ roomId, view, onVoteClosed }: VoteContentProps) => {
       );
     case "moktak":
       return <Navigate to={paths.room.tapTap(roomId, view.roundId)} replace />;
-    // 투표하기와 결과 화면은 다음 단계에서 채워요.
-    case "voting":
+    // 결과 화면은 다음 단계에서 채워요.
     case "result":
       return null;
   }

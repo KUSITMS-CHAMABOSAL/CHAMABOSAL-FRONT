@@ -39,6 +39,8 @@
   /* 초대 미리보기 배경 그라데이션의 중간·끝 색. 시안 1-1 */
   --color-invite-mint: rgb(177 255 240 / 0.3);
   --color-invite-mint-light: rgb(242 255 247 / 0.4);
+  /* 이마 톡톡 배경 그라데이션 끝 색. 시안 결과·이마톡톡-01의 이름 없는 색이에요. */
+  --color-forehead-tap-bottom: #999999;
 }
 
 /* 한 솥 축하 순위는 4등부터 1등까지 차례로 올라오며 나타나요(Figma 프로토타입, 값은 potCelebration/config/motion.ts).

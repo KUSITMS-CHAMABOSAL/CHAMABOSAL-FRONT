@@ -69,7 +69,8 @@ const VoteResult = ({ roomId, roundId, isSeen }: VoteResultProps) => {
   const navigate = useNavigate();
   const { data: result, error } = useRoundResultQuery(roundId);
   const { mutate: confirmSeen } = useConfirmResultSeen(roomId);
-  const [isTooltipOpen, setIsTooltipOpen] = useState(true);
+  /** 툴팁을 닫은 회차예요. 방을 바꿔 회차가 달라지면 새로 열려요. */
+  const [tooltipClosedRound, setTooltipClosedRound] = useState<number | null>(null);
   const hasResult = result !== undefined;
 
   // 결과를 처음 그릴 때 한 번 봤다고 저장해요.
@@ -77,10 +78,12 @@ const VoteResult = ({ roomId, roundId, isSeen }: VoteResultProps) => {
     if (hasResult && !isSeen) confirmSeen(roundId);
   }, [hasResult, isSeen, roundId, confirmSeen]);
 
+  // 결과가 그려진 뒤부터 2초를 세요. 결과를 늦게 받아도 툴팁을 볼 수 있어요.
   useEffect(() => {
-    const timer = window.setTimeout(() => setIsTooltipOpen(false), TOOLTIP_MS);
+    if (!hasResult) return;
+    const timer = window.setTimeout(() => setTooltipClosedRound(roundId), TOOLTIP_MS);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [hasResult, roundId]);
 
   if (!result) {
     if (error) throw error;
@@ -179,7 +182,7 @@ const VoteResult = ({ roomId, roundId, isSeen }: VoteResultProps) => {
         </>
       )}
       <Tooltip
-        open={tooltip !== null && isTooltipOpen}
+        open={tooltip !== null && tooltipClosedRound !== roundId}
         size="small"
         placement="bottom"
         messageAlign="center"

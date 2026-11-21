@@ -32,17 +32,18 @@ const VotingChoose = ({
   onVoteClosed,
 }: VotingChooseProps) => {
   const safeAreaBottom = useSafeAreaBottom();
-  const [selected, setSelected] = useState<ChoiceKey | null>(null);
+  const [chosen, setChosen] = useState<ChoiceKey | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const choices: CandidateChoice[] = [
     { kind: "allBosal" },
     ...candidates.map(candidate => ({ kind: "member" as const, candidate })),
   ];
-  const picked = candidates.find(candidate => candidate.memberId === selected);
-  const target: VoteSubmitRequest =
-    selected === "allBosal" || !picked
-      ? { targetType: "ALL_BOSAL" }
-      : { targetType: "MEMBER", targetMemberId: picked.memberId };
+  const picked = candidates.find(candidate => candidate.memberId === chosen);
+  // 투표 탭을 다시 받아 고른 후보가 목록에서 빠지면 고르기 전으로 돌아가요. 다른 대상으로 투표되지 않아요.
+  const selected = chosen === "allBosal" || picked ? chosen : null;
+  const target: VoteSubmitRequest = picked
+    ? { targetType: "MEMBER", targetMemberId: picked.memberId }
+    : { targetType: "ALL_BOSAL" };
 
   return (
     // 하단 탭바 자리(75px)를 뺀 높이를 채워요. 카드는 아래로 붙고, 남는 높이는 헤더와 카드 사이로 가요.
@@ -69,7 +70,7 @@ const VotingChoose = ({
               choices={choices}
               selected={selected}
               // 같은 카드를 다시 누르면 고른 채로 둬요. 다른 카드를 누르면 바꿔요(화면설계서 20).
-              onSelect={setSelected}
+              onSelect={setChosen}
             />
           </div>
         </Tooltip>
@@ -89,7 +90,8 @@ const VotingChoose = ({
         </Button>
       </div>
       <VoteConfirmSheet
-        open={isConfirmOpen}
+        // 시트를 연 채로 고른 후보가 빠져도 닫아서 다른 대상으로 투표되지 않아요.
+        open={isConfirmOpen && selected !== null}
         roomId={roomId}
         roundId={roundId}
         target={target}

@@ -148,3 +148,11 @@ export interface RoundResultResponse {
   tappedMemberCount: number;
   isDefensePending: boolean;
 }
+
+/** POST /api/rounds/{roundId}/taps */
+export interface TapSendResponse {
+  /** 1번 이상이면 5, 건너뛰면 0. 방 인원이 1명이면 0 */
+  riceEarned: number;
+  /** 한 솥에 들어간 석. riceEarned와 같아요. */
+  potEarned: number;
+}

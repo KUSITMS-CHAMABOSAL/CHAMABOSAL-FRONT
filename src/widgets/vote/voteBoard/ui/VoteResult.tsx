@@ -67,7 +67,9 @@ const getVoteSummary = ({ voteCounts, allBosalCount }: RoundResultResponse) =>
  */
 const VoteResult = ({ roomId, roundId, isSeen }: VoteResultProps) => {
   const navigate = useNavigate();
-  const { data: result, error } = useRoundResultQuery(roundId);
+  const { data: result, error } = useRoundResultQuery(roundId, {
+    refetchWhileTappable: true,
+  });
   const { mutate: confirmSeen } = useConfirmResultSeen(roomId);
   /** 툴팁을 닫은 회차예요. 방을 바꿔 회차가 달라지면 새로 열려요. */
   const [tooltipClosedRound, setTooltipClosedRound] = useState<number | null>(null);

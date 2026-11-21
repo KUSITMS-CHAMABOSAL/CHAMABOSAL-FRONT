@@ -600,5 +600,12 @@ export const mockHandler: MockHandler = (method, path, body) => {
     return ok({ riceEarned: first ? 10 : 0 }, 201);
   }
 
+  if (route.match(/^POST \/api\/rounds\/\d+\/taps\/start$/)) return ok(undefined, 201);
+
+  if (route.match(/^POST \/api\/rounds\/\d+\/taps$/)) {
+    const tapped = (body as { count: number }).count > 0;
+    return ok({ riceEarned: tapped ? 5 : 0, potEarned: tapped ? 5 : 0 }, 201);
+  }
+
   return fail(404, "COMMON_404", `목에 없는 API예요: ${route}`);
 };

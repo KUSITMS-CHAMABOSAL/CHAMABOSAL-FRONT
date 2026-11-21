@@ -84,6 +84,12 @@ export const router = createBrowserRouter([
                     lazy: { Component: async () => (await import("@/pages/vote")).TapTapPage },
                   },
                   {
+                    path: "vote/:roundId/forehead",
+                    lazy: {
+                      Component: async () => (await import("@/pages/vote")).ForeheadTapPage,
+                    },
+                  },
+                  {
                     path: "certify",
                     children: [
                       {

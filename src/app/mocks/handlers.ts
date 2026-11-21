@@ -49,6 +49,9 @@ const moktakDoneRounds = new Set<number>();
 /** 새로고침 전까지 내가 투표한 회차를 기억해요. */
 const votedRounds = new Set<number>();
 
+/** 새로고침 전까지 결과를 본 방을 기억해요. 시나리오가 안 본 결과로 고정해도 본 방만 결과 확인 후로 바뀌어요. */
+const seenResultRooms = new Set<number>();
+
 /** 나보다 먼저 투표한 친구 수예요. 내가 투표하면 1 늘어요. */
 const OTHERS_VOTED = 1;
 
@@ -165,8 +168,12 @@ const voteTabOf = (room: TodayResponse): VoteTabStatusResponse => {
   const closesAt = minutesFromNow(137);
   const voterCount = room.members.filter(item => item.certification).length;
   const amICertified = room.members.some(item => item.isMe && item.certification);
+  const fixedStatus =
+    state.voteStatus === "RESULT_UNSEEN" && seenResultRooms.has(room.room.roomId)
+      ? "RESULT_SEEN"
+      : state.voteStatus;
   const status =
-    state.voteStatus ??
+    fixedStatus ??
     (room.round.status === "VOTING"
       ? !amICertified
         ? "NO_VOTING_RIGHT"
@@ -558,7 +565,7 @@ export const mockHandler: MockHandler = (method, path, body) => {
     const room = state.rooms[Number(match[1])];
     if (!room) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
     room.entry.unseenResultRoundId = null;
-    if (state.voteStatus === "RESULT_UNSEEN") state.voteStatus = "RESULT_SEEN";
+    seenResultRooms.add(room.room.roomId);
     return ok();
   }
 

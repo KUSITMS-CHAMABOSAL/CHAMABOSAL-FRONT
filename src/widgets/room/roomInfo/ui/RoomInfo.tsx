@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { IconButton, Paragraph, useToast } from "@toss/tds-mobile";
+import { Paragraph, useToast } from "@toss/tds-mobile";
 
 import { BosalHead } from "@/entities/bosal";
 import type { TodayMember, TodayResponse } from "@/entities/room";
@@ -15,14 +15,13 @@ import MemberSheet from "./MemberSheet";
 
 interface RoomInfoProps {
   today: TodayResponse;
-  onBack: () => void;
 }
 
 /**
  * 방 정보예요(시안 3-2). 함께하는 보살의 이번 달 기록, 친구 초대, 방 나가기를 보여줘요.
  * 방장은 다른 멤버를 눌러 시트에서 내보낼 수 있어요.
  */
-const RoomInfo = ({ today, onBack }: RoomInfoProps) => {
+const RoomInfo = ({ today }: RoomInfoProps) => {
   const { roomId, name, isOwner } = today.room;
   const { openToast } = useToast();
   const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(roomId, message =>
@@ -51,16 +50,8 @@ const RoomInfo = ({ today, onBack }: RoomInfoProps) => {
 
   return (
     <main className="flex min-h-svh flex-col bg-(--adaptiveBackground) pb-10">
-      <header className="relative flex h-11 items-center justify-center">
-        <IconButton
-          name="icon-arrow-back-ios-mono"
-          variant="clear"
-          color="var(--adaptiveGrey900)"
-          iconSize={24}
-          aria-label="뒤로 가기"
-          onClick={onBack}
-          className="absolute! top-0 left-0"
-        />
+      {/* 뒤로 가기는 토스 내비게이션 바의 버튼을 써요. */}
+      <header className="flex h-11 items-center px-5">
         <Paragraph typography="t5" fontWeight="bold" color="var(--adaptiveGrey900)">
           {name}
         </Paragraph>

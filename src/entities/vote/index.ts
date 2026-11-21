@@ -3,6 +3,7 @@ export { useRoundResultQuery } from "./api/useRoundResultQuery";
 export { useVoteTabQuery } from "./api/useVoteTabQuery";
 export { voteQueries } from "./api/voteQueries";
 export * from "./config/vote";
+export { getVoteView, type VoteView } from "./lib/getVoteView";
 export type {
   MoktakCompleteResponse,
   PickedMember,
@@ -11,6 +12,7 @@ export type {
   RoundResultResponse,
   RoundResultType,
   TapSendResponse,
+  VoteCandidate,
   VoteTabStatus,
   VoteTabStatusResponse,
 } from "./model/types";

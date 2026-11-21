@@ -28,7 +28,7 @@ paths:
 | `/rooms/new`                            | Plain        | 닉네임 → 보살 받기 → 방 만들기 → 초대 공유 (만든 뒤 뒤로가기는 그 방 홈)   |
 | `/invite?code=`                         | Plain        | 초대 미리보기 → 닉네임 → 보살 받기 (참여 불가 3종, 이미 멤버면 그 방 홈)   |
 | `/rooms/:roomId`                        | 하단 탭      | 홈                                                                         |
-| `/rooms/:roomId/vote`                   | 하단 탭      | 투표                                                                       |
+| `/rooms/:roomId/vote`                   | 하단 탭      | 투표 (방 탭, 상태별 안내·투표·결과, 안 본 결과는 방 홈보다 먼저)           |
 | `/rooms/:roomId/vote/:roundId/tap`      | 하단 바 없음 | 정신 차려! 톡톡 (그 회차에 받은 톡톡만큼 목탁 수행, 끝나면 완료 화면)      |
 | `/rooms/:roomId/vote/:roundId/forehead` | 하단 바 없음 | 정신 차려! 톡톡 (내가 지목된 친구의 이마를 무제한 톡톡, 떠날 때 횟수 전송) |
 | `/storehouse`                           | 하단 탭      | 곳간                                                                       |

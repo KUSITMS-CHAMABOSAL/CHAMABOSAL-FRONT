@@ -2,8 +2,17 @@ import type { MockHandler } from "@/shared/api";
 
 import type { BosalColor } from "@/entities/bosal";
 import { MAX_JOINED_ROOMS, type RoomGoal, type TodayResponse } from "@/entities/room";
+import { MIN_VOTERS, type VoteCandidate, type VoteTabStatusResponse } from "@/entities/vote";
 
-import { FULL_ROOM_ID, inviteRoom, member, newCertification, SCENARIOS, today } from "./scenarios";
+import {
+  FULL_ROOM_ID,
+  inviteRoom,
+  member,
+  minutesFromNow,
+  newCertification,
+  SCENARIOS,
+  today,
+} from "./scenarios";
 
 const ok = (data?: unknown, status = 200) => ({
   status,
@@ -36,6 +45,15 @@ let uploadCount = 0;
 
 /** 새로고침 전까지 수행을 마친 회차를 기억해요. */
 const moktakDoneRounds = new Set<number>();
+
+/** 새로고침 전까지 내가 투표한 회차를 기억해요. */
+const votedRounds = new Set<number>();
+
+/** 새로고침 전까지 결과를 본 방을 기억해요. 시나리오가 안 본 결과로 고정해도 본 방만 결과 확인 후로 바뀌어요. */
+const seenResultRooms = new Set<number>();
+
+/** 나보다 먼저 투표한 친구 수예요. 내가 투표하면 1 늘어요. */
+const OTHERS_VOTED = 1;
 
 const pad = (value: number) => String(value).padStart(2, "0");
 const now = new Date();
@@ -124,6 +142,99 @@ const GOAL_TEXTS: Record<RoomGoal, { goalTitle: string; goalDescription: string 
   },
 };
 const isGoal = (goal: string): goal is RoomGoal => goal in GOAL_TEXTS;
+
+/** 서버처럼 투표 명단에서 후보를 만들어요. 투표권이 없으면 나도 후보로 보여요. */
+const candidatesOf = (room: TodayResponse, includeMe: boolean): VoteCandidate[] =>
+  room.members
+    .filter(item => includeMe || !item.isMe)
+    .map(({ memberId, nickname, color, equippedItemCodes, certification }) => ({
+      memberId,
+      nickname,
+      color,
+      equippedItemCodes,
+      certification: certification && {
+        result: certification.result,
+        memo: certification.memo,
+        spentAmount: certification.spentAmount,
+        imageUrl: certification.imageUrl,
+        certifiedAt: certification.certifiedAt,
+      },
+    }));
+
+/** 투표 탭 상태예요. 시나리오가 고정하지 않으면 방 인원과 회차 상태로 정해요. 시안처럼 마감까지 2시간 17분 남아요. */
+const voteTabOf = (room: TodayResponse): VoteTabStatusResponse => {
+  // 오늘 탭에 회차가 없어도 화면을 볼 수 있게 방 ID를 회차 ID로 써요.
+  const round = { roundId: room.round.roundId ?? room.room.roomId, roundDate: todayDate };
+  const closesAt = minutesFromNow(137);
+  const voterCount = room.members.filter(item => item.certification).length;
+  const amICertified = room.members.some(item => item.isMe && item.certification);
+  const fixedStatus =
+    state.voteStatus === "RESULT_UNSEEN" && seenResultRooms.has(room.room.roomId)
+      ? "RESULT_SEEN"
+      : state.voteStatus;
+  const status =
+    fixedStatus ??
+    (room.round.status === "VOTING"
+      ? !amICertified
+        ? "NO_VOTING_RIGHT"
+        : votedRounds.has(round.roundId)
+          ? "VOTED"
+          : "VOTING"
+      : room.members.length < MIN_VOTERS
+        ? "UNDER_THREE"
+        : "BEFORE_FIRST_VOTE");
+
+  switch (status) {
+    case "UNDER_THREE":
+      return { status, memberCount: room.members.length, memberLimit: room.room.memberLimit };
+    case "BEFORE_FIRST_VOTE": {
+      const uncertified = room.members.filter(item => !item.isMe && !item.certification);
+      const [first] = uncertified;
+      return {
+        status,
+        uncertifiedCount: uncertified.length,
+        firstUncertifiedMember: first
+          ? { memberId: first.memberId, nickname: first.nickname, color: first.color }
+          : null,
+      };
+    }
+    case "NOT_IN_LIST":
+      return { status, ...round, closesAt };
+    case "NO_VOTING_RIGHT":
+      return { status, ...round, closesAt, candidates: candidatesOf(room, true) };
+    case "VOTING":
+      return {
+        status,
+        ...round,
+        closesAt,
+        votedCount: OTHERS_VOTED,
+        voterCount,
+        candidates: candidatesOf(room, false),
+      };
+    case "VOTED":
+      return {
+        status,
+        ...round,
+        closesAt,
+        // 투표 완료는 나도 투표한 상태라 직접 제출했든 시나리오로 고정했든 같은 값이에요.
+        votedCount: OTHERS_VOTED + 1,
+        voterCount,
+      };
+    case "RESULT_UNSEEN":
+    case "RESULT_SEEN":
+      return { status, ...round };
+    case "TAP":
+      return { status, ...round, tapClosesAt: minutesFromNow(180) };
+    case "NO_VOTE":
+      return { status, ...round };
+    case "MOKTAK":
+      return {
+        status,
+        ...round,
+        moktakCount: RECEIVED_TAPS.reduce((sum, tap) => sum + tap.count, 0),
+      };
+  }
+};
 
 /** API 초안의 경로와 응답 모양을 흉내 내요. 없는 경로는 404예요. */
 export const mockHandler: MockHandler = (method, path, body) => {
@@ -393,11 +504,79 @@ export const mockHandler: MockHandler = (method, path, body) => {
     return ok();
   }
 
-  // 목탁 수행으로 바로 들어가도록 결과가 나온 상태로 줘요. 회차 ID는 방 ID와 같게 둬요.
   if ((match = route.match(/^GET \/api\/rooms\/(\d+)\/vote$/))) {
-    const roomId = Number(match[1]);
-    if (!state.rooms[roomId]) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
-    return ok({ status: "RESULT_UNSEEN", roundId: roomId });
+    const room = state.rooms[Number(match[1])];
+    if (!room) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
+    return ok(voteTabOf(room));
+  }
+
+  if ((match = route.match(/^GET \/api\/rounds\/(\d+)\/result$/))) {
+    const roundId = Number(match[1]);
+    const room =
+      Object.values(state.rooms).find(
+        item => (item.round.roundId ?? item.room.roomId) === roundId,
+      ) ?? Object.values(state.rooms)[0];
+    if (!room) return fail(404, "ROUND_001", "없는 회차입니다.");
+    const resultType = state.resultType ?? "PICKED";
+    // 시안처럼 못 참은 친구가 지목돼요. 없으면 나 아닌 첫 멤버예요.
+    const target =
+      room.members.find(item => !item.isMe && item.certification?.result === "FAILED") ??
+      room.members.find(item => !item.isMe);
+    const isPicked = resultType === "PICKED" || resultType === "DEFENDED";
+    const others = room.members.filter(item => !item.isMe);
+    return ok({
+      roundId,
+      roundDate: todayDate,
+      resultType,
+      picked:
+        isPicked && target
+          ? {
+              memberId: target.memberId,
+              nickname: target.nickname,
+              color: target.color,
+              equippedItemCodes: target.equippedItemCodes,
+              isLeft: false,
+              certificationResult: target.certification?.result ?? null,
+              spentAmount: target.certification?.spentAmount ?? null,
+            }
+          : null,
+      // 시안처럼 동점이면 두 명이 2표씩이에요.
+      voteCounts: isPicked
+        ? []
+        : others.slice(0, resultType === "ALL_SAFE" ? 2 : 1).map(item => ({
+            memberId: item.memberId,
+            nickname: item.nickname,
+            count: resultType === "ALL_SAFE" ? 2 : 1,
+            isLeft: false,
+          })),
+      allBosalCount: isPicked ? null : resultType === "ALL_BOSAL" ? 3 : 0,
+      isMePicked: false,
+      defenseUsableUntil: null,
+      defenseTicketCount: null,
+      canUseDefense: false,
+      canTap: resultType === "PICKED",
+      isTapExpired: false,
+      tappedMemberCount: 0,
+      isDefensePending: false,
+    });
+  }
+
+  if ((match = route.match(/^PUT \/api\/rooms\/(\d+)\/members\/me\/seen-result$/))) {
+    const room = state.rooms[Number(match[1])];
+    if (!room) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
+    room.entry.unseenResultRoundId = null;
+    seenResultRooms.add(room.room.roomId);
+    return ok();
+  }
+
+  if ((match = route.match(/^POST \/api\/rounds\/(\d+)\/votes$/))) {
+    const roundId = Number(match[1]);
+    if (votedRounds.has(roundId)) return fail(409, "VOTE_004", "이미 투표했습니다.");
+    const target = body as { targetType: "MEMBER" | "ALL_BOSAL"; targetMemberId?: number };
+    if (target.targetType === "MEMBER" && !target.targetMemberId)
+      return fail(400, "COMMON_002", "입력값 오류");
+    votedRounds.add(roundId);
+    return ok({ riceEarned: 5, potEarned: 5, isClosed: false }, 201);
   }
 
   if ((match = route.match(/^GET \/api\/rounds\/(\d+)\/taps\/received$/))) {
@@ -419,17 +598,6 @@ export const mockHandler: MockHandler = (method, path, body) => {
     const first = !moktakDoneRounds.has(roundId);
     moktakDoneRounds.add(roundId);
     return ok({ riceEarned: first ? 10 : 0 }, 201);
-  }
-
-  // 이마 톡톡으로 바로 들어가도록 시안처럼 민지보살이 지목된 결과로 줘요.
-  if ((match = route.match(/^GET \/api\/rounds\/(\d+)\/result$/))) {
-    return ok({
-      roundId: Number(match[1]),
-      resultType: "PICKED",
-      picked: { memberId: 2, nickname: "민지", color: "MINT", isLeft: false },
-      isMePicked: false,
-      canTap: true,
-    });
   }
 
   if (route.match(/^POST \/api\/rounds\/\d+\/taps\/start$/)) return ok(undefined, 201);

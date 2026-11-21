@@ -15,6 +15,7 @@ export const paths = {
   settings: "/settings",
   room: {
     home: (roomId: number) => `/rooms/${roomId}`,
+    info: (roomId: number) => `/rooms/${roomId}/info`,
     vote: (roomId: number) => `/rooms/${roomId}/vote`,
     tapTap: (roomId: number, roundId: number) => `/rooms/${roomId}/vote/${roundId}/tap`,
     foreheadTap: (roomId: number, roundId: number) => `/rooms/${roomId}/vote/${roundId}/forehead`,

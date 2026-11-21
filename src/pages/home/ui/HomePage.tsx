@@ -35,7 +35,7 @@ const HomePage = () => {
             rooms={me.data.rooms}
             today={today.data}
             onSelectRoom={selectRoom}
-            onRoomInfo={notReady("방 정보")}
+            onRoomInfo={() => navigate(paths.room.info(roomId))}
           />
           {/* 방을 바꾸면 새로 그려요. 모아 둔 콕이 이전 방 ID로 전송되고, 캐러셀 위치와 찌른 횟수도 초기화돼요. */}
           <TodayBosals

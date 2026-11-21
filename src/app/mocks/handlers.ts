@@ -49,6 +49,9 @@ const moktakDoneRounds = new Set<number>();
 /** 새로고침 전까지 내가 투표한 회차를 기억해요. */
 const votedRounds = new Set<number>();
 
+/** 나보다 먼저 투표한 친구 수예요. 내가 투표하면 1 늘어요. */
+const OTHERS_VOTED = 1;
+
 const pad = (value: number) => String(value).padStart(2, "0");
 const now = new Date();
 const thisMonth = `${now.getFullYear()}-${pad(now.getMonth() + 1)}`;
@@ -197,7 +200,7 @@ const voteTabOf = (room: TodayResponse): VoteTabStatusResponse => {
         status,
         ...round,
         closesAt,
-        votedCount: 1,
+        votedCount: OTHERS_VOTED,
         voterCount,
         candidates: candidatesOf(room, false),
       };
@@ -206,8 +209,9 @@ const voteTabOf = (room: TodayResponse): VoteTabStatusResponse => {
         status,
         ...round,
         closesAt,
-        votedCount: voterCount,
-        voterCount: room.members.length,
+        // 투표 완료는 나도 투표한 상태라 직접 제출했든 시나리오로 고정했든 같은 값이에요.
+        votedCount: OTHERS_VOTED + 1,
+        voterCount,
       };
     case "RESULT_UNSEEN":
     case "RESULT_SEEN":

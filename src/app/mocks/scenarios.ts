@@ -1,6 +1,6 @@
 import type { TodayMember, TodayResponse } from "@/entities/room";
 import type { MeResponse } from "@/entities/session";
-import type { VoteTabStatus } from "@/entities/vote";
+import type { RoundResultResponse, VoteTabStatus } from "@/entities/vote";
 
 import photo from "./assets/certification_photo.jpg";
 
@@ -136,6 +136,8 @@ export interface Scenario {
   uploadDelayMs?: number;
   /** 투표 탭 상태를 이걸로 고정해요. 없으면 방 인원과 회차 상태로 정해요. */
   voteStatus?: VoteTabStatus;
+  /** 투표 결과 종류예요. 없으면 지목(PICKED)이에요. */
+  resultType?: RoundResultResponse["resultType"];
 }
 
 // 방마다 멤버와 인증을 새로 만들어요. 같은 객체를 나누면 한 방의 리액션·삭제가 다른 방에도 반영돼요.
@@ -203,6 +205,30 @@ export const SCENARIOS: Record<string, () => Scenario> = {
   voteNotInList: () => ({ ...voteRound(() => fourMembers(2)), voteStatus: "NOT_IN_LIST" }),
   /** 05 투표: 결과를 아직 안 봤어요 */
   voteResult: () => ({ ...build(ROOMS, () => fourMembers(2)), voteStatus: "RESULT_UNSEEN" }),
+  /** 05 투표: 동점이라 뽑힌 보살이 없어요 */
+  voteResultSafe: () => ({
+    ...build(ROOMS, () => fourMembers(2)),
+    voteStatus: "RESULT_UNSEEN",
+    resultType: "ALL_SAFE",
+  }),
+  /** 05 투표: 과반이 오늘은 모두 보살을 골랐어요 */
+  voteResultAllBosal: () => ({
+    ...build(ROOMS, () => fourMembers(2)),
+    voteStatus: "RESULT_UNSEEN",
+    resultType: "ALL_BOSAL",
+  }),
+  /** 05 투표: 지목된 보살이 방어권을 썼어요 */
+  voteResultDefended: () => ({
+    ...build(ROOMS, () => fourMembers(2)),
+    voteStatus: "RESULT_UNSEEN",
+    resultType: "DEFENDED",
+  }),
+  /** 05 투표: 방 홈에 들어가면 안 본 결과가 먼저 떠요 */
+  voteResultEntry: () => {
+    const scenario = build(ROOMS, () => fourMembers(2));
+    scenario.rooms[1].entry.unseenResultRoundId = scenario.rooms[1].round.roundId;
+    return { ...scenario, voteStatus: "RESULT_UNSEEN" };
+  },
   /** 05 투표: 결과를 봤어요 */
   voteResultSeen: () => ({ ...build(ROOMS, () => fourMembers(2)), voteStatus: "RESULT_SEEN" }),
   /** 05 투표: 결과를 보고 이마 톡톡을 보낼 수 있어요 */

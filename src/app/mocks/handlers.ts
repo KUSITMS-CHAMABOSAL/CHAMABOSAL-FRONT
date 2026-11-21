@@ -497,6 +497,65 @@ export const mockHandler: MockHandler = (method, path, body) => {
     return ok(voteTabOf(room));
   }
 
+  if ((match = route.match(/^GET \/api\/rounds\/(\d+)\/result$/))) {
+    const roundId = Number(match[1]);
+    const room =
+      Object.values(state.rooms).find(
+        item => (item.round.roundId ?? item.room.roomId) === roundId,
+      ) ?? Object.values(state.rooms)[0];
+    if (!room) return fail(404, "ROUND_001", "없는 회차입니다.");
+    const resultType = state.resultType ?? "PICKED";
+    // 시안처럼 못 참은 친구가 지목돼요. 없으면 나 아닌 첫 멤버예요.
+    const target =
+      room.members.find(item => !item.isMe && item.certification?.result === "FAILED") ??
+      room.members.find(item => !item.isMe);
+    const isPicked = resultType === "PICKED" || resultType === "DEFENDED";
+    const others = room.members.filter(item => !item.isMe);
+    return ok({
+      roundId,
+      roundDate: todayDate,
+      resultType,
+      picked:
+        isPicked && target
+          ? {
+              memberId: target.memberId,
+              nickname: target.nickname,
+              color: target.color,
+              equippedItemCodes: target.equippedItemCodes,
+              isLeft: false,
+              certificationResult: target.certification?.result ?? null,
+              spentAmount: target.certification?.spentAmount ?? null,
+            }
+          : null,
+      // 시안처럼 동점이면 두 명이 2표씩이에요.
+      voteCounts: isPicked
+        ? []
+        : others.slice(0, resultType === "ALL_SAFE" ? 2 : 1).map(item => ({
+            memberId: item.memberId,
+            nickname: item.nickname,
+            count: resultType === "ALL_SAFE" ? 2 : 1,
+            isLeft: false,
+          })),
+      allBosalCount: isPicked ? null : resultType === "ALL_BOSAL" ? 3 : 0,
+      isMePicked: false,
+      defenseUsableUntil: null,
+      defenseTicketCount: null,
+      canUseDefense: false,
+      canTap: resultType === "PICKED",
+      isTapExpired: false,
+      tappedMemberCount: 0,
+      isDefensePending: false,
+    });
+  }
+
+  if ((match = route.match(/^PUT \/api\/rooms\/(\d+)\/members\/me\/seen-result$/))) {
+    const room = state.rooms[Number(match[1])];
+    if (!room) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
+    room.entry.unseenResultRoundId = null;
+    if (state.voteStatus === "RESULT_UNSEEN") state.voteStatus = "RESULT_SEEN";
+    return ok();
+  }
+
   if ((match = route.match(/^POST \/api\/rounds\/(\d+)\/votes$/))) {
     const roundId = Number(match[1]);
     if (votedRounds.has(roundId)) return fail(409, "VOTE_004", "이미 투표했습니다.");

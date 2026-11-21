@@ -12,6 +12,7 @@ import { VOTE_EMOJI } from "../config/emoji";
 import EmojiFigure from "./EmojiFigure";
 import RoomTabs from "./RoomTabs";
 import VoteHeader from "./VoteHeader";
+import VoteResult from "./VoteResult";
 import Voting from "./Voting";
 
 interface VoteBoardProps {
@@ -154,9 +155,8 @@ const VoteContent = ({ roomId, view, onVoteClosed }: VoteContentProps) => {
       );
     case "moktak":
       return <Navigate to={paths.room.tapTap(roomId, view.roundId)} replace />;
-    // 결과 화면은 다음 단계에서 채워요.
     case "result":
-      return null;
+      return <VoteResult roomId={roomId} roundId={view.roundId} isSeen={view.isSeen} />;
   }
 };
 

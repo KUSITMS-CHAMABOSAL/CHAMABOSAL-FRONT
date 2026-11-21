@@ -97,3 +97,52 @@ export interface MoktakCompleteResponse {
   /** 번뇌 완료 보상이에요. 처음 완료하면 10, 이미 완료했거나 방 인원이 1명이면 0 */
   riceEarned: number;
 }
+
+/** 결과 종류예요. `ALL_BOSAL` 과반이 모두 보살, `ALL_SAFE` 동점·0표로 모두 무사, `DEFENDED` 지목된 사람이 방어권을 씀 */
+export type RoundResultType = "PICKED" | "ALL_BOSAL" | "ALL_SAFE" | "DEFENDED";
+
+/** 지목된 보살이에요. PICKED·DEFENDED일 때만 와요. */
+export interface PickedMember {
+  memberId: number;
+  nickname: string;
+  color: BosalColor;
+  equippedItemCodes: string[];
+  /** 투표 중에 방을 나간 "떠난 보살"이에요. */
+  isLeft: boolean;
+  /** 인증하지 않았으면 null */
+  certificationResult: CertificationResult | null;
+  /** 인증하지 않았거나 참았으면 null */
+  spentAmount: number | null;
+}
+
+/** 표를 받은 멤버예요. 지목이 없을 때만 와요. */
+export interface VoteCount {
+  memberId: number;
+  nickname: string;
+  count: number;
+  isLeft: boolean;
+}
+
+/** GET /api/rounds/{roundId}/result. 누가 누구에게 투표했는지는 오지 않아요. */
+export interface RoundResultResponse {
+  roundId: number;
+  roundDate: string;
+  resultType: RoundResultType;
+  picked: PickedMember | null;
+  /** 지목이 없을 때(ALL_BOSAL·ALL_SAFE)만, 득표 수가 많은 순. 지목이 있으면 빈 배열 */
+  voteCounts: VoteCount[];
+  /** 지목이 없을 때만 "오늘은 모두 보살" 득표 수. 지목이 있으면 null */
+  allBosalCount: number | null;
+  isMePicked: boolean;
+  /** 내가 지목됐고 톡톡 마감 전에 처음 열었을 때만, 처음 연 시각 + 2분 */
+  defenseUsableUntil: string | null;
+  /** 내가 지목됐을 때만, 보유한 방어권 개수 */
+  defenseTicketCount: number | null;
+  canUseDefense: boolean;
+  /** 지금 이마 톡톡을 보낼 수 있어요. 그 회차에 투표했고 지목되지 않았을 때만 true일 수 있어요. */
+  canTap: boolean;
+  isTapExpired: boolean;
+  /** 나를 뺀, 그 회차에 한 번 이상 톡톡한 멤버 수 */
+  tappedMemberCount: number;
+  isDefensePending: boolean;
+}

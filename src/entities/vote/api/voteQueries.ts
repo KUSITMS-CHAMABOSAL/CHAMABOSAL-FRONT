@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { getReceivedTaps, getVoteTab } from "./voteApi";
+import { getReceivedTaps, getRoundResult, getVoteTab } from "./voteApi";
 
 export const voteQueries = {
   all: () => ["vote"] as const,
@@ -8,6 +8,11 @@ export const voteQueries = {
     queryOptions({
       queryKey: [...voteQueries.all(), "room", roomId, "tab"],
       queryFn: () => getVoteTab(roomId),
+    }),
+  result: (roundId: number) =>
+    queryOptions({
+      queryKey: [...voteQueries.all(), roundId, "result"],
+      queryFn: () => getRoundResult(roundId),
     }),
   receivedTaps: (roundId: number) =>
     queryOptions({

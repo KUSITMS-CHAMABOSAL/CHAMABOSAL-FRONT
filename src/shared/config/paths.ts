@@ -17,6 +17,7 @@ export const paths = {
     home: (roomId: number) => `/rooms/${roomId}`,
     vote: (roomId: number) => `/rooms/${roomId}/vote`,
     tapTap: (roomId: number, roundId: number) => `/rooms/${roomId}/vote/${roundId}/tap`,
+    foreheadTap: (roomId: number, roundId: number) => `/rooms/${roomId}/vote/${roundId}/forehead`,
     certify: (roomId: number) => `/rooms/${roomId}/certify`,
     /** 결과를 빼면 쿼리 없는 경로예요. 탭바를 숨길 화면인지 볼 때 써요. */
     certifyWrite: (roomId: number, result?: CertificationResult) =>

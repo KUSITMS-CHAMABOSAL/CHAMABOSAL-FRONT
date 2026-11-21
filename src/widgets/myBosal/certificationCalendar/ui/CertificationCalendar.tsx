@@ -12,7 +12,7 @@ const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 const WEEKDAY_COLOR = (index: number) => {
   if (index === 0) return "var(--adaptiveRed500)";
   if (index === 6) return "var(--adaptiveBlue500)";
-  return "var(--adaptiveGrey600)";
+  return "var(--adaptiveGrey700)";
 };
 
 // 시안 색(민트·빨강 그라데이션)과 가장 가까운 TDS 색이에요.
@@ -63,24 +63,24 @@ const CertificationCalendar = ({ roomId }: CertificationCalendarProps) => {
       <TableRow
         align="space-between"
         left={
-          <Paragraph typography="t6" fontWeight="bold" color="var(--adaptiveGrey900)">
+          <Paragraph typography="st10" fontWeight="bold" color="var(--adaptiveGrey900)">
             인증 캘린더
           </Paragraph>
         }
         right={null}
       />
-      <div className="mt-3.25 flex gap-2.75 px-5" aria-hidden>
+      <div className="mt-2.75 flex gap-2.75 px-5" aria-hidden>
         {(["ENDURED", "FAILED"] as const).map(result => (
           <div key={result} className="flex items-center gap-1.5">
             <span className={cn("size-4 rounded-full", RESULT_STYLE[result].circle)} />
-            <Paragraph typography="t7" fontWeight="medium" color="var(--adaptiveGrey600)">
+            <Paragraph typography="t7" fontWeight="medium" color="var(--adaptiveGrey700)">
               {RESULT_STYLE[result].label}
             </Paragraph>
           </div>
         ))}
       </div>
 
-      <div className="mx-5 mt-3.25 mb-4.75 rounded-xl bg-(--adaptiveBackground) px-1.75 pt-4.75 pb-4.25 shadow-[0_0_4px_var(--adaptiveGrey200)]">
+      <div className="mx-5 mt-2.75 mb-4.75 rounded-xl bg-(--adaptiveBackground) px-1.75 pt-4.75 pb-4.25 shadow-[0_0_4px_var(--adaptiveGrey200)]">
         {/* 화살표는 누를 영역(48px)을 지키고, 아이콘(24px) 위치와 줄 높이만 시안에 맞춰요. */}
         <div className="-mx-1.25 flex h-6.75 items-center justify-between">
           <IconButton

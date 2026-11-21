@@ -4,10 +4,12 @@ import { useLocation, useNavigate } from "react-router";
 import type { VoteCandidate } from "@/entities/vote";
 import { paths } from "@/shared/config";
 
+import VotingChoose from "./VotingChoose";
 import VotingPreview from "./VotingPreview";
 
 interface VotingProps {
   roomId: number;
+  roundId: number;
   /** 방 탭이에요. 미리보기에만 있고 후보 고르기에는 없어요(시안). */
   roomTabs: ReactNode;
   closesAt: string;
@@ -22,12 +24,29 @@ interface VotingState {
 }
 
 /** 투표 중이에요. 후보 미리보기에서 시작해 후보 고르기로 넘어가요. */
-const Voting = ({ roomId, roomTabs, closesAt, candidates, canVote, onVoteClosed }: VotingProps) => {
+const Voting = ({
+  roomId,
+  roundId,
+  roomTabs,
+  closesAt,
+  candidates,
+  canVote,
+  onVoteClosed,
+}: VotingProps) => {
   const navigate = useNavigate();
   const isChoosing = (useLocation().state as VotingState | null)?.step === "choose";
 
-  // 후보 고르기는 다음 단계에서 채워요.
-  if (isChoosing && canVote) return null;
+  // 투표권이 없으면 후보 고르기로 오지 않지만, 주소 기록으로 들어와도 미리보기를 보여줘요.
+  if (isChoosing && canVote)
+    return (
+      <VotingChoose
+        roomId={roomId}
+        roundId={roundId}
+        closesAt={closesAt}
+        candidates={candidates}
+        onVoteClosed={onVoteClosed}
+      />
+    );
 
   return (
     <VotingPreview

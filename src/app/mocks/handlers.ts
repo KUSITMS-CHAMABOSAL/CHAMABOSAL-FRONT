@@ -46,6 +46,9 @@ let uploadCount = 0;
 /** 새로고침 전까지 수행을 마친 회차를 기억해요. */
 const moktakDoneRounds = new Set<number>();
 
+/** 새로고침 전까지 내가 투표한 회차를 기억해요. */
+const votedRounds = new Set<number>();
+
 const pad = (value: number) => String(value).padStart(2, "0");
 const now = new Date();
 const thisMonth = `${now.getFullYear()}-${pad(now.getMonth() + 1)}`;
@@ -162,9 +165,11 @@ const voteTabOf = (room: TodayResponse): VoteTabStatusResponse => {
   const status =
     state.voteStatus ??
     (room.round.status === "VOTING"
-      ? amICertified
-        ? "VOTING"
-        : "NO_VOTING_RIGHT"
+      ? !amICertified
+        ? "NO_VOTING_RIGHT"
+        : votedRounds.has(round.roundId)
+          ? "VOTED"
+          : "VOTING"
       : room.members.length < MIN_VOTERS
         ? "UNDER_THREE"
         : "BEFORE_FIRST_VOTE");
@@ -490,6 +495,16 @@ export const mockHandler: MockHandler = (method, path, body) => {
     const room = state.rooms[Number(match[1])];
     if (!room) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
     return ok(voteTabOf(room));
+  }
+
+  if ((match = route.match(/^POST \/api\/rounds\/(\d+)\/votes$/))) {
+    const roundId = Number(match[1]);
+    if (votedRounds.has(roundId)) return fail(409, "VOTE_004", "이미 투표했습니다.");
+    const target = body as { targetType: "MEMBER" | "ALL_BOSAL"; targetMemberId?: number };
+    if (target.targetType === "MEMBER" && !target.targetMemberId)
+      return fail(400, "COMMON_002", "입력값 오류");
+    votedRounds.add(roundId);
+    return ok({ riceEarned: 5, potEarned: 5, isClosed: false }, 201);
   }
 
   if ((match = route.match(/^GET \/api\/rounds\/(\d+)\/taps\/received$/))) {

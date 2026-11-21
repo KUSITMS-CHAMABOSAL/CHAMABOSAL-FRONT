@@ -39,6 +39,7 @@ const VoteBoard = ({ roomId, rooms, view, onSelectRoom, onVoteClosed }: VoteBoar
     return (
       <Voting
         roomId={roomId}
+        roundId={view.roundId}
         roomTabs={roomTabs}
         closesAt={view.closesAt}
         candidates={view.candidates}

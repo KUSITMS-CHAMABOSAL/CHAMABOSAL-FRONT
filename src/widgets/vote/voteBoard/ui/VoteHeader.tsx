@@ -7,6 +7,8 @@ interface VoteHeaderProps {
   closesAt: string;
   /** 남은 시간이 0이 되면 한 번 불러요. 마감된 상태를 다시 받아요. */
   onClosed: () => void;
+  /** "익명투표로 진행돼요"를 보여줘요. 후보 고르기에서는 시안에 없어요. */
+  showAnonymousNotice?: boolean;
 }
 
 /** 남은 시간을 다시 그리는 간격이에요. */
@@ -14,7 +16,7 @@ const TICK_MS = 1000;
 
 // 🔖 서버 시간 보정(Environment.getServerTime)이 들어오면 기기 시각 대신 써요.
 /** 투표 중·투표 완료 화면 위쪽이에요. 마감까지 남은 시간이 1초마다 줄어요. */
-const VoteHeader = ({ closesAt, onClosed }: VoteHeaderProps) => {
+const VoteHeader = ({ closesAt, onClosed, showAnonymousNotice = true }: VoteHeaderProps) => {
   const [now, setNow] = useState(Date.now);
   const secondsLeft = secondsUntil(closesAt, now);
   const isClosed = secondsLeft === 0;
@@ -42,7 +44,11 @@ const VoteHeader = ({ closesAt, onClosed }: VoteHeaderProps) => {
           흔들린 보살은?
         </Top.TitleParagraph>
       }
-      subtitleBottom={<Top.SubtitleParagraph size={17}>익명투표로 진행돼요</Top.SubtitleParagraph>}
+      subtitleBottom={
+        showAnonymousNotice && (
+          <Top.SubtitleParagraph size={17}>익명투표로 진행돼요</Top.SubtitleParagraph>
+        )
+      }
     />
   );
 };

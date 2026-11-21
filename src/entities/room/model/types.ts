@@ -1,6 +1,6 @@
 import type { BosalColor, CertificationResult, LockReason, ReactionType } from "@/shared/types";
 
-// GET /api/rooms/{roomId}/today 응답이에요. 이름과 필드는 API 문서(초안 0.2.0)와 같아요.
+// GET /api/rooms/{roomId}/today 응답이에요. 이름과 필드는 API 문서(Swagger v1.0.0)와 같아요.
 
 /** 절약 목표. `DELIVERY` 배달 끊기, `SNACK` 간식 참기, `SHOPPING` 쇼핑 참기, `ETC` 자율 절약 */
 export type RoomGoal = "DELIVERY" | "SNACK" | "SHOPPING" | "ETC";
@@ -45,6 +45,10 @@ export interface TodayCertification {
   /** 만료 URL. 없거나 삭제됐으면 null */
   imageUrl: string | null;
   certifiedAt: string;
+  /** 잘 참았어요 수 */
+  goodCount: number;
+  /** 아쉬워요 수 */
+  badCount: number;
   myReaction: ReactionType | null;
   /** 수정·삭제 마감 시각 (인증 후 10분) */
   editableUntil: string;
@@ -72,7 +76,6 @@ export interface TodayMe {
 }
 
 export interface TodayEntry {
-  unplayedTapRoundId: number | null;
   unseenResultRoundId: number | null;
   hasUnseenPotCelebration: boolean;
 }
@@ -104,7 +107,6 @@ export interface RoomSummary {
   /** 절약 목표별 설명이에요. 줄바꿈은 `\n` */
   goalDescription: string;
   memberCount: number;
-  memberLimit: number;
 }
 
 /** GET /api/invites/{token}. 막힌 경우도 200으로 오고 `status`로 화면을 나눠요. */

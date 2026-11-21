@@ -7,8 +7,8 @@ import thumbDown from "../assets/icon_thumbdown_fill.svg";
 import thumbUp from "../assets/icon_thumbup_fill.svg";
 
 const OPTIONS = [
-  { value: "RICE", label: "잘 참았어요", icon: thumbUp },
-  { value: "MOKTAK", label: "아쉬워요", icon: thumbDown },
+  { value: "GOOD", label: "잘 참았어요", icon: thumbUp },
+  { value: "BAD", label: "아쉬워요", icon: thumbDown },
 ] as const;
 
 interface ReactionButtonsProps {

@@ -57,7 +57,7 @@ const RoomTabLayout = () => {
   if (param !== undefined && roomId === undefined) return <NotFoundPage />;
 
   // 솥을 다 채웠는데 축하를 안 봤으면 방 홈보다 먼저 띄워요. 투표·톡톡으로 채워도 방 홈에 오면 떠요.
-  // 🔖 받은 톡톡(entry.unplayedTapRoundId), 결과(unseenResultRoundId) 진입을 붙이면 이 앞에 둬요.
+  // 🔖 결과(entry.unseenResultRoundId) 진입을 붙이면 이 앞에 둬요.
   if (isRoomHome && today.data?.entry.hasUnseenPotCelebration)
     return <Navigate to={paths.room.pot(roomId, today.data.room.potCompletedCount)} replace />;
 

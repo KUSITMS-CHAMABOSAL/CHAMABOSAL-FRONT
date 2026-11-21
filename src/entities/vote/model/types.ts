@@ -14,7 +14,9 @@ export type VoteTabStatus =
   | "TAP"
   /** 지목된 본인이 목탁 수행을 해야 해요. */
   | "MOKTAK"
-  | "RESULT_SEEN";
+  | "RESULT_SEEN"
+  /** 아무도 투표하지 않아 결과가 없어요. */
+  | "NO_VOTE";
 
 /**
  * GET /api/rooms/{roomId}/vote. 방의 투표 탭 상태예요.

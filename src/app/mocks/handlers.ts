@@ -478,6 +478,13 @@ export const mockHandler: MockHandler = (method, path, body) => {
     return ok();
   }
 
+  if ((match = route.match(/^GET \/api\/rooms\/(\d+)\/members\/me\/leave-preview$/))) {
+    const room = state.rooms[Number(match[1])];
+    if (!room) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");
+    // 목에서는 솥에 담긴 공양미를 그대로 사라질 양으로 줘요. 실제 계산은 서버(RICE-03)가 해요.
+    return ok({ riceToLose: room.pot.amount });
+  }
+
   if ((match = route.match(/^DELETE \/api\/rooms\/(\d+)\/members\/me$/))) {
     const roomId = Number(match[1]);
     if (!state.rooms[roomId]) return fail(404, "ROOM_005", "없거나 삭제된 방입니다.");

@@ -32,7 +32,7 @@ const BosalProfile = ({ nickname, color }: BosalProfileProps) => (
         {`${nickname}보살`}
       </Paragraph>
       {/* 🔖 오늘 인증 상태에 따라 바뀌는 문구인지 디자이너 확인이 필요해요. */}
-      <Paragraph typography="t6" fontWeight="semibold" color="var(--adaptiveGrey600)">
+      <Paragraph typography="t6" fontWeight="semibold" color="var(--adaptiveGrey700)">
         오늘도 맑은 마음이에요.
       </Paragraph>
     </div>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 
 import { Button } from "@toss/tds-mobile";
 
+import { useLeavePreviewQuery } from "@/entities/room";
 import { paths } from "@/shared/config";
 import { useTabBarToast } from "@/shared/lib";
 
@@ -18,6 +19,8 @@ interface LeaveRoomButtonProps {
 const LeaveRoomButton = ({ roomId, roomName }: LeaveRoomButtonProps) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const { mutate: leave, isPending } = useLeaveRoom(roomId);
+  // 확인 창이 열린 뒤 공양미 문장이 붙어 창 높이가 바뀌지 않게, 버튼이 보일 때 미리 받아요.
+  const preview = useLeavePreviewQuery(roomId);
   const navigate = useNavigate();
   const openToast = useTabBarToast();
 
@@ -37,13 +40,18 @@ const LeaveRoomButton = ({ roomId, roomName }: LeaveRoomButtonProps) => {
         color="danger"
         variant="weak"
         display="block"
-        onClick={() => setIsConfirmOpen(true)}
+        onClick={() => {
+          setIsConfirmOpen(true);
+          // 받아 둔 값이 오래됐으면 다시 받아요. 실제로 깎이는 양은 나가는 순간 서버가 정해요.
+          if (preview.isStale) void preview.refetch();
+        }}
       >
         나가기
       </Button>
       <LeaveRoomDialog
         open={isConfirmOpen}
         roomName={roomName}
+        riceToLose={preview.data?.riceToLose}
         isPending={isPending}
         onClose={() => setIsConfirmOpen(false)}
         onConfirm={confirmLeave}

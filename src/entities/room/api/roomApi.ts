@@ -2,6 +2,7 @@ import { request } from "@/shared/api";
 
 import type {
   InvitePreview,
+  LeavePreview,
   NewColorResponse,
   PotCelebration,
   TodayResponse,
@@ -19,3 +20,6 @@ export const getNewColor = () => request<NewColorResponse>("GET", "/api/rooms/ne
 /** `seq`번째로 다 채운 솥의 축하 화면이에요. 보통 오늘 탭의 `room.potCompletedCount`를 넣어요. */
 export const getPotCelebration = (roomId: number, seq: number) =>
   request<PotCelebration>("GET", `/api/rooms/${roomId}/pots/${seq}`);
+
+export const getLeavePreview = (roomId: number) =>
+  request<LeavePreview>("GET", `/api/rooms/${roomId}/members/me/leave-preview`);

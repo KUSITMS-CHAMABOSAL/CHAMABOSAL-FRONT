@@ -13,7 +13,8 @@ const VotePage = () => {
   const navigate = useNavigate();
 
   if (!data || !me.data) {
-    if (error) throw error;
+    const failure = error ?? me.error;
+    if (failure) throw failure;
     // 🔖 로딩 시안이 없어 아직 아무것도 그리지 않아요.
     return null;
   }

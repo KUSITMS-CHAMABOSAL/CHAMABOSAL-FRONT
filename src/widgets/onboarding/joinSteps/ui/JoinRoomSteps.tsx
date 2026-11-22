@@ -7,11 +7,13 @@ import { BOSAL_COLOR_NAME } from "@/entities/bosal";
 import { useInvitePreviewQuery } from "@/entities/room";
 import { useMeQuery } from "@/entities/session";
 import { NicknameForm } from "@/features/onboarding/nicknameForm";
+import { ServiceTour } from "@/features/onboarding/takeServiceTour";
 import { useJoinRoom } from "@/features/room/joinRoom";
 import { isApiError } from "@/shared/api";
 import { paths } from "@/shared/config";
 import type { BosalColor } from "@/shared/types";
 
+import { useNeedsServiceTour } from "../model/useNeedsServiceTour";
 import JoinBlocked, { type JoinBlockedReason } from "./JoinBlocked";
 import InvitePreview from "./InvitePreview";
 import ReceiveBosal from "./ReceiveBosal";
@@ -22,12 +24,15 @@ const isBosalColor = (value: unknown): value is BosalColor =>
 type Step =
   | { kind: "preview" }
   | { kind: "nickname" }
-  | { kind: "bosal"; roomId: number; nickname: string; color: BosalColor };
+  | { kind: "bosal"; roomId: number; nickname: string; color: BosalColor }
+  | { kind: "tour"; roomId: number };
 
 /** 단계는 기록(location.state)에 둬요. 참여한 뒤 보살 받기는 새로고침해도 다시 그릴 수 있게 값을 함께 둬요. */
 const getStep = (state: unknown): Step => {
   if (typeof state !== "object" || state === null || !("step" in state)) return { kind: "preview" };
   if (state.step === "nickname") return { kind: "nickname" };
+  if (state.step === "tour" && "roomId" in state && typeof state.roomId === "number")
+    return { kind: "tour", roomId: state.roomId };
   if (
     state.step === "bosal" &&
     "roomId" in state &&
@@ -60,7 +65,7 @@ interface JoinRoomStepsProps {
 }
 
 /**
- * 초대 미리보기 → 닉네임 → 내 보살 받기 단계예요. 막히면 참여 불가 화면, 이미 멤버면 그 방 홈으로 가요.
+ * 초대 미리보기 → 닉네임 → 내 보살 받기 → (처음이면 온보딩) 단계예요. 막히면 참여 불가 화면, 이미 멤버면 그 방 홈으로 가요.
  * 참여한 뒤에는 뒤로가기로 미리보기나 닉네임에 돌아가지 않고 그 방 홈으로 가요.
  */
 const JoinRoomSteps = ({ token }: JoinRoomStepsProps) => {
@@ -78,14 +83,26 @@ const JoinRoomSteps = ({ token }: JoinRoomStepsProps) => {
   const [takenNickname, setTakenNickname] = useState<string | null>(null);
 
   const step = getStep(state);
+  const needsTour = useNeedsServiceTour(step.kind === "bosal" ? step.roomId : undefined);
 
   if (step.kind === "bosal") {
     return (
       <ReceiveBosal
         nickname={step.nickname}
         color={step.color}
-        onReceive={() => navigate(paths.room.home(step.roomId), { replace: true })}
+        onReceive={() =>
+          needsTour
+            ? navigate(paths.invite(token), { state: { step: "tour", roomId: step.roomId } })
+            : navigate(paths.room.home(step.roomId), { replace: true })
+        }
       />
+    );
+  }
+
+  // 참여한 뒤라 아래 '들어간 방' 분기보다 먼저 그려요.
+  if (step.kind === "tour") {
+    return (
+      <ServiceTour onFinish={() => navigate(paths.room.home(step.roomId), { replace: true })} />
     );
   }
 

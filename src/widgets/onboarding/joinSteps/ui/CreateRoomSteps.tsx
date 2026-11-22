@@ -5,6 +5,7 @@ import { Navigate, useLocation, useNavigate } from "react-router";
 
 import { MAX_JOINED_ROOMS, ROOM_GOALS, type RoomGoal, useNewColorQuery } from "@/entities/room";
 import { NicknameForm } from "@/features/onboarding/nicknameForm";
+import { ServiceTour } from "@/features/onboarding/takeServiceTour";
 import { CreateRoomForm, useCreateRoom } from "@/features/room/createRoom";
 import { isApiError } from "@/shared/api";
 import { paths } from "@/shared/config";
@@ -14,12 +15,14 @@ import {
   markCreateRoomFlowDone,
   newCreateRoomFlowId,
 } from "../model/createRoomFlow";
+import { useNeedsServiceTour } from "../model/useNeedsServiceTour";
 import ReceiveBosal from "./ReceiveBosal";
 import RoomCreated from "./RoomCreated";
 
 type Step =
   | { kind: "nickname" }
   | { kind: "bosal" }
+  | { kind: "tour" }
   | { kind: "form" }
   | { kind: "created"; roomId: number; goal: RoomGoal };
 
@@ -38,7 +41,8 @@ const getFlowId = (state: unknown) =>
 const getStep = (state: unknown): Step => {
   if (typeof state !== "object" || state === null || !("step" in state))
     return { kind: "nickname" };
-  if (state.step === "bosal" || state.step === "form") return { kind: state.step };
+  if (state.step === "bosal" || state.step === "tour" || state.step === "form")
+    return { kind: state.step };
   if (
     state.step === "created" &&
     "roomId" in state &&
@@ -51,7 +55,7 @@ const getStep = (state: unknown): Step => {
 };
 
 /**
- * 닉네임 → 내 보살 받기 → 방 만들기 → 초대 공유 단계예요. 단계를 기록에 남겨 토스 뒤로가기로 이전 단계에 돌아가요.
+ * 닉네임 → 내 보살 받기 → (처음이면 온보딩) → 방 만들기 → 초대 공유 단계예요. 단계를 기록에 남겨 토스 뒤로가기로 이전 단계에 돌아가요.
  * 보살 색은 들어오자마자 뽑아 두고, 보살 받기에서 보여준 색을 방을 만들 때 그대로 보내요.
  * 방을 만든 뒤에는 뒤로가기로 만들기 단계에 돌아가지 않고 그 방 홈으로 가요.
  * 방 홈으로 나갔다가 뒤로가기로 돌아와 화면이 다시 그려져도, 흐름 ID로 끝난 흐름인지 알아봐요.
@@ -66,6 +70,7 @@ const CreateRoomSteps = () => {
   const { data: drawn, isFetching: isDrawing, refetch: drawAgain } = useNewColorQuery();
   const { mutate: create, isPending } = useCreateRoom();
   const { openToast } = useToast();
+  const needsTour = useNeedsServiceTour();
 
   const step = getStep(state);
   const flowId = getFlowId(state);
@@ -117,7 +122,20 @@ const CreateRoomSteps = () => {
       <ReceiveBosal
         nickname={nickname}
         color={drawn.color}
-        onReceive={() => navigate(paths.createRoom, { state: { step: "form", flowId } })}
+        onReceive={() =>
+          navigate(paths.createRoom, { state: { step: needsTour ? "tour" : "form", flowId } })
+        }
+      />
+    );
+  }
+
+  if (step.kind === "tour") {
+    return (
+      <ServiceTour
+        // 온보딩 기록을 방 만들기로 바꿔서, 뒤로가기로 온보딩에 다시 오지 않고 보살 받기로 가요.
+        onFinish={() =>
+          navigate(paths.createRoom, { replace: true, state: { step: "form", flowId } })
+        }
       />
     );
   }

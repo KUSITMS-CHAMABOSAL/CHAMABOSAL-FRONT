@@ -1,6 +1,12 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { getInvitePreview, getNewColor, getPotCelebration, getToday } from "./roomApi";
+import {
+  getInvitePreview,
+  getLeavePreview,
+  getNewColor,
+  getPotCelebration,
+  getToday,
+} from "./roomApi";
 
 export const roomQueries = {
   all: () => ["room"] as const,
@@ -29,6 +35,14 @@ export const roomQueries = {
       queryKey: [...roomQueries.all(), "new-color"],
       queryFn: getNewColor,
       staleTime: Infinity,
+      gcTime: 0,
+    }),
+  /** 나가기 확인을 열 때마다 새로 받아요. 공양미는 계속 바뀌어요. */
+  leavePreview: (roomId: number) =>
+    queryOptions({
+      queryKey: [...roomQueries.all(), roomId, "leave-preview"],
+      queryFn: () => getLeavePreview(roomId),
+      staleTime: 0,
       gcTime: 0,
     }),
 };

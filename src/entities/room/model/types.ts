@@ -152,3 +152,9 @@ export interface PotCelebration {
 export interface NewColorResponse {
   color: BosalColor;
 }
+
+/** GET /api/rooms/{roomId}/members/me/leave-preview */
+export interface LeavePreview {
+  /** 지금 나가면 사라질 공양미 석. 목표를 채운 방이거나 잔액이 0석 이하면 0 */
+  riceToLose: number;
+}

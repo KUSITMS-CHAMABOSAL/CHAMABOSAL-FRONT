@@ -49,6 +49,7 @@ const LeaveRoomButton = ({ roomId, roomName, children }: LeaveRoomButtonProps) =
       )}
       <LeaveRoomDialog
         open={isConfirmOpen}
+        roomId={roomId}
         roomName={roomName}
         isPending={isPending}
         onClose={() => setIsConfirmOpen(false)}

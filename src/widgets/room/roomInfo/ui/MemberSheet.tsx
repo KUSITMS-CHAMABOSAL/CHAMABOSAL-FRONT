@@ -9,18 +9,35 @@ interface MemberSheetProps {
   open: boolean;
   roomName: string;
   onClose: () => void;
+  /** 방장이 다른 멤버를 볼 때만 [내보내기]를 보여줘요. */
+  canKick: boolean;
+  /** 투표가 열린 뒤부터 결과 발표까지는 내보낼 수 없어요. */
+  isKickDisabled: boolean;
   onKick: () => void;
 }
 
-/** 방장이 멤버를 눌렀을 때 뜨는 시트예요(시안 3-4 내보내기). 이번 달 기록을 보고 내보낼 수 있어요. */
-const MemberSheet = ({ member, open, roomName, onClose, onKick }: MemberSheetProps) => (
+/**
+ * 멤버를 눌렀을 때 뜨는 시트예요(시안 3-4 내보내기). 누구나 이번 달 기록을 볼 수 있어요.
+ * [내보내기]는 방장에게만, 자기 자신에게는 없어요(설계서 10).
+ */
+const MemberSheet = ({
+  member,
+  open,
+  roomName,
+  onClose,
+  canKick,
+  isKickDisabled,
+  onKick,
+}: MemberSheetProps) => (
   <BottomSheet
     open={open}
     onClose={onClose}
     cta={
-      <BottomSheet.CTA color="danger" variant="weak" onClick={onKick}>
-        내보내기
-      </BottomSheet.CTA>
+      canKick && (
+        <BottomSheet.CTA color="danger" variant="weak" disabled={isKickDisabled} onClick={onKick}>
+          내보내기
+        </BottomSheet.CTA>
+      )
     }
   >
     {member && (

@@ -8,7 +8,6 @@ import { KickMemberDialog, useKickMember } from "@/features/room/kickMember";
 import { LeaveRoomButton } from "@/features/room/leaveRoom";
 import { CopyInviteLinkButton, useCopyInviteLink } from "@/features/room/shareInvite";
 import { isApiError } from "@/shared/api";
-import { cn } from "@/shared/lib";
 
 import { ArrowLeftIcon } from "../assets";
 import MemberSheet from "./MemberSheet";
@@ -19,10 +18,10 @@ interface RoomInfoProps {
 
 /**
  * 방 정보예요(시안 3-2). 함께하는 보살의 이번 달 기록, 친구 초대, 방 나가기를 보여줘요.
- * 방장은 다른 멤버를 눌러 시트에서 내보낼 수 있어요.
+ * 멤버를 누르면 이번 달 기록 시트가 뜨고, 방장은 거기서 다른 멤버를 내보낼 수 있어요.
  */
 const RoomInfo = ({ today }: RoomInfoProps) => {
-  const { roomId, name, isOwner } = today.room;
+  const { roomId, name, isOwner, hasVotingRound } = today.room;
   const { openToast } = useToast();
   const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(roomId, message =>
     openToast(message),
@@ -38,12 +37,8 @@ const RoomInfo = ({ today }: RoomInfoProps) => {
       onSuccess: () => setStep("closed"),
       onError: error => {
         setStep("closed");
-        // 🔖 실패 문구 시안이 없어요. 투표 중(ROOM_008)만 이유를 알려요.
-        openToast(
-          isApiError(error, "ROOM_008")
-            ? "투표 중에는 내보낼 수 없어요"
-            : "내보내지 못했어요. 잠시 후 다시 시도해 주세요",
-        );
+        // 🔖 실패 문구 시안이 없어 서버 에러 문구에 맞춘 임시 문구예요. 목록은 훅이 다시 받아요.
+        openToast(getKickErrorMessage(error));
       },
     });
   };
@@ -67,8 +62,6 @@ const RoomInfo = ({ today }: RoomInfoProps) => {
       </Paragraph>
       <ul role="list" className="m-0! mt-5! p-0!">
         {today.members.map(member => {
-          // 방장만 다른 멤버를 내보낼 수 있어요. 나는 누르지 않아요.
-          const canKick = isOwner && !member.isMe;
           return (
             <li
               key={member.memberId}
@@ -76,15 +69,11 @@ const RoomInfo = ({ today }: RoomInfoProps) => {
             >
               <button
                 type="button"
-                disabled={!canKick}
                 onClick={() => {
                   setSelected(member);
                   setStep("sheet");
                 }}
-                className={cn(
-                  "flex h-[85px] w-full appearance-none items-center gap-4.75 rounded-none! border-0! bg-transparent! p-0 pl-5.75 text-left [-webkit-tap-highlight-color:transparent]",
-                  canKick ? "cursor-pointer" : "cursor-default",
-                )}
+                className="flex h-[85px] w-full cursor-pointer appearance-none items-center gap-4.75 rounded-none! border-0! bg-transparent! p-0 pl-5.75 text-left [-webkit-tap-highlight-color:transparent]"
               >
                 <BosalHead color={member.color} className="size-15 shrink-0" />
                 <div className="flex min-w-0 items-center gap-[11px]">
@@ -132,6 +121,8 @@ const RoomInfo = ({ today }: RoomInfoProps) => {
         open={step === "sheet"}
         roomName={name}
         onClose={() => setStep("closed")}
+        canKick={isOwner && selected?.isMe === false}
+        isKickDisabled={hasVotingRound}
         onKick={() => setStep("confirm")}
       />
       <KickMemberDialog
@@ -154,5 +145,12 @@ const Stat = ({ value, label }: { value: string; label: string }) => (
     </Paragraph>
   </div>
 );
+
+const getKickErrorMessage = (error: unknown) => {
+  if (isApiError(error, "ROOM_008")) return "투표 중에는 내보낼 수 없어요";
+  if (isApiError(error, "ROOM_009")) return "이미 방에 없는 보살이에요";
+  if (isApiError(error, "ROOM_007")) return "방장만 내보낼 수 있어요";
+  return "내보내지 못했어요. 잠시 후 다시 시도해 주세요";
+};
 
 export default RoomInfo;

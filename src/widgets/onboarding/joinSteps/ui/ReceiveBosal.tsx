@@ -16,11 +16,13 @@ const ART_HEIGHT = 298.5;
 interface ReceiveBosalProps {
   nickname: string;
   color: BosalColor;
+  /** 다음 단계를 정하는 중이에요. 버튼이 로딩으로 기다려요. */
+  isPending?: boolean;
   onReceive: () => void;
 }
 
 /** 내 보살 받기 화면이에요. 이 방에서 쓸 닉네임과 보살 색을 보여줘요. */
-const ReceiveBosal = ({ nickname, color, onReceive }: ReceiveBosalProps) => (
+const ReceiveBosal = ({ nickname, color, isPending = false, onReceive }: ReceiveBosalProps) => (
   <main
     className={cn(
       "flex min-h-svh flex-col items-center overflow-hidden bg-white text-center",
@@ -61,7 +63,7 @@ const ReceiveBosal = ({ nickname, color, onReceive }: ReceiveBosalProps) => (
     </div>
     <div aria-hidden className="min-h-8 grow" />
     {/* 작은 화면에서 버튼이 문구를 가리지 않도록 화면 흐름 안의 맨 아래에 둬요. */}
-    <BottomCTA className="w-full" background="none" onClick={onReceive}>
+    <BottomCTA className="w-full" background="none" loading={isPending} onClick={onReceive}>
       내 보살 받기
     </BottomCTA>
   </main>

@@ -73,6 +73,8 @@ export interface TodayMe {
   isLastCertifier: boolean;
   /** 이번 회차에 받은 콕 수 */
   receivedPokeCount: number;
+  /** 솥을 채운 뒤 방장이 아직 [더 수행하기]·[방 닫기]를 고르지 않았어요. 방장에게만 true예요. */
+  isPotDecisionPending: boolean;
 }
 
 export interface TodayEntry {

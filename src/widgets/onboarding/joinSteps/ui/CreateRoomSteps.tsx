@@ -122,6 +122,8 @@ const CreateRoomSteps = () => {
       <ReceiveBosal
         nickname={nickname}
         color={drawn.color}
+        // 온보딩을 넣을지 알기 전에는 기다려요.
+        isPending={needsTour === undefined}
         onReceive={() =>
           navigate(paths.createRoom, { state: { step: needsTour ? "tour" : "form", flowId } })
         }

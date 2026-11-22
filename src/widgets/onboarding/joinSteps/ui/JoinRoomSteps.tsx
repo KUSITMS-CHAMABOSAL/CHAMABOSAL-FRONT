@@ -90,6 +90,8 @@ const JoinRoomSteps = ({ token }: JoinRoomStepsProps) => {
       <ReceiveBosal
         nickname={step.nickname}
         color={step.color}
+        // 온보딩을 넣을지 알기 전에는 기다려요.
+        isPending={needsTour === undefined}
         onReceive={() =>
           needsTour
             ? navigate(paths.invite(token), { state: { step: "tour", roomId: step.roomId } })

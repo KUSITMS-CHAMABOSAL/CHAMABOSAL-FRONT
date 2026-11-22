@@ -32,7 +32,7 @@ const RoomCreated = ({ roomId, goal, onGoToRoom }: RoomCreatedProps) => {
         <Paragraph typography="st5" fontWeight="bold" color="var(--adaptiveBlue600)">
           방이 만들어졌어요!
         </Paragraph>
-        <Paragraph typography="t6" fontWeight="semibold" color="var(--adaptiveGrey600)">
+        <Paragraph typography="t6" fontWeight="semibold" color="var(--adaptiveGreyOpacity700)">
           친구들을 초대하면 챌린지가 시작돼요.
         </Paragraph>
       </div>

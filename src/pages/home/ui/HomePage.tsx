@@ -1,14 +1,11 @@
 import { useNavigate, useParams } from "react-router";
 
-import { useTodayQuery } from "@/entities/room";
+import { isRoomGoneError, RoomGoneDialog, useTodayQuery } from "@/entities/room";
 import { useMeQuery } from "@/entities/session";
-import { isApiError } from "@/shared/api";
 import { paths } from "@/shared/config";
 import { useTabBarToast } from "@/shared/lib";
 import { RoomSummary } from "@/widgets/home/roomSummary";
 import { TodayBosals } from "@/widgets/home/todayBosals";
-
-import RoomGoneDialog from "./RoomGoneDialog";
 
 /** 방 홈이에요. 내 방 목록과 고른 방의 오늘 탭을 받아 위젯에 넘겨요. */
 const HomePage = () => {
@@ -21,7 +18,7 @@ const HomePage = () => {
   const selectRoom = (id: number) => navigate(paths.room.home(id), { replace: true });
 
   // 나갔거나 사라진 방이에요. 닫으면 방 목록을 다시 받아 진입 분기로 가요.
-  const isRoomGone = isApiError(today.error, "ROOM_005", "ROOM_002");
+  const isRoomGone = isRoomGoneError(today.error);
   const leaveGoneRoom = () => void me.refetch().then(() => navigate(paths.root, { replace: true }));
 
   // 🔖 로딩·에러·방 없음(첫 화면) 시안이 없어 아직 아무것도 그리지 않아요.

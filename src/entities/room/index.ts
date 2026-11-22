@@ -7,6 +7,7 @@ export * from "./config/goals";
 export * from "./config/members";
 export * from "./config/pot";
 export { canCertify } from "./lib/certify";
+export { isRoomGoneError } from "./lib/roomGone";
 export * from "./lib/nickname";
 export type {
   InviteStatus,
@@ -20,3 +21,4 @@ export type {
   TodayResponse,
 } from "./model/types";
 export { default as RicePotGauge } from "./ui/RicePotGauge";
+export { default as RoomGoneDialog } from "./ui/RoomGoneDialog";

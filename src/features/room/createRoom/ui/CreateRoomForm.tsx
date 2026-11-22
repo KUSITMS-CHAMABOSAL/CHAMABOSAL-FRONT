@@ -46,9 +46,9 @@ const CreateRoomForm = ({ isPending, onSubmit }: CreateRoomFormProps) => {
       <section className="flex flex-col gap-1.5 pt-3">
         <Paragraph
           id="room-name-label"
-          className="px-5!"
+          className="px-6!"
           typography="t6"
-          fontWeight="semibold"
+          fontWeight="medium"
           color="var(--adaptiveGrey800)"
         >
           방 이름

@@ -23,7 +23,7 @@ const IntroPage = () => {
           <br />
           같이 참아봐요.
         </Paragraph>
-        <Paragraph typography="t6" fontWeight="semibold" color="var(--adaptiveGrey600)">
+        <Paragraph typography="t6" fontWeight="semibold" color="var(--adaptiveGreyOpacity700)">
           참은 순간을 인증하고 친구들과 응원해요.
           <br />
           흔들린 날엔 이마를 톡톡, 다시 맑게!
@@ -41,7 +41,7 @@ const IntroPage = () => {
               초대받았다면 친구에게 받은 링크로 들어와주세요.
             </Paragraph>
             {/* 🔖 약관 화면(/terms, /privacy)이 생기면 링크로 바꿔요. */}
-            <Paragraph typography="st12" color="var(--adaptiveGrey600)">
+            <Paragraph typography="st12" color="var(--adaptiveGreyOpacity700)">
               시작하면 <span className="underline">이용약관</span>과{" "}
               <span className="underline">개인정보처리방침</span>에 동의하게 돼요.
             </Paragraph>

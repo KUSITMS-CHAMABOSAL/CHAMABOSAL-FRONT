@@ -55,7 +55,7 @@ const ReceiveBosal = ({ nickname, color, onReceive }: ReceiveBosalProps) => (
       <Paragraph typography="st5" fontWeight="bold" color="var(--adaptiveGrey900)">
         {`${nickname}보살`}
       </Paragraph>
-      <Paragraph typography="t6" fontWeight="semibold" color="var(--adaptiveGrey600)">
+      <Paragraph typography="t6" fontWeight="semibold" color="var(--adaptiveGreyOpacity700)">
         {`${nickname}님에게 ${BOSAL_COLOR_NAME[color]}보살이 찾아왔어요!`}
       </Paragraph>
     </div>

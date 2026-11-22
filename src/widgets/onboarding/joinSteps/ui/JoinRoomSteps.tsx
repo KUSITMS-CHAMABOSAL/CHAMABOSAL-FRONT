@@ -92,9 +92,13 @@ const JoinRoomSteps = ({ token }: JoinRoomStepsProps) => {
         color={step.color}
         // 온보딩을 넣을지 알기 전에는 기다려요.
         isPending={needsTour === undefined}
+        // 참여한 뒤라 보살 받기 기록은 온보딩이나 방 홈으로 바꿔, 뒤로가기로 다시 오지 않게 해요.
         onReceive={() =>
           needsTour
-            ? navigate(paths.invite(token), { state: { step: "tour", roomId: step.roomId } })
+            ? navigate(paths.invite(token), {
+                replace: true,
+                state: { step: "tour", roomId: step.roomId },
+              })
             : navigate(paths.room.home(step.roomId), { replace: true })
         }
       />

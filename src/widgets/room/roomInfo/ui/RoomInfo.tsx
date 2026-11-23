@@ -44,7 +44,7 @@ const RoomInfo = ({ today }: RoomInfoProps) => {
   };
 
   return (
-    <main className="flex min-h-svh flex-col bg-(--adaptiveBackground) pb-10">
+    <main className="flex min-h-svh flex-col bg-(--adaptiveBackground) pb-16">
       {/* 뒤로 가기는 토스 내비게이션 바의 버튼을 써요. */}
       <header className="flex h-11 items-center px-5">
         <Paragraph typography="t5" fontWeight="bold" color="var(--adaptiveGrey900)">
@@ -94,7 +94,8 @@ const RoomInfo = ({ today }: RoomInfoProps) => {
         })}
       </ul>
 
-      <div className="mt-16 flex flex-col gap-3 px-5">
+      {/* 멤버 수와 관계없이 화면 아래에 붙여요(시안 3-2). 목록이 길면 목록과 64px 띄워 밀려 내려가요. */}
+      <div className="mt-auto flex flex-col gap-3 px-5 pt-16">
         <CopyInviteLinkButton
           isPending={isCopying}
           onCopy={() => copyInviteLink()}

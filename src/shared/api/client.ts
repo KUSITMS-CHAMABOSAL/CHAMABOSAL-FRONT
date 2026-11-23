@@ -1,7 +1,6 @@
-import { API_BASE_URL, API_MOCK } from "@/shared/config";
+import { API_BASE_URL } from "@/shared/config";
 
 import { ApiError } from "./apiError";
-import { mockFetch } from "./mock";
 
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -44,10 +43,6 @@ export const request = async <T = void>(
   body?: unknown,
   { auth = true, headers }: RequestOptions = {},
 ) => {
-  // 목 모드에서도 로그인(/api/auth/*)은 실서버로 보내요.
-  if (API_MOCK && !path.startsWith("/api/auth/"))
-    return parse<T>(await mockFetch(method, path, body));
-
   const provider = auth ? tokenProvider : null;
   const send = (token: string | null) =>
     fetch(`${API_BASE_URL}${path}`, {

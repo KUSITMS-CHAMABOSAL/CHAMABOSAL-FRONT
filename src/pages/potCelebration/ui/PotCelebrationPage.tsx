@@ -2,7 +2,7 @@ import { FullScreenLoader } from "@toss/tds-mobile";
 import { useNavigate, useParams } from "react-router";
 
 import { usePotCelebrationQuery } from "@/entities/room";
-import { paths } from "@/shared/config";
+import { paths, type RoomHomeState } from "@/shared/config";
 import { PotCelebration } from "@/widgets/room/potCelebration";
 
 /** 한 솥 축하예요. 방 홈에 들어올 때 안 본 축하가 있으면 먼저 떠요. */
@@ -22,7 +22,12 @@ const PotCelebrationPage = () => {
     <PotCelebration
       roomId={roomId}
       pot={pot.data}
-      onClose={() => navigate(paths.room.home(roomId), { replace: true })}
+      onClose={() =>
+        navigate(paths.room.home(roomId), {
+          replace: true,
+          state: { fromPotCelebration: true } satisfies RoomHomeState,
+        })
+      }
       onShop={() => navigate(paths.storehouse, { replace: true })}
     />
   );

@@ -1,15 +1,13 @@
 import { Skeleton } from "@toss/tds-mobile";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 
-import { useTodayQuery } from "@/entities/room";
+import { isRoomGoneError, RoomGoneDialog, useTodayQuery } from "@/entities/room";
 import { useMeQuery } from "@/entities/session";
-import { isApiError } from "@/shared/api";
-import { paths } from "@/shared/config";
+import { paths, type RoomHomeState } from "@/shared/config";
 import { useTabBarToast } from "@/shared/lib";
+import { EntryPopups } from "@/widgets/home/entryPopups";
 import { RoomSummary } from "@/widgets/home/roomSummary";
 import { TodayBosals } from "@/widgets/home/todayBosals";
-
-import RoomGoneDialog from "./RoomGoneDialog";
 
 /** 방 홈이에요. 내 방 목록과 고른 방의 오늘 탭을 받아 위젯에 넘겨요. */
 const HomePage = () => {
@@ -17,12 +15,14 @@ const HomePage = () => {
   const roomId = Number(useParams().roomId);
   const today = useTodayQuery(roomId);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isBackFromPotCelebration =
+    (location.state as RoomHomeState | null)?.fromPotCelebration ?? false;
   const openToast = useTabBarToast();
-  const notReady = (label: string) => () => openToast(`${label}은 준비 중이에요`);
   const selectRoom = (id: number) => navigate(paths.room.home(id), { replace: true });
 
   // 나갔거나 사라진 방이에요. 닫으면 방 목록을 다시 받아 진입 분기로 가요.
-  const isRoomGone = isApiError(today.error, "ROOM_005", "ROOM_002");
+  const isRoomGone = isRoomGoneError(today.error);
   const leaveGoneRoom = () => void me.refetch().then(() => navigate(paths.root, { replace: true }));
 
   // 🔖 에러·방 없음(첫 화면) 시안이 없어 아직 로딩과 같이 그려요.
@@ -46,14 +46,24 @@ const HomePage = () => {
             rooms={me.data.rooms}
             today={today.data}
             onSelectRoom={selectRoom}
-            onRoomInfo={notReady("방 정보")}
+            onRoomInfo={() => navigate(paths.room.info(roomId))}
           />
           {/* 방을 바꾸면 새로 그려요. 모아 둔 콕이 이전 방 ID로 전송되고, 캐러셀 위치와 찌른 횟수도 초기화돼요. */}
           <TodayBosals
             key={roomId}
             today={today.data}
             onCertify={() => navigate(paths.room.certify(roomId))}
-            onEditCertification={notReady("인증 수정")}
+            onEditCertification={() => navigate(paths.room.certifyEdit(roomId))}
+          />
+          <EntryPopups
+            key={`popups-${roomId}`}
+            today={today.data}
+            isBackFromPotCelebration={isBackFromPotCelebration}
+            // 상태를 지워 새로고침이나 뒤로가기로 다시 뜨지 않게 해요.
+            onPotNoticeClose={() => navigate(location.pathname, { replace: true })}
+            onCertify={() => navigate(paths.room.certify(roomId))}
+            onRoomClosed={() => navigate(paths.root, { replace: true })}
+            onError={openToast}
           />
         </>
       )}

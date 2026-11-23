@@ -21,5 +21,6 @@ export const getNewColor = () => request<NewColorResponse>("GET", "/api/rooms/ne
 export const getPotCelebration = (roomId: number, seq: number) =>
   request<PotCelebration>("GET", `/api/rooms/${roomId}/pots/${seq}`);
 
+/** 지금 나가면 사라질 공양미예요. 나가기 확인에 보여줘요. */
 export const getLeavePreview = (roomId: number) =>
   request<LeavePreview>("GET", `/api/rooms/${roomId}/members/me/leave-preview`);

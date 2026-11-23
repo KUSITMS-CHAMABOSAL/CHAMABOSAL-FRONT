@@ -22,6 +22,8 @@ interface RenameNicknameSheetProps {
   roomName: string;
   /** 지금 닉네임이에요. 열 때마다 이 값으로 시작해요. */
   nickname: string;
+  /** 투표 중(투표 시작 ~ 결과 발표)에는 저장할 수 없어요(설계서 33). */
+  isVoting: boolean;
   onClose: () => void;
 }
 
@@ -31,6 +33,7 @@ const RenameNicknameSheet = ({
   roomId,
   roomName,
   nickname,
+  isVoting,
   onClose,
 }: RenameNicknameSheetProps) => {
   const [value, setValue] = useState(nickname);
@@ -47,7 +50,7 @@ const RenameNicknameSheet = ({
     : isTaken
       ? NICKNAME_TAKEN_MESSAGE
       : null;
-  const canSave = isSubmittableNickname(value) && trimmed !== nickname && !isTaken;
+  const canSave = isSubmittableNickname(value) && trimmed !== nickname && !isTaken && !isVoting;
 
   const save = () => {
     const submitted = trimmed;

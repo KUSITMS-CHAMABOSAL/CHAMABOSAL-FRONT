@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { useNavigate } from "react-router";
 
 import { Button } from "@toss/tds-mobile";
@@ -13,16 +13,24 @@ import LeaveRoomDialog from "./LeaveRoomDialog";
 interface LeaveRoomButtonProps {
   roomId: number;
   roomName: string;
+  /** 기본 [나가기] 버튼 대신 그릴 트리거예요. 누르면 `open`을 불러요. */
+  children?: (open: () => void) => ReactNode;
 }
 
 /** [나가기] 버튼과 확인 다이얼로그예요. 나가면 진입 분기로 가서 남은 방이나 첫 화면을 보여줘요. */
-const LeaveRoomButton = ({ roomId, roomName }: LeaveRoomButtonProps) => {
+const LeaveRoomButton = ({ roomId, roomName, children }: LeaveRoomButtonProps) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const { mutate: leave, isPending } = useLeaveRoom(roomId);
   // 확인 창이 열린 뒤 공양미 문장이 붙어 창 높이가 바뀌지 않게, 버튼이 보일 때 미리 받아요.
   const preview = useLeavePreviewQuery(roomId);
   const navigate = useNavigate();
   const openToast = useTabBarToast();
+
+  const openConfirm = () => {
+    setIsConfirmOpen(true);
+    // 받아 둔 값이 오래됐으면 다시 받아요. 실제로 깎이는 양은 나가는 순간 서버가 정해요.
+    if (preview.isStale) void preview.refetch();
+  };
 
   const confirmLeave = () =>
     leave(undefined, {
@@ -35,24 +43,20 @@ const LeaveRoomButton = ({ roomId, roomName }: LeaveRoomButtonProps) => {
 
   return (
     <>
-      <Button
-        size="xlarge"
-        color="danger"
-        variant="weak"
-        display="block"
-        onClick={() => {
-          setIsConfirmOpen(true);
-          // 받아 둔 값이 오래됐으면 다시 받아요. 실제로 깎이는 양은 나가는 순간 서버가 정해요.
-          if (preview.isStale) void preview.refetch();
-        }}
-      >
-        나가기
-      </Button>
+      {children ? (
+        children(openConfirm)
+      ) : (
+        <Button size="xlarge" color="danger" variant="weak" display="block" onClick={openConfirm}>
+          나가기
+        </Button>
+      )}
       <LeaveRoomDialog
         open={isConfirmOpen}
         roomName={roomName}
         riceToLose={preview.data?.riceToLose}
         isPending={isPending}
+        // 공양미 안내 없이 나가지 않게 받는 중에는 막아요. 받지 못했으면 서버가 정한 대로 나가요.
+        isPreviewLoading={preview.isPending || preview.isFetching}
         onClose={() => setIsConfirmOpen(false)}
         onConfirm={confirmLeave}
       />

@@ -1,9 +1,13 @@
-import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 
 import { Button, Paragraph, TextButton, useToast } from "@toss/tds-mobile";
 
 import { BosalGreyFigure, GREY_FIGURE, GREY_HAIR_CURLS } from "@/entities/bosal";
-import { HAIR_PLANT_PRICE, useHairPlanting } from "@/features/storehouse/plantHair";
+import {
+  HAIR_PLANT_PRICE,
+  type PlantResult,
+  useHairPlanting,
+} from "@/features/storehouse/plantHair";
 import { cn } from "@/shared/lib";
 import { useSafeAreaBottom } from "@/shared/lib/appsInToss";
 
@@ -45,6 +49,13 @@ const slotClass =
 
 type Phase = "select" | "zoom" | "planted";
 
+// 🔖 실패 문구는 시안이 없어 임시예요.
+const PLANT_FAILED_MESSAGE: Record<Exclude<PlantResult, "planted">, string> = {
+  notEnoughRice: "공양미가 부족해요",
+  notEmpty: "이미 나발이 있는 자리예요",
+  failed: "나발을 심지 못했어요. 잠시 후 다시 시도해 주세요",
+};
+
 interface HairPlantingProps {
   onClose: () => void;
   /** 나발 빠짐 설명에서 넘어왔을 때예요. 설명이 이 화면 배경색으로 어두워진 뒤라, 배경은 그대로 두고 내용만 나타나게 해요. */
@@ -65,14 +76,29 @@ const HairPlanting = ({ onClose, fadeIn = false }: HairPlantingProps) => {
   const { openToast } = useToast();
   const safeAreaBottom = useSafeAreaBottom();
   const timers = useRef<number[]>([]);
+  const isMounted = useRef(true);
 
-  useEffect(() => () => timers.current.forEach(window.clearTimeout), []);
+  useEffect(
+    () => () => {
+      isMounted.current = false;
+      timers.current.forEach(window.clearTimeout);
+    },
+    [],
+  );
 
   const later = (delay: number, run: () => void) => {
     timers.current.push(window.setTimeout(run, delay));
   };
 
   const isSelecting = phase === "select";
+  // 응답이 확대보다 먼저 와도, 돋아나기 전까지는 고른 자리를 비워 둬요.
+  const shownPlucked = useMemo(
+    () =>
+      phase === "zoom" && zoomSlot !== null && !plucked.has(zoomSlot)
+        ? new Set([...plucked, zoomSlot])
+        : plucked,
+    [phase, zoomSlot, plucked],
+  );
 
   const canAfford = rice >= HAIR_PLANT_PRICE;
 
@@ -92,19 +118,29 @@ const HairPlanting = ({ onClose, fadeIn = false }: HairPlantingProps) => {
     const index = selected;
     setZoomSlot(index);
     setPhase("zoom");
-    later(PLANT_MOTION.zoomMs, () => {
-      plant(index);
+    // 확대하는 동안 심기를 요청하고, 확대가 끝나고 응답도 온 뒤에 나발이 돋아나요.
+    const zoomed = new Promise<void>(resolve => later(PLANT_MOTION.zoomMs, resolve));
+    void Promise.all([plant(index), zoomed]).then(([result]) => {
+      if (!isMounted.current) return;
+      if (result !== "planted") {
+        openToast(PLANT_FAILED_MESSAGE[result], { gap: TOAST_GAP.aboveButtons + safeAreaBottom });
+        setSelected(null);
+        setPhase("select");
+        return;
+      }
       setPhase("planted");
-    });
-    later(PLANT_MOTION.zoomMs + PLANT_MOTION.growMs, () =>
-      openToast("나발이 심어졌어요", {
-        gap: TOAST_GAP.bottom + safeAreaBottom,
-        duration: PLANT_MOTION.toastMs,
-      }),
-    );
-    later(PLANT_MOTION.zoomMs + PLANT_MOTION.holdMs, () => {
-      setSelected(null);
-      setPhase("select");
+      later(PLANT_MOTION.growMs, () => {
+        if (!isMounted.current) return;
+        openToast("나발이 심어졌어요", {
+          gap: TOAST_GAP.bottom + safeAreaBottom,
+          duration: PLANT_MOTION.toastMs,
+        });
+      });
+      later(PLANT_MOTION.holdMs, () => {
+        if (!isMounted.current) return;
+        setSelected(null);
+        setPhase("select");
+      });
     });
   };
 
@@ -195,7 +231,7 @@ const HairPlanting = ({ onClose, fadeIn = false }: HairPlantingProps) => {
               isSelecting && "opacity-50",
             )}
           >
-            <BosalGreyFigure pluckedHairs={plucked} className="block w-full" />
+            <BosalGreyFigure pluckedHairs={shownPlucked} className="block w-full" />
           </div>
 
           {isSelecting &&

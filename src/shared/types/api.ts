@@ -4,7 +4,7 @@
 export type BosalColor = "PINK" | "PURPLE" | "MINT" | "YELLOW";
 /** `ENDURED` 참았어요, `FAILED` 못 참았어요 */
 export type CertificationResult = "ENDURED" | "FAILED";
-/** `RICE` 잘 참았어요, `MOKTAK` 아쉬워요 */
-export type ReactionType = "RICE" | "MOKTAK";
+/** `GOOD` 잘 참았어요, `BAD` 아쉬워요 */
+export type ReactionType = "GOOD" | "BAD";
 /** 인증을 수정·삭제할 수 없는 이유. `TIME_OVER` 10분 지남, `VOTE_STARTED` 투표 시작 */
 export type LockReason = "TIME_OVER" | "VOTE_STARTED";

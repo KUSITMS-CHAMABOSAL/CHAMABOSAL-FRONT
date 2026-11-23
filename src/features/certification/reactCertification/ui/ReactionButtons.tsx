@@ -1,45 +1,108 @@
+import { useRef } from "react";
+
 import { Paragraph } from "@toss/tds-mobile";
 
 import { cn } from "@/shared/lib";
 import type { ReactionType } from "@/shared/types";
 
-import thumbDown from "../assets/icon_thumbdown_fill.svg";
-import thumbUp from "../assets/icon_thumbup_fill.svg";
+import { ThumbDownIcon, ThumbUpIcon } from "../assets";
 
 const OPTIONS = [
-  { value: "RICE", label: "잘 참았어요", icon: thumbUp },
-  { value: "MOKTAK", label: "아쉬워요", icon: thumbDown },
+  {
+    value: "GOOD",
+    label: "잘 참았어요",
+    Icon: ThumbUpIcon,
+    iconColor: "text-(color:--adaptiveGreyOpacity400)",
+    selected: "border-(--adaptiveBlue500) bg-(--adaptiveBlue50)",
+    selectedIconColor: "text-(color:--adaptiveBlue400)",
+    selectedText: "var(--adaptiveBlue600)",
+  },
+  {
+    value: "BAD",
+    label: "아쉬워요",
+    Icon: ThumbDownIcon,
+    iconColor: "text-(color:--adaptiveGrey400)",
+    selected: "border-(--adaptiveRed500) bg-(--adaptiveRed50)",
+    selectedIconColor: "text-(color:--adaptiveRed500)",
+    selectedText: "var(--adaptiveRed500)",
+  },
 ] as const;
+
+// 시안 "인증반응_액션": 고르면 엄지가 위로 떠오르고(0.3s) 0.5s 머문 뒤 사라져요(0.25s).
+const FLOAT_MS = 1050;
+const FLOAT: Keyframe[] = [
+  { opacity: 0, transform: "translateY(0)" },
+  { opacity: 1, transform: "translateY(-20px)", offset: 300 / FLOAT_MS },
+  { opacity: 1, transform: "translateY(-20px)", offset: 800 / FLOAT_MS },
+  { opacity: 0, transform: "translateY(-20px)" },
+];
+
+const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 interface ReactionButtonsProps {
   value: ReactionType | null;
   /** 고른 리액션을 다시 누르면 null(취소)이에요. */
   onChange: (reaction: ReactionType | null) => void;
+  /** 리액션별 수예요. 시안 "잘 참았어요 1" */
+  counts: Record<ReactionType, number>;
   disabled?: boolean;
 }
 
-// 🔖 "아쉬워요"를 골랐을 때 아이콘 색은 시안 확인 필요. 지금은 고른 쪽만 파란 배경이에요.
-const ReactionButtons = ({ value, onChange, disabled }: ReactionButtonsProps) => (
-  <div className="flex gap-[13px]">
-    {OPTIONS.map(option => (
-      <button
-        key={option.value}
-        type="button"
-        disabled={disabled}
-        aria-pressed={value === option.value}
-        onClick={() => onChange(value === option.value ? null : option.value)}
-        className={cn(
-          "flex h-[46px] flex-1 touch-manipulation appearance-none items-center justify-center gap-2.5 rounded-sm! border-0 bg-(--adaptiveGrey50) p-0 [-webkit-tap-highlight-color:transparent]",
-          value === option.value && "bg-(--adaptiveBlue50)",
-        )}
-      >
-        <img src={option.icon} alt="" width={24} height={24} />
-        <Paragraph typography="t7" color="var(--adaptiveGrey900)">
-          {option.label}
-        </Paragraph>
-      </button>
-    ))}
-  </div>
-);
+const ReactionButtons = ({ value, onChange, counts, disabled }: ReactionButtonsProps) => {
+  const floats = useRef<Partial<Record<ReactionType, HTMLSpanElement | null>>>({});
+
+  const select = (reaction: ReactionType) => {
+    const next = value === reaction ? null : reaction;
+    // 누를 때마다 다시 재생해서 Web Animations API를 써요.
+    if (next && !prefersReducedMotion())
+      floats.current[next]?.animate(FLOAT, { duration: FLOAT_MS, easing: "ease-out" });
+    onChange(next);
+  };
+
+  return (
+    <div className="flex gap-3">
+      {OPTIONS.map(({ value: option, label, Icon, ...style }) => {
+        const isSelected = value === option;
+        return (
+          <button
+            key={option}
+            type="button"
+            disabled={disabled}
+            aria-pressed={isSelected}
+            onClick={() => select(option)}
+            className={cn(
+              "flex h-14 flex-1 touch-manipulation appearance-none items-center justify-center gap-1.5 rounded-2xl! border border-solid border-(--adaptiveGreyOpacity200) bg-(--adaptiveGrey50) p-0 [-webkit-tap-highlight-color:transparent]",
+              isSelected && style.selected,
+            )}
+          >
+            <span className="relative size-6" aria-hidden>
+              <Icon
+                className={cn(
+                  "block size-6",
+                  isSelected ? style.selectedIconColor : style.iconColor,
+                )}
+              />
+              <span
+                ref={node => {
+                  floats.current[option] = node;
+                }}
+                className="pointer-events-none absolute inset-0 opacity-0"
+              >
+                <Icon className={cn("block size-6", style.selectedIconColor)} />
+              </span>
+            </span>
+            <Paragraph
+              typography="t6"
+              fontWeight="semibold"
+              color={isSelected ? style.selectedText : "var(--adaptiveGreyOpacity700)"}
+            >
+              {`${label} ${counts[option]}`}
+            </Paragraph>
+          </button>
+        );
+      })}
+    </div>
+  );
+};
 
 export default ReactionButtons;

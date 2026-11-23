@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Button, FixedBottomCTA, TextArea, Top } from "@toss/tds-mobile";
+import { Button, FixedBottomCTA, TextArea, Top, useToast } from "@toss/tds-mobile";
 
+import { useUpdateCertification } from "@/features/certification/editCertification";
 import {
   type CertificationCreateResponse,
   CertifyConfirmSheet,
@@ -13,7 +14,8 @@ import {
   SPENT_AMOUNT_MIN,
   sliceMemo,
 } from "@/entities/certification";
-import type { TodayResponse } from "@/entities/room";
+import type { TodayCertification, TodayResponse } from "@/entities/room";
+import { isApiError } from "@/shared/api";
 import { cn } from "@/shared/lib";
 import type { CertificationResult } from "@/shared/types";
 
@@ -21,15 +23,21 @@ import endureBosal from "../assets/illustration_endure_bosal.svg";
 import giveUpBosal from "../assets/illustration_give_up_bosal.svg";
 import AmountField from "./AmountField";
 
-interface CertifyFormProps {
+interface CertifyFormBaseProps {
   roomId: number;
   today: TodayResponse;
   result: CertificationResult;
   onChangeResult: (result: CertificationResult) => void;
-  onSubmitted: (response: CertificationCreateResponse) => void;
-  /** 이미 인증했거나 인증 시간이 아니에요. */
+  /** 이미 인증했거나 인증 시간이 아니에요. 수정이면 수정 기한이 지났어요. */
   onUnavailable: () => void;
 }
+
+/** 새로 인증하거나, 내 인증을 채운 채로 열어 고쳐요. */
+type CertifyFormProps = CertifyFormBaseProps &
+  (
+    | { edit?: undefined; onSubmitted: (response: CertificationCreateResponse) => void }
+    | { edit: TodayCertification; onEdited: () => void }
+  );
 
 /** 시안 메모: 800ms 지연 후 다음 화면으로 디졸브 */
 const INTRO_DELAY_MS = 800;
@@ -46,25 +54,54 @@ const isValidAmount = (amount: number | null) =>
  * 인증 작성 폼이에요. 고른 결과의 보살을 잠깐 보여준 뒤 제목과 폼으로 디졸브해요.
  * 사진은 선택이고, 한 줄 기록과 (못 참았으면) 쓴 금액을 채우면 [인증하기]가 켜져요.
  */
-const CertifyForm = ({
-  roomId,
-  today,
-  result,
-  onChangeResult,
-  onSubmitted,
-  onUnavailable,
-}: CertifyFormProps) => {
-  const [isIntro, setIsIntro] = useState(true);
-  const [memo, setMemo] = useState("");
-  const [amount, setAmount] = useState<number | null>(null);
+const CertifyForm = (props: CertifyFormProps) => {
+  const { roomId, today, result, onChangeResult, onUnavailable, edit } = props;
+  // 수정은 이미 고른 결과라 보살 소개 없이 바로 폼을 보여줘요.
+  const [isIntro, setIsIntro] = useState(!edit);
+  const [memo, setMemo] = useState(edit?.memo ?? "");
+  const [amount, setAmount] = useState<number | null>(edit?.spentAmount ?? null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const { photo, pick, remove } = usePhotoUpload();
+  const { photo, pick, remove, removeRejected } = usePhotoUpload(edit?.imageUrl);
+  const { mutate: update, isPending: isUpdating } = useUpdateCertification(roomId);
+  const { openToast } = useToast();
   const isFailed = result === "FAILED";
 
+  // 🔖 수정 시안이 없어 작성 폼을 채운 채로 쓰고, 확인 시트 없이 바로 저장해요. 실패 문구도 임시예요.
+  const save = () => {
+    if (!edit) return;
+    update(
+      {
+        certificationId: edit.certificationId,
+        body: {
+          result,
+          memo: memo.trim(),
+          spentAmount: isFailed && amount !== null ? amount : undefined,
+          imageKey: photo.status === "uploaded" ? photo.imageKey : undefined,
+          isImageKept: photo.status === "kept",
+        },
+      },
+      {
+        onSuccess: props.onEdited,
+        onError: error => {
+          if (isApiError(error, "CERT_002", "CERT_004", "CERT_005")) {
+            openToast("수정기한이 지나 수정할 수 없어요");
+            onUnavailable();
+          } else if (isApiError(error, "COMMON_002") && error.field === "imageKey") {
+            openToast("사진을 다시 올려 주세요");
+            if (photo.status === "uploaded") removeRejected(photo.imageKey);
+          } else {
+            openToast("인증을 수정하지 못했어요. 잠시 후 다시 시도해 주세요");
+          }
+        },
+      },
+    );
+  };
+
   useEffect(() => {
+    if (!isIntro) return;
     const timer = setTimeout(() => setIsIntro(false), INTRO_DELAY_MS);
     return () => clearTimeout(timer);
-  }, []);
+  }, [isIntro]);
 
   const canSubmit =
     isValidMemo(memo) &&
@@ -138,27 +175,33 @@ const CertifyForm = ({
         }
       />
       {isFailed && <AmountField value={amount} onChange={setAmount} />}
-      <FixedBottomCTA disabled={!canSubmit} onClick={() => setIsConfirmOpen(true)}>
-        인증하기
+      <FixedBottomCTA
+        disabled={!canSubmit}
+        loading={isUpdating}
+        onClick={() => (edit ? save() : setIsConfirmOpen(true))}
+      >
+        {edit ? "수정하기" : "인증하기"}
       </FixedBottomCTA>
-      <CertifyConfirmSheet
-        open={isConfirmOpen}
-        onClose={() => setIsConfirmOpen(false)}
-        roomId={roomId}
-        roomName={today.room.name}
-        memberCount={today.room.memberCount}
-        certifiedCount={today.round.certifiedCount}
-        isLastCertifier={today.me.isLastCertifier}
-        request={{
-          result,
-          memo: memo.trim(),
-          spentAmount: isFailed && amount !== null ? amount : undefined,
-          imageKey: photo.status === "uploaded" ? photo.imageKey : undefined,
-        }}
-        onSubmitted={onSubmitted}
-        onUnavailable={onUnavailable}
-        onPhotoExpired={remove}
-      />
+      {!edit && (
+        <CertifyConfirmSheet
+          open={isConfirmOpen}
+          onClose={() => setIsConfirmOpen(false)}
+          roomId={roomId}
+          roomName={today.room.name}
+          memberCount={today.room.memberCount}
+          certifiedCount={today.round.certifiedCount}
+          isLastCertifier={today.me.isLastCertifier}
+          request={{
+            result,
+            memo: memo.trim(),
+            spentAmount: isFailed && amount !== null ? amount : undefined,
+            imageKey: photo.status === "uploaded" ? photo.imageKey : undefined,
+          }}
+          onSubmitted={props.onSubmitted}
+          onUnavailable={onUnavailable}
+          onPhotoExpired={remove}
+        />
+      )}
     </main>
   );
 };

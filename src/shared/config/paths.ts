@@ -14,6 +14,7 @@ export const paths = {
   settings: "/settings",
   room: {
     home: (roomId: number) => `/rooms/${roomId}`,
+    info: (roomId: number) => `/rooms/${roomId}/info`,
     vote: (roomId: number) => `/rooms/${roomId}/vote`,
     tapTap: (roomId: number, roundId: number) => `/rooms/${roomId}/vote/${roundId}/tap`,
     foreheadTap: (roomId: number, roundId: number) => `/rooms/${roomId}/vote/${roundId}/forehead`,
@@ -22,7 +23,21 @@ export const paths = {
     certifyWrite: (roomId: number, result?: CertificationResult) =>
       `/rooms/${roomId}/certify/write${result ? `?result=${result}` : ""}`,
     certifyResult: (roomId: number) => `/rooms/${roomId}/certify/result`,
+    certifyEdit: (roomId: number) => `/rooms/${roomId}/certify/edit`,
     /** 한 솥 축하예요. `seq`는 몇 번째 솥인지예요. */
     pot: (roomId: number, seq: number) => `/rooms/${roomId}/pots/${seq}`,
   },
 } as const;
+
+/** 방 홈으로 갈 때 넘기는 상태예요. 한 솥 축하를 보고 돌아오면 멤버에게 목표 달성 안내를 띄워요. */
+export interface RoomHomeState {
+  fromPotCelebration?: boolean;
+}
+
+/** 나발 설명으로 갈 때 넘기는 상태예요. 앱 진입 때 처음 나발이 빠졌으면 진입 분기가 이 화면부터 띄워요. */
+export interface HairGuideState {
+  /** 본 것으로 저장할 나발 기록이에요. */
+  nabalLossId?: number;
+  /** 닫으면 갈 화면이에요. 진입 분기가 원래 보내려던 화면이에요. */
+  returnTo?: string;
+}

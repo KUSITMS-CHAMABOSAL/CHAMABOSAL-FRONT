@@ -12,6 +12,8 @@ interface MyRoomPanelProps {
   rooms: MyRoom[];
   /** 지금 보고 있는 방이에요. */
   room: MyRoom;
+  /** 빠진 나발 번호예요. GET /api/users/me 의 nabal.fallenNumbers */
+  fallenHairs: readonly number[];
   /** 참여 중인 방이 2개 미만이면 "+ 새 방" 탭을 보여줘요. */
   canCreateRoom: boolean;
   onSelectRoom: (roomId: number) => void;
@@ -23,6 +25,7 @@ interface MyRoomPanelProps {
 const MyRoomPanel = ({
   rooms,
   room,
+  fallenHairs,
   canCreateRoom,
   onSelectRoom,
   onCreateRoom,
@@ -82,7 +85,7 @@ const MyRoomPanel = ({
     <Border variant="full" />
     {/* 시안은 카드가 Top 시작에서 167px 아래예요. TDS 탭 높이가 시안(38px)과 달라 측정값으로 맞추고, 탭 아래 선(1px)만큼 줄여요. */}
     <div className="px-5 pt-4.25">
-      <BosalProfile nickname={room.nickname} color={room.color} />
+      <BosalProfile nickname={room.nickname} color={room.color} fallenHairs={fallenHairs} />
     </div>
     <div className="flex gap-2.5 px-5 py-4">
       <RenameNicknameButton roomId={room.roomId} roomName={room.name} nickname={room.nickname} />

@@ -9,7 +9,7 @@
 
 - `src/features/vote/tapForehead/model/useForeheadTaps.ts`의 언마운트 정리 함수 `sendTaps(...).catch(() => {})`
 - PR #46 CodeRabbit 리뷰(Major, `useForeheadTaps.ts:38`)
-- 재현: `src/app/mocks/handlers.ts`의 `POST /api/rounds/:roundId/taps`가 실패를 돌려주게 바꾼 뒤 `pnpm dev`에서 몇 번 치고 [종료하기]를 누르면, 투표 탭으로 이동하고 횟수는 다시 보내지 않습니다.
+- 재현: `pnpm dev`에서 브라우저 개발자 도구 Network의 요청 차단으로 `POST /api/rounds/{roundId}/taps`를 막고, 몇 번 친 뒤 [종료하기]를 누르면 투표 탭으로 이동하고 횟수는 다시 보내지 않습니다.
 
 ## 왜 지금 우리 코드에서 고치면 안 되는지
 

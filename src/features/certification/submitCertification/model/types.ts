@@ -37,4 +37,6 @@ export type PhotoState =
   | { status: "empty" }
   | { status: "uploading"; previewUrl: string }
   | { status: "uploaded"; previewUrl: string; imageKey: string }
+  /** 수정할 때 이미 올려 둔 사진이에요. 새로 올리지 않아요. */
+  | { status: "kept"; previewUrl: string }
   | { status: "failed"; previewUrl: string };

@@ -62,7 +62,7 @@ const PhotoField = ({ photo, onPick, onRemove }: PhotoFieldProps) => {
           </button>
         ) : (
           <div className="relative size-25">
-            {photo.status === "uploaded" ? (
+            {photo.status === "uploaded" || photo.status === "kept" ? (
               <img
                 src={photo.previewUrl}
                 alt="첨부한 사진"

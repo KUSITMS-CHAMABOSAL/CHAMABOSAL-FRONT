@@ -40,6 +40,11 @@ export const router = createBrowserRouter([
             path: "settings",
             lazy: { Component: async () => (await import("@/pages/settings")).SettingsPage },
           },
+          // 시안에 하단 탭바가 없어요. 방 홈의 [방 정보]로 들어와요.
+          {
+            path: "rooms/:roomId/info",
+            lazy: { Component: async () => (await import("@/pages/roomInfo")).RoomInfoPage },
+          },
           // 방 홈에 안 본 축하가 있으면 탭 레이아웃이 이 화면으로 보내요.
           {
             path: "rooms/:roomId/pots/:seq",
@@ -91,6 +96,12 @@ export const router = createBrowserRouter([
                     path: "write",
                     lazy: {
                       Component: async () => (await import("@/pages/certify")).CertifyWritePage,
+                    },
+                  },
+                  {
+                    path: "edit",
+                    lazy: {
+                      Component: async () => (await import("@/pages/certify")).CertifyEditPage,
                     },
                   },
                   {

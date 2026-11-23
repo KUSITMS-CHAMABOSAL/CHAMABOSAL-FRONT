@@ -38,7 +38,7 @@ const JoinBlocked = ({ reason, room, onAction }: JoinBlockedProps) => (
         {reason === "ROOM_LIMIT"
           ? "내 보살에서 참여중인 방을 확인하고 정리해주세요.\n방을 정리한 뒤 받은 링크로 다시 들어와 주세요."
           : reason === "ROOM_FULL"
-            ? `이 방은 ${room?.memberLimit ?? ""}명이 모두 모였어요.\n새 방을 만들어 친구를 초대해보세요.`
+            ? `이 방은 ${room?.memberCount ?? ""}명이 모두 모였어요.\n새 방을 만들어 친구를 초대해보세요.`
             : "이 방에는 다시 참여할 수 없어요."}
       </Paragraph>
     </div>

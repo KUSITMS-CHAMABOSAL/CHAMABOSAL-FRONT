@@ -48,3 +48,11 @@ export const BOSAL_ART_WIDTH: Record<BosalExpression, number> = {
   failed: 107,
   poked: 88,
 };
+
+/** 나발 그라디언트(위 → 아래)예요. 그림 파일에는 나발이 없고, 빠진 나발을 빼고 그리려고 코드에서 그려요. */
+export const BOSAL_HAIR_GRADIENT: Record<BosalColor, readonly [string, string]> = {
+  PINK: ["#FFE2E9", "#FB93AC"],
+  YELLOW: ["#FFF5CD", "#FFDC4F"],
+  PURPLE: ["#E3DFFF", "#AAA1FD"],
+  MINT: ["#B7F7F3", "#4BD9D0"],
+};

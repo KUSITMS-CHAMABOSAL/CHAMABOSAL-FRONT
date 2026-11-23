@@ -6,6 +6,7 @@ interface LeaveRoomDialogProps {
   /** 지금 나가면 사라질 공양미예요. 받지 못했으면 없어요. */
   riceToLose: number | undefined;
   isPending: boolean;
+  isPreviewLoading: boolean;
   onClose: () => void;
   onConfirm: () => void;
 }
@@ -24,6 +25,7 @@ const LeaveRoomDialog = ({
   roomName,
   riceToLose,
   isPending,
+  isPreviewLoading,
   onClose,
   onConfirm,
 }: LeaveRoomDialogProps) => (
@@ -38,6 +40,7 @@ const LeaveRoomDialog = ({
       <ConfirmDialog.ConfirmButton
         color="danger"
         variant="weak"
+        disabled={isPreviewLoading}
         loading={isPending}
         onClick={onConfirm}
       >

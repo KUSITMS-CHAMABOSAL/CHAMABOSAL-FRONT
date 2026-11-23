@@ -252,14 +252,18 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
         <div>
           {/* 탭이 다섯 칸이라 같은 폭으로 나누면 "악세사리"가 들어가지 않아요. 글자 폭에 맞춰요. */}
           <SegmentedControl
+            size="small"
             alignment="fluid"
             value={tab}
             onChange={value => changeTab(value as ClosetTab)}
           >
             {CLOSET_TABS.map(({ value, label }) => (
               <SegmentedControl.Item key={value} value={value}>
-                {/* 칸이 넓어지면 같은 폭으로 나뉘어 "악세사리"가 두 줄로 갈라져서 줄바꿈을 막아요. */}
-                <span className="whitespace-nowrap">{label}</span>
+                {/*
+                  TDS는 넘치지 않으면 칸을 같은 폭(375px에서 64px)으로 나눠서, 안쪽 여백(14px)을 빼면 "악세사리"(52px)가 들어가지 않아요.
+                  줄바꿈을 막고 좌우를 8px씩 여백 안으로 당겨 가운데에 맞춰요.
+                */}
+                <span className="-mx-2 whitespace-nowrap">{label}</span>
               </SegmentedControl.Item>
             ))}
           </SegmentedControl>

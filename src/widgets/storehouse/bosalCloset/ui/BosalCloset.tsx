@@ -1,11 +1,16 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import { Button, Paragraph, SegmentedControl } from "@toss/tds-mobile";
 
-import { BosalFigure } from "@/entities/bosal";
-import { ItemCard, ShieldImage } from "@/entities/item";
-import { useMeQuery } from "@/entities/session";
-import { EquipItemButton, type Outfit, useOutfit } from "@/features/storehouse/equipItem";
+import { BosalFigure, isItemCode } from "@/entities/bosal";
+import { ItemCard, ShieldImage, type StoreItem, useStoreQuery } from "@/entities/item";
+import { type MyRoom, useMeQuery } from "@/entities/session";
+import {
+  EquipItemButton,
+  getWornItems,
+  type Outfit,
+  useOutfit,
+} from "@/features/storehouse/equipItem";
 import { useHairPlanting } from "@/features/storehouse/plantHair";
 import { cn, useTabBarToast } from "@/shared/lib";
 
@@ -13,9 +18,10 @@ import {
   CLOSET_TABS,
   type ClosetItem,
   type ClosetTab,
-  DEMO_ITEMS,
-  ITEM_TAB,
-} from "../config/demoItems";
+  DEMO_SHIELD,
+  EXPRESSION_ITEMS,
+  SLOT_TAB,
+} from "../config/closetItems";
 import HairPlantCard from "./HairPlantCard";
 import OutfitSlots from "./OutfitSlots";
 
@@ -28,10 +34,8 @@ interface BosalClosetProps {
 
 const isWorn = (item: ClosetItem, outfit: Outfit) => {
   switch (item.kind) {
-    case "hat":
-      return outfit.hat === item.hat;
-    case "faceItem":
-      return outfit.faceItem === item.faceItem;
+    case "item":
+      return outfit.items[item.slot] === item.code;
     case "expression":
       return outfit.expression === item.expression;
     case "shield":
@@ -39,10 +43,24 @@ const isWorn = (item: ClosetItem, outfit: Outfit) => {
   }
 };
 
-const wornSummary = (outfit: Outfit) => {
-  const names = DEMO_ITEMS.filter(item => isWorn(item, outfit)).map(item => item.name);
-  return names.length > 0 ? `${names.join(", ")} 착용 중` : "아이템 미착용";
+const tabOf = (item: ClosetItem): ClosetTab => {
+  switch (item.kind) {
+    case "item":
+      return SLOT_TAB[item.slot];
+    case "expression":
+      return "expression";
+    case "shield":
+      return "all";
+  }
 };
+
+/** 곳간 아이템이에요. 그림이 없는 코드는 빼요. */
+const toClosetItems = (items: StoreItem[]) =>
+  items.flatMap(({ itemId, code, name, price, slot, isOwned }) =>
+    isItemCode(code)
+      ? [{ kind: "item", id: code, itemId, name, price, code, slot, isOwned } as const]
+      : [],
+  );
 
 // 착용이 바뀌면 보살이 살짝 눌렸다 튀어 올라요. 감싼 div에 걸어 GPU 합성만 일어나게 해요.
 const SQUASH: Keyframe[] = [
@@ -58,27 +76,44 @@ const LIST_IN: Keyframe[] = [
 
 const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const isVisible = (item: ClosetItem, tab: ClosetTab) =>
-  tab === "all" || ITEM_TAB[item.kind] === tab;
+/** 곳간 조회와 내 정보를 받은 뒤 그려요. 처음 착용 상태를 서버 값으로 시작하려고 기다려요. */
+const BosalCloset = (props: BosalClosetProps) => {
+  const store = useStoreQuery();
+  const me = useMeQuery();
+  if (store.error) throw store.error;
+  if (me.error) throw me.error;
+  // 보살 색과 닉네임은 방마다 달라요. 곳간은 방 밖이라 첫 번째 방의 내 보살로 보여줘요.
+  const myRoom = me.data?.rooms[0];
+  if (!store.data || !myRoom) return null;
+  return <Closet {...props} storeItems={store.data.items} myRoom={myRoom} />;
+};
 
-const BosalCloset = ({ onPlantHair, onHairGuide }: BosalClosetProps) => {
+interface ClosetProps extends BosalClosetProps {
+  storeItems: StoreItem[];
+  myRoom: MyRoom;
+}
+
+const Closet = ({ onPlantHair, onHairGuide, storeItems, myRoom }: ClosetProps) => {
   const stageRef = useRef<HTMLDivElement>(null);
   const [tab, setTab] = useState<ClosetTab>("all");
-  const { outfit, toggleHat, toggleFaceItem, toggleExpression } = useOutfit();
+  const closetItems = useMemo(
+    () => [DEMO_SHIELD, ...toClosetItems(storeItems), ...EXPRESSION_ITEMS],
+    [storeItems],
+  );
+  const { outfit, toggleItem, toggleExpression } = useOutfit(
+    toClosetItems(storeItems.filter(item => item.isEquipped)),
+  );
+  const wornItems = getWornItems(outfit);
   const { plucked, rice } = useHairPlanting();
-  // 보살 색과 닉네임은 방마다 달라요. 곳간은 방 밖이라 첫 번째 방의 내 보살로 보여줘요.
-  const myRoom = useMeQuery().data?.rooms[0];
   const openToast = useTabBarToast();
   const gridRef = useRef<HTMLDivElement>(null);
-
   const playStage = (keyframes: Keyframe[], duration: number) => {
     if (prefersReducedMotion()) return;
     stageRef.current?.animate(keyframes, { duration, easing: "ease-out" });
   };
 
   const toggle = (item: ClosetItem) => {
-    if (item.kind === "hat") toggleHat(item.hat);
-    if (item.kind === "faceItem") toggleFaceItem(item.faceItem);
+    if (item.kind === "item") toggleItem(item);
     if (item.kind === "expression") toggleExpression(item.expression);
     // 착용을 바꾼 순간에만 눌렸다 튀어요. effect로 걸면 StrictMode의 마운트 재실행에서도 재생돼요.
     playStage(SQUASH, 380);
@@ -91,6 +126,8 @@ const BosalCloset = ({ onPlantHair, onHairGuide }: BosalClosetProps) => {
     }
   };
 
+  const wornNames = closetItems.filter(item => isWorn(item, outfit)).map(item => item.name);
+
   return (
     <div className="min-h-svh bg-(--adaptiveBackground)">
       <section className="bg-(--adaptiveGrey50) px-5 pt-5 pb-4">
@@ -99,26 +136,23 @@ const BosalCloset = ({ onPlantHair, onHairGuide }: BosalClosetProps) => {
             ref={stageRef}
             className="absolute top-[18px] left-1/2 z-10 origin-bottom -translate-x-1/2"
           >
-            {myRoom && (
-              <BosalFigure
-                className="h-[119px] w-[76px]"
-                color={myRoom.color}
-                expression={outfit.expression}
-                hat={outfit.hat}
-                faceItem={outfit.faceItem}
-                pluckedHairs={plucked}
-              />
-            )}
+            <BosalFigure
+              className="h-[119px] w-[76px]"
+              color={myRoom.color}
+              expression={outfit.expression}
+              items={wornItems}
+              pluckedHairs={plucked}
+            />
           </div>
           <div className="absolute top-0 right-0">
             <OutfitSlots outfit={outfit} onSelect={changeTab} />
           </div>
           <div className="absolute inset-x-0 top-[155px] flex flex-col items-center gap-0.5">
             <Paragraph typography="t5" fontWeight="bold" color="var(--adaptiveGrey900)">
-              {myRoom && `${myRoom.nickname}보살`}
+              {`${myRoom.nickname}보살`}
             </Paragraph>
             <Paragraph typography="t6" fontWeight="semibold" color="var(--adaptiveGrey600)">
-              {wornSummary(outfit)}
+              {wornNames.length > 0 ? `${wornNames.join(", ")} 착용 중` : "아이템 미착용"}
             </Paragraph>
           </div>
         </div>
@@ -149,8 +183,8 @@ const BosalCloset = ({ onPlantHair, onHairGuide }: BosalClosetProps) => {
           <div className={cn(tab !== "all" && "hidden")}>
             <HairPlantCard onPlant={onPlantHair} onGuide={onHairGuide} />
           </div>
-          {DEMO_ITEMS.map(item => (
-            <div key={item.id} className={cn(!isVisible(item, tab) && "hidden")}>
+          {closetItems.map(item => (
+            <div key={item.id} className={cn(tab !== "all" && tabOf(item) !== tab && "hidden")}>
               <ItemCard
                 name={item.name}
                 price={item.kind === "expression" ? undefined : item.price}
@@ -167,9 +201,9 @@ const BosalCloset = ({ onPlantHair, onHairGuide }: BosalClosetProps) => {
                       </Paragraph.Text>
                       개
                     </>
-                  ) : (
+                  ) : item.kind === "expression" || item.isOwned ? (
                     "보유 중"
-                  )
+                  ) : null
                 }
                 thumbnail={
                   item.kind === "shield" ? (
@@ -177,16 +211,13 @@ const BosalCloset = ({ onPlantHair, onHairGuide }: BosalClosetProps) => {
                       <ShieldImage />
                     </div>
                   ) : (
-                    myRoom && (
-                      <BosalFigure
-                        dimmed
-                        color={myRoom.color}
-                        className="mt-3 h-[107px] w-[68px]"
-                        hat={item.kind === "hat" ? item.hat : null}
-                        faceItem={item.kind === "faceItem" ? item.faceItem : null}
-                        expression={item.kind === "expression" ? item.expression : "default"}
-                      />
-                    )
+                    <BosalFigure
+                      dimmed
+                      color={myRoom.color}
+                      className="mt-3 h-[107px] w-[68px]"
+                      items={item.kind === "item" ? [item.code] : undefined}
+                      expression={item.kind === "expression" ? item.expression : "default"}
+                    />
                   )
                 }
                 action={

@@ -13,10 +13,12 @@ interface BosalCardProps {
   pokes: number;
   /** 빠진 나발 번호예요. */
   fallenHairs: readonly number[];
+  /** 착용한 아이템 코드예요. */
+  items: readonly string[];
 }
 
 /** 오늘의 보살 격자 카드예요. 누르는 동작은 쓰는 쪽에서 감싸서 붙여요. */
-const BosalCard = ({ name, color, status, pokes, fallenHairs }: BosalCardProps) => (
+const BosalCard = ({ name, color, status, pokes, fallenHairs, items }: BosalCardProps) => (
   <div className="relative h-[213px] w-full overflow-hidden rounded-lg border border-solid border-(--adaptiveGrey300) bg-(--adaptiveGrey50) text-center">
     <div className="absolute inset-x-2.5 top-2.5 flex items-center justify-between">
       <BosalStatusBadge status={status} />
@@ -32,6 +34,7 @@ const BosalCard = ({ name, color, status, pokes, fallenHairs }: BosalCardProps) 
       color={color}
       expression={STATUS_EXPRESSION[status]}
       fallenHairs={fallenHairs}
+      items={items}
       className="absolute top-9 left-[27px]"
     />
     <Paragraph

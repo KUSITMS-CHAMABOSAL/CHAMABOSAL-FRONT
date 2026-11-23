@@ -2,19 +2,19 @@ import { memo, type Ref } from "react";
 
 import { cn } from "@/shared/lib";
 
-import rudolphNose from "../assets/item_rudolph_nose.svg";
-import santaHat from "../assets/item_santa_hat.svg";
 import { BOSAL_ART, BOSAL_ART_HEIGHT, BOSAL_ART_WIDTH } from "../config/art";
-import type { BosalColor, BosalExpression, BosalFaceItem, BosalHat } from "../model/types";
+import { getItemTransform, ITEM_ART } from "../config/items";
+import type { BosalColor, BosalExpression, ItemCode } from "../model/types";
 import BosalHair from "./BosalHair";
 
 const EXPRESSIONS = Object.keys(BOSAL_ART_WIDTH) as BosalExpression[];
+const ITEMS = Object.entries(ITEM_ART) as [ItemCode, (typeof ITEM_ART)[ItemCode]][];
 
 interface BosalFigureProps {
   color: BosalColor;
   expression?: BosalExpression;
-  hat?: BosalHat | null;
-  faceItem?: BosalFaceItem | null;
+  /** 착용한 아이템이에요. 슬롯마다 하나씩이에요. */
+  items?: readonly ItemCode[];
   /** 빠진 나발 번호 */
   pluckedHairs?: ReadonlySet<number>;
   /** 아이템 카드처럼 보살은 흐리게, 아이템만 또렷하게 보여줄 때 써요. */
@@ -25,6 +25,7 @@ interface BosalFigureProps {
 }
 
 const NO_PLUCKED: ReadonlySet<number> = new Set();
+const NO_ITEMS: readonly ItemCode[] = [];
 
 // 착용 아이템은 항상 렌더링하고 투명도만 바꿔요. 착용하는 순간 이미지를 불러오면 WebView에서 한 프레임 비어 보여요.
 const itemClass = (worn: boolean) =>
@@ -40,8 +41,7 @@ const itemClass = (worn: boolean) =>
 const BosalFigure = ({
   color,
   expression = "default",
-  hat = null,
-  faceItem = null,
+  items = NO_ITEMS,
   pluckedHairs = NO_PLUCKED,
   dimmed = false,
   className,
@@ -66,21 +66,25 @@ const BosalFigure = ({
           )}
         />
       ))}
-      <BosalHair color={color} expression={expression} fallenHairs={pluckedHairs} />
+      <BosalHair color={color} fallenHairs={pluckedHairs} />
     </g>
 
-    <g transform="translate(44.69 68.35)">
-      <g className={cn("origin-center transform-fill", itemClass(faceItem === "rudolphNose"))}>
-        <image href={rudolphNose} x={-6.44} y={-6.44} width={12.88} height={12.88} />
+    {ITEMS.map(([code, art]) => (
+      <g key={code} transform={getItemTransform(art)}>
+        <g className={cn("origin-center transform-fill", itemClass(items.includes(code)))}>
+          <image
+            href={art.href}
+            x={art.x}
+            y={art.y}
+            width={art.width}
+            height={art.height}
+            preserveAspectRatio="none"
+          />
+        </g>
       </g>
-    </g>
-    <g transform="translate(47.95 0.55) rotate(6.67)">
-      <g className={cn("origin-center transform-fill", itemClass(hat === "santaHat"))}>
-        <image href={santaHat} x={-34.2} y={-17.33} width={68.4} height={34.66} />
-      </g>
-    </g>
+    ))}
   </svg>
 );
 
-// 그림 4장과 나발 38가닥을 그려서, 같은 화면의 다른 상태가 바뀔 때 다시 그리지 않게 해요.
+// 그림 4장, 나발 38가닥, 아이템 13개를 그려서, 같은 화면의 다른 상태가 바뀔 때 다시 그리지 않게 해요.
 export default memo(BosalFigure);

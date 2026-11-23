@@ -1,12 +1,13 @@
+import type { CSSProperties } from "react";
+
 import { Paragraph } from "@toss/tds-mobile";
 
-import { cn } from "@/shared/lib";
+import { ITEM_ART, type ItemCode } from "@/entities/bosal";
 import type { Outfit } from "@/features/storehouse/equipItem";
+import { cn } from "@/shared/lib";
 
 import { PlusIcon } from "../assets";
-import rudolphNoseIcon from "../assets/slot_rudolph_nose.svg";
-import santaHatIcon from "../assets/slot_santa_hat.svg";
-import type { ClosetTab } from "../config/demoItems";
+import type { ClosetTab } from "../config/closetItems";
 
 interface OutfitSlotsProps {
   outfit: Outfit;
@@ -20,20 +21,34 @@ const EXPRESSION_LABEL = {
   poked: "찔림",
 } as const;
 
+/** 슬롯 칸(48px) 안에 아이템 그림을 비율대로 줄여 넣어요. */
+const SlotItem = ({ code }: { code: ItemCode }) => {
+  const { href, rotate } = ITEM_ART[code];
+  return (
+    <img
+      src={href}
+      alt=""
+      className="max-h-7 max-w-8 rotate-(--item-rotate)"
+      style={{ "--item-rotate": `${rotate ?? 0}deg` } as CSSProperties}
+    />
+  );
+};
+
+// 🔖 시안 슬롯은 모자·얼굴·표정 세 칸이에요. 소품(ACCESSORY) 칸은 시안이 없어 두지 않았어요.
 /** 위에서부터 모자, 얼굴, 표정 슬롯이에요. 누르면 해당 카테고리 탭으로 이동해요. */
 const OutfitSlots = ({ outfit, onSelect }: OutfitSlotsProps) => {
   const slots = [
     {
       tab: "hat",
       label: "모자",
-      filled: outfit.hat !== null,
-      content: <img src={santaHatIcon} alt="" className="w-8 rotate-[6.67deg]" />,
+      filled: outfit.items.HAT !== undefined,
+      content: outfit.items.HAT && <SlotItem code={outfit.items.HAT} />,
     },
     {
       tab: "face",
       label: "얼굴",
-      filled: outfit.faceItem !== null,
-      content: <img src={rudolphNoseIcon} alt="" className="size-[15px]" />,
+      filled: outfit.items.FACE !== undefined,
+      content: outfit.items.FACE && <SlotItem code={outfit.items.FACE} />,
     },
     {
       tab: "expression",

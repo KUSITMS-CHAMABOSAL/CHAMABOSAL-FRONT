@@ -25,6 +25,7 @@ interface UnverifiedBosal {
   color: BosalColor;
   isMe: boolean;
   fallenNabalNumbers: readonly number[];
+  equippedItemCodes: readonly string[];
 }
 
 interface UnverifiedCardProps {
@@ -77,6 +78,7 @@ const UnverifiedCard = ({ member, pokes = 0 }: UnverifiedCardProps) => {
             color={member.color}
             expression="default"
             fallenHairs={member.fallenNabalNumbers}
+            items={member.equippedItemCodes}
             height={ART_HEIGHT}
             className={cn("block transition-opacity duration-150", isPoked && "opacity-0")}
           />
@@ -84,6 +86,7 @@ const UnverifiedCard = ({ member, pokes = 0 }: UnverifiedCardProps) => {
             color={member.color}
             expression="poked"
             fallenHairs={member.fallenNabalNumbers}
+            items={member.equippedItemCodes}
             height={ART_HEIGHT}
             className={cn(
               "absolute inset-0 opacity-0 transition-opacity duration-150",

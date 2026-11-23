@@ -14,10 +14,12 @@ interface BosalProfileProps {
   color: BosalColor;
   /** 빠진 나발 번호예요. */
   fallenHairs: readonly number[];
+  /** 착용한 아이템 코드예요. 착용은 사용자 단위라 모든 방에 같아요. */
+  items: readonly string[];
 }
 
 /** 내 보살 카드예요. 이 방에서 쓰는 닉네임과 보살 색을 보여줘요. */
-const BosalProfile = ({ nickname, color, fallenHairs }: BosalProfileProps) => (
+const BosalProfile = ({ nickname, color, fallenHairs, items }: BosalProfileProps) => (
   <div
     className={cn(
       "relative flex h-[211px] flex-col items-center overflow-hidden rounded-sm bg-linear-to-b from-(--adaptiveBackground) pt-4.25",
@@ -32,6 +34,7 @@ const BosalProfile = ({ nickname, color, fallenHairs }: BosalProfileProps) => (
       color={color}
       expression="default"
       fallenHairs={fallenHairs}
+      items={items}
       height={ART_HEIGHT}
       className="relative"
     />

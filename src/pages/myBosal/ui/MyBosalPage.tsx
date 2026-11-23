@@ -38,6 +38,7 @@ const MyBosalPage = () => {
         rooms={me.data.rooms}
         room={room}
         fallenHairs={me.data.nabal.fallenNumbers}
+        equippedItems={me.data.equippedItemCodes}
         canCreateRoom={me.data.canCreateRoom}
         onSelectRoom={id => navigate(paths.my(id), { replace: true })}
         // 🔖 방 만들기(/rooms/new)는 각 이슈에서 연결해요.

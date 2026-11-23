@@ -41,7 +41,9 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
   const [sentPokes, setSentPokes] = useState<Record<number, number>>({});
   const openToast = useTabBarToast();
   const poke = usePokeMember(roomId, openToast);
-  const { mutate: react, isPending: isReacting } = useReactCertification(roomId);
+  const { mutate: react, isPending: isReacting } = useReactCertification(roomId, openToast);
+  /** 리액션은 인증이 속한 회차가 인증 중일 때만 받아요. 투표가 시작되면 남긴 리액션만 보여줘요. */
+  const canReact = today.round.status === "CERTIFYING";
   const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(roomId, openToast);
 
   const goToPage = (page: number) => {
@@ -73,12 +75,9 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
           <ReactionButtons
             value={view.certification.myReaction}
             counts={{ GOOD: view.certification.goodCount, BAD: view.certification.badCount }}
-            disabled={isReacting}
+            disabled={!canReact || isReacting}
             onChange={reaction =>
-              react(
-                { certificationId: view.certification.certificationId, reaction },
-                { onError: () => openToast("리액션을 남기지 못했어요") },
-              )
+              react({ certificationId: view.certification.certificationId, reaction })
             }
           />
         );

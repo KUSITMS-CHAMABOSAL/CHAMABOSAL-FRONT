@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { roomQueries, type TodayResponse } from "@/entities/room";
+import { isApiError } from "@/shared/api";
 import type { ReactionType } from "@/shared/types";
 
 import { deleteMyReaction, putMyReaction } from "../api/reactionApi";
@@ -30,8 +31,17 @@ const setMyReaction = (
     }),
   };
 
-/** 인증에 리액션을 남기거나 바꾸거나 취소해요. 누르는 즉시 화면에 반영하고, 실패하면 되돌려요. */
-export const useReactCertification = (roomId: number) => {
+// 🔖 실패 문구는 시안이 없어 임시예요.
+const getReactErrorMessage = (error: unknown) =>
+  isApiError(error, "REACT_002")
+    ? "투표가 시작돼서 리액션을 바꿀 수 없어요"
+    : "리액션을 남기지 못했어요";
+
+/**
+ * 인증에 리액션을 남기거나 바꾸거나 취소해요. 누르는 즉시 화면에 반영하고, 실패하면 되돌려요.
+ * 인증이 속한 회차가 인증 중일 때만 돼요. 투표가 시작되면 서버가 거절해요(REACT_002).
+ */
+export const useReactCertification = (roomId: number, onError: (message: string) => void) => {
   const queryClient = useQueryClient();
   const { queryKey } = roomQueries.today(roomId);
 
@@ -44,7 +54,10 @@ export const useReactCertification = (roomId: number) => {
       queryClient.setQueryData(queryKey, setMyReaction(previous, variables));
       return { previous };
     },
-    onError: (_error, _variables, context) => queryClient.setQueryData(queryKey, context?.previous),
+    onError: (error, _variables, context) => {
+      queryClient.setQueryData(queryKey, context?.previous);
+      onError(getReactErrorMessage(error));
+    },
     onSettled: () => queryClient.invalidateQueries({ queryKey }),
   });
 };

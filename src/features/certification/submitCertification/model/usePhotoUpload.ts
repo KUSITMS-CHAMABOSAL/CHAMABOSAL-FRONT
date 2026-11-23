@@ -45,5 +45,13 @@ export const usePhotoUpload = (keptPhotoUrl?: string | null) => {
     setPhoto({ status: "empty" });
   };
 
-  return { photo, pick, remove };
+  /** 서버가 거절한 사진이 아직 그대로일 때만 지워요. 그 사이 새로 올린 사진은 남겨요. */
+  const removeRejected = (imageKey: string) =>
+    setPhoto(current =>
+      current.status === "uploaded" && current.imageKey === imageKey
+        ? { status: "empty" }
+        : current,
+    );
+
+  return { photo, pick, remove, removeRejected };
 };

@@ -61,7 +61,7 @@ const CertifyForm = (props: CertifyFormProps) => {
   const [memo, setMemo] = useState(edit?.memo ?? "");
   const [amount, setAmount] = useState<number | null>(edit?.spentAmount ?? null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const { photo, pick, remove } = usePhotoUpload(edit?.imageUrl);
+  const { photo, pick, remove, removeRejected } = usePhotoUpload(edit?.imageUrl);
   const { mutate: update, isPending: isUpdating } = useUpdateCertification(roomId);
   const { openToast } = useToast();
   const isFailed = result === "FAILED";
@@ -88,7 +88,7 @@ const CertifyForm = (props: CertifyFormProps) => {
             onUnavailable();
           } else if (isApiError(error, "COMMON_002") && error.field === "imageKey") {
             openToast("사진을 다시 올려 주세요");
-            remove();
+            if (photo.status === "uploaded") removeRejected(photo.imageKey);
           } else {
             openToast("인증을 수정하지 못했어요. 잠시 후 다시 시도해 주세요");
           }

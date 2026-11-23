@@ -1,3 +1,3 @@
 export { deepLinks } from "./deepLinks";
 export * from "./env";
-export { paths, type RoomHomeState } from "./paths";
+export { type HairGuideState, paths, type RoomHomeState } from "./paths";

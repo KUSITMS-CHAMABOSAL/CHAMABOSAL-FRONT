@@ -4,6 +4,7 @@ import { Button, Paragraph, TextButton } from "@toss/tds-mobile";
 
 import { BosalGreyFigure, GREY_FIGURE, GREY_HAIR_CURLS } from "@/entities/bosal";
 import { ItemCard } from "@/entities/item";
+import { useConfirmNabalLoss } from "@/features/storehouse/confirmNabalLoss";
 import { HAIR_PLANT_PRICE } from "@/features/storehouse/plantHair";
 import { cn } from "@/shared/lib";
 import { useSafeAreaBottom } from "@/shared/lib/appsInToss";
@@ -69,6 +70,8 @@ const transition =
   "transition-[transform,opacity] duration-(--guide-transition) ease-[cubic-bezier(0.33,1,0.68,1)] motion-reduce:transition-none";
 
 interface HairGuideProps {
+  /** 앱 진입 때 처음 나발이 빠져서 열렸으면 그 기록이에요. 보여주면 본 것으로 저장해요. */
+  nabalLossId?: number;
   onPlant: () => void;
   /** 07 카드의 [구매하기] */
   onBuy: () => void;
@@ -79,8 +82,14 @@ interface HairGuideProps {
  * 나발이 처음 빠졌을 때 보여주는 설명이에요. 들어오면 시안 01~07을 이어서 재생하고 07에서 멈춰요.
  * 동작 줄이기를 켠 사용자에게는 바로 마지막 장면을 보여줘요.
  */
-const HairGuide = ({ onPlant, onBuy, onClose }: HairGuideProps) => {
+const HairGuide = ({ nabalLossId, onPlant, onBuy, onClose }: HairGuideProps) => {
   const [scene, setScene] = useState(() => (prefersReducedMotion() ? GUIDE_LAST_SCENE : 0));
+  const { mutate: confirmNabalLoss } = useConfirmNabalLoss();
+
+  // 한 번 보여주면 다음 앱 진입부터는 진입 분기가 이 화면을 띄우지 않아요.
+  useEffect(() => {
+    if (nabalLossId !== undefined) confirmNabalLoss(nabalLossId);
+  }, [nabalLossId, confirmNabalLoss]);
   const safeAreaBottom = useSafeAreaBottom();
 
   useEffect(() => {

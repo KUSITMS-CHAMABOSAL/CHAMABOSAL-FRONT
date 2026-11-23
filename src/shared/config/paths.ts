@@ -34,3 +34,11 @@ export const paths = {
 export interface RoomHomeState {
   fromPotCelebration?: boolean;
 }
+
+/** 나발 설명으로 갈 때 넘기는 상태예요. 앱 진입 때 처음 나발이 빠졌으면 진입 분기가 이 화면부터 띄워요. */
+export interface HairGuideState {
+  /** 본 것으로 저장할 나발 기록이에요. */
+  nabalLossId?: number;
+  /** 닫으면 갈 화면이에요. 진입 분기가 원래 보내려던 화면이에요. */
+  returnTo?: string;
+}

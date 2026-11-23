@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 
 import { Button, IconButton, Paragraph } from "@toss/tds-mobile";
 
-import { BosalCard, BosalStatusBadge, EmptyBosalCard, InviteSeatCard } from "@/entities/bosal";
+import { BosalCard, BosalStatusBadge, InviteBosalCard } from "@/entities/bosal";
 import { CertificationCard } from "@/entities/certification";
 import { MAX_MEMBERS, type TodayMember, type TodayResponse } from "@/entities/room";
 import { EditCertificationActions } from "@/features/certification/editCertification";
@@ -146,14 +146,8 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
           <div className="grid w-[296px] grid-cols-2 gap-2.5">
             {Array.from({ length: MAX_MEMBERS }, (_, index) => today.members[index] ?? null).map(
               (member, index) =>
-                // 격자는 늘 네 칸이에요. 정원 밖 칸은 친구 초대 칸이에요.
-                index >= memberLimit ? (
-                  <InviteSeatCard
-                    key={`invite-${index}`}
-                    disabled={isCopying}
-                    onClick={() => copyInviteLink()}
-                  />
-                ) : member ? (
+                // 격자는 늘 네 칸이에요. 빈 칸은 정원 안팎 모두 친구 초대 칸이에요.
+                member ? (
                   <BosalCard
                     key={member.memberId}
                     name={getBosalName(member)}
@@ -163,7 +157,11 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
                     pokes={member.isMe ? today.me.receivedPokeCount : 0}
                   />
                 ) : (
-                  <EmptyBosalCard key={`empty-${index}`} />
+                  <InviteBosalCard
+                    key={`invite-${index}`}
+                    disabled={isCopying}
+                    onClick={() => copyInviteLink()}
+                  />
                 ),
             )}
           </div>

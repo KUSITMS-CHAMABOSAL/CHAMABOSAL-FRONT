@@ -13,7 +13,7 @@ interface BosalCardProps {
   pokes: number;
 }
 
-/** 오늘의 보살 격자 카드예요. 누르지 않고 옆으로 넘겨서 그 보살의 카드를 봐요. */
+/** 오늘의 보살 격자 카드예요. 누르는 동작은 쓰는 쪽에서 감싸서 붙여요. */
 const BosalCard = ({ name, color, status, pokes }: BosalCardProps) => (
   <div className="relative h-[213px] w-full overflow-hidden rounded-lg border border-solid border-(--adaptiveGrey300) bg-(--adaptiveGrey50) text-center">
     <div className="absolute inset-x-2.5 top-2.5 flex items-center justify-between">

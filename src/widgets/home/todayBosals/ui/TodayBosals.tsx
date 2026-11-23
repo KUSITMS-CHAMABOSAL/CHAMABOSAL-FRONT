@@ -28,7 +28,7 @@ const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: r
 
 /**
  * 오늘의 보살들이에요. 첫 장은 격자이고, 옆으로 넘기면 자리마다 카드가 캐러셀로 이어져요.
- * 격자는 누르지 않고 넘겨서 봐요. 빈자리는 친구 입장 전 카드예요. 끝에는 격자로 돌아가는 버튼이 있어요.
+ * 격자의 보살을 누르거나 넘기면 그 보살의 카드를 봐요. 빈자리는 친구 입장 전 카드예요. 끝에는 격자로 돌아가는 버튼이 있어요.
  *
  * 넘기기는 브라우저 기본 가로 스크롤과 scroll-snap이에요. 드래그, 관성, 멈출 자리 맞추기를 WebView가
  * 합성 스레드에서 처리해서 자바스크립트 없이 부드럽고, 드래그 라이브러리가 필요 없어요.
@@ -148,14 +148,22 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
               (member, index) =>
                 // 격자는 늘 네 칸이에요. 빈 칸은 정원 안팎 모두 친구 초대 칸이에요.
                 member ? (
-                  <BosalCard
+                  // 누르면 캐러셀에서 그 보살의 카드로 넘어가요. 캐러셀은 격자와 같은 순서예요.
+                  <button
                     key={member.memberId}
-                    name={getBosalName(member)}
-                    color={member.color}
-                    status={getBosalStatus(member)}
-                    // 🔖 서버는 내가 받은 콕 수만 줘요. 다른 보살의 콕 뱃지는 표시하지 않아요.
-                    pokes={member.isMe ? today.me.receivedPokeCount : 0}
-                  />
+                    type="button"
+                    aria-label={`${getBosalName(member)}의 인증 보기`}
+                    onClick={() => goToPage(index + 1)}
+                    className="touch-manipulation appearance-none border-0 bg-transparent p-0 text-left [-webkit-tap-highlight-color:transparent]"
+                  >
+                    <BosalCard
+                      name={getBosalName(member)}
+                      color={member.color}
+                      status={getBosalStatus(member)}
+                      // 🔖 서버는 내가 받은 콕 수만 줘요. 다른 보살의 콕 뱃지는 표시하지 않아요.
+                      pokes={member.isMe ? today.me.receivedPokeCount : 0}
+                    />
+                  </button>
                 ) : (
                   <InviteBosalCard
                     key={`invite-${index}`}

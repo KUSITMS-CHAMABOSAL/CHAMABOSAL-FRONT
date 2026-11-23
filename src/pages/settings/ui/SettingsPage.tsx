@@ -10,7 +10,8 @@ const SettingsPage = () => {
   const me = useMeQuery();
   const { openToast } = useToast();
 
-  if (me.error) throw me.error;
+  // 처음 받지 못했을 때만 에러 화면이에요. 다시 받기만 실패하면 보던 설정을 그대로 둬요.
+  if (!me.data && me.error) throw me.error;
 
   return (
     <main className="min-h-svh bg-(--adaptiveBackground)">

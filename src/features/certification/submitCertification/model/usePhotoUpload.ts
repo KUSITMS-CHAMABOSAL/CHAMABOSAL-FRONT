@@ -11,9 +11,12 @@ export type PhotoSource = "camera" | "album";
 /**
  * 인증 사진 한 장이에요. 고르는 즉시 올려서, 실패하면 폼에서 바로 알려요.
  * 카메라·앨범을 열지 못하면(권한 거부 등) `pick`이 에러를 던져요. 업로드 실패는 `failed` 상태로 남아요.
+ * 수정할 때는 이미 올린 사진 주소를 넘겨 `kept`로 시작해요.
  */
-export const usePhotoUpload = () => {
-  const [photo, setPhoto] = useState<PhotoState>({ status: "empty" });
+export const usePhotoUpload = (keptPhotoUrl?: string | null) => {
+  const [photo, setPhoto] = useState<PhotoState>(() =>
+    keptPhotoUrl ? { status: "kept", previewUrl: keptPhotoUrl } : { status: "empty" },
+  );
   // 올리는 중에 지우거나 다시 고르면 이전 업로드 결과를 버려요.
   const attempt = useRef(0);
   // 고르기가 겹치면 마지막으로 연 것만 써요. 고르다 취소하면 올리던 사진은 그대로 둬요.

@@ -112,8 +112,14 @@ const JoinRoomSteps = ({ token }: JoinRoomStepsProps) => {
     );
   }
 
+  // Navigate는 아무것도 그리지 않아요. 방 홈 화면 코드를 받는 동안 이 화면이 남아 있어서 로더를 함께 그려요.
   if (joinedRoomId !== undefined) {
-    return <Navigate to={paths.room.home(joinedRoomId)} replace />;
+    return (
+      <>
+        <FullScreenLoader />
+        <Navigate to={paths.room.home(joinedRoomId)} replace />
+      </>
+    );
   }
 
   const goToEntry = () => navigate(paths.root, { replace: true });
@@ -127,7 +133,12 @@ const JoinRoomSteps = ({ token }: JoinRoomStepsProps) => {
   const { status, room, previousNickname } = preview.data;
 
   if (status === "ALREADY_MEMBER" && room) {
-    return <Navigate to={paths.room.home(room.roomId)} replace />;
+    return (
+      <>
+        <FullScreenLoader />
+        <Navigate to={paths.room.home(room.roomId)} replace />
+      </>
+    );
   }
 
   const reason = blockedBy ?? (status === "JOINABLE" ? null : status);

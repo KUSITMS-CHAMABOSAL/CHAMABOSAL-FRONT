@@ -22,8 +22,14 @@ const EntryRedirect = () => {
   if (me.error) throw me.error;
   if (!me.data) return <FullScreenLoader />;
   const roomId = me.data.rooms[0]?.roomId;
-  if (roomId === undefined) return <Navigate to={paths.intro} replace />;
-  return <Navigate to={getRoomPath(roomId, state?.tab)} replace />;
+  const to = roomId === undefined ? paths.intro : getRoomPath(roomId, state?.tab);
+  // Navigate는 아무것도 그리지 않아요. 갈 화면 코드를 받는 동안 이 화면이 남아 있어서 로더를 함께 그려요.
+  return (
+    <>
+      <FullScreenLoader />
+      <Navigate to={to} replace />
+    </>
+  );
 };
 
 export default EntryRedirect;

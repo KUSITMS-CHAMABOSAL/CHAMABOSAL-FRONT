@@ -18,7 +18,6 @@ const HomePage = () => {
   const isBackFromPotCelebration =
     (location.state as RoomHomeState | null)?.fromPotCelebration ?? false;
   const openToast = useTabBarToast();
-  const notReady = (label: string) => () => openToast(`${label}은 준비 중이에요`);
   const selectRoom = (id: number) => navigate(paths.room.home(id), { replace: true });
 
   // 나갔거나 사라진 방이에요. 닫으면 방 목록을 다시 받아 진입 분기로 가요.
@@ -43,7 +42,7 @@ const HomePage = () => {
             key={roomId}
             today={today.data}
             onCertify={() => navigate(paths.room.certify(roomId))}
-            onEditCertification={notReady("인증 수정")}
+            onEditCertification={() => navigate(paths.room.certifyEdit(roomId))}
           />
           <EntryPopups
             key={`popups-${roomId}`}

@@ -11,9 +11,10 @@ import RoomTabBar, { type RoomTab } from "./RoomTabBar";
 /** 탭 레이아웃 안에 있지만 하단 바를 그리지 않는 화면이에요. */
 const NO_TAB_BAR_PATHS: readonly string[] = [paths.hairPlanting];
 
-/** 방 화면 중 하단 바를 그리지 않는 화면이에요. 인증 작성은 시안에 하단 바가 없어요. */
+/** 방 화면 중 하단 바를 그리지 않는 화면이에요. 인증 작성은 시안에 하단 바가 없고, 수정도 같은 폼이에요. */
 const hidesTabBar = (pathname: string, roomId?: number) =>
-  roomId !== undefined && pathname === paths.room.certifyWrite(roomId);
+  roomId !== undefined &&
+  (pathname === paths.room.certifyWrite(roomId) || pathname === paths.room.certifyEdit(roomId));
 
 /** 지금 경로에 맞는 탭이에요. 인증 결과처럼 탭에 속하지 않는 화면은 선택 없이 그려요. */
 const getActiveTab = (pathname: string, roomId?: number): RoomTab | undefined => {

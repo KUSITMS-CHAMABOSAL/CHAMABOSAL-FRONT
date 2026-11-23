@@ -111,6 +111,12 @@ export const router = createBrowserRouter([
                         },
                       },
                       {
+                        path: "edit",
+                        lazy: {
+                          Component: async () => (await import("@/pages/certify")).CertifyEditPage,
+                        },
+                      },
+                      {
                         path: "result",
                         lazy: {
                           Component: async () =>

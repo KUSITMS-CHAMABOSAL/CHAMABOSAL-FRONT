@@ -3,9 +3,8 @@ import type { TodayMember } from "@/entities/room";
 
 import type { BosalCardView } from "../model/types";
 
-/** 격자 한 칸(빈자리는 null)을 캐러셀 카드 화면으로 바꿔요. */
-export const getBosalCardView = (member: TodayMember | null): BosalCardView => {
-  if (!member) return { kind: "waiting" };
+/** 보살 한 명을 캐러셀 카드 화면으로 바꿔요. */
+export const getBosalCardView = (member: TodayMember): BosalCardView => {
   const { certification } = member;
   if (certification) return { kind: "certified", member, certification };
   return { kind: "unverified", member };

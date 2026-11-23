@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Paragraph } from "@toss/tds-mobile";
 
-import { BosalImage, BosalSilhouette, BosalStatusBadge } from "@/entities/bosal";
+import { BosalImage, BosalStatusBadge } from "@/entities/bosal";
 import { cn } from "@/shared/lib";
 
 import type { BosalColor } from "@/entities/bosal";
@@ -27,19 +27,17 @@ interface UnverifiedBosal {
 }
 
 interface UnverifiedCardProps {
-  /** 없으면 아직 친구가 들어오기 전인 빈자리예요. */
-  member?: UnverifiedBosal;
+  member: UnverifiedBosal;
   /** 이 화면에서 콕 찌른 횟수예요. 늘 때마다 움찔해요. */
   pokes?: number;
 }
 
-const getMessage = (member?: UnverifiedBosal) => {
-  if (!member) return "아직 친구가 들어오기 전이에요!";
+const getMessage = (member: UnverifiedBosal) => {
   const next = member.isMe ? "친구에게 오늘의 순간을 인증해요!" : "콕 찔러서 알려줄까요?";
   return `${member.name}은 아직 인증하지 않았어요.\n${next}`;
 };
 
-/** 아직 인증하지 않은 보살이나 빈자리의 캐러셀 카드예요. 찔린 횟수가 늘면 표정이 잠깐 '찔림'으로 바뀌고 움찔해요. */
+/** 아직 인증하지 않은 보살의 캐러셀 카드예요. 찔린 횟수가 늘면 표정이 잠깐 '찔림'으로 바뀌고 움찔해요. */
 const UnverifiedCard = ({ member, pokes = 0 }: UnverifiedCardProps) => {
   const [isPoked, setIsPoked] = useState(false);
   const artRef = useRef<HTMLDivElement>(null);
@@ -65,35 +63,31 @@ const UnverifiedCard = ({ member, pokes = 0 }: UnverifiedCardProps) => {
           color="var(--adaptiveGrey900)"
           className="truncate"
         >
-          {member?.name ?? "초대받은 중생"}
+          {member.name}
         </Paragraph>
       </div>
       <Paragraph typography="t6" color="var(--adaptiveGrey900)" className="whitespace-pre-line">
         {getMessage(member)}
       </Paragraph>
       <div className="flex min-h-0 flex-1 items-center justify-center">
-        {member ? (
-          // 두 표정을 겹쳐 두고 opacity만 바꿔요. 찔릴 때 그림을 새로 불러오느라 깜빡이지 않아요.
-          <div ref={artRef} className="relative">
-            <BosalImage
-              color={member.color}
-              expression="default"
-              height={ART_HEIGHT}
-              className={cn("block transition-opacity duration-150", isPoked && "opacity-0")}
-            />
-            <BosalImage
-              color={member.color}
-              expression="poked"
-              height={ART_HEIGHT}
-              className={cn(
-                "absolute inset-0 opacity-0 transition-opacity duration-150",
-                isPoked && "opacity-100",
-              )}
-            />
-          </div>
-        ) : (
-          <BosalSilhouette height={ART_HEIGHT} />
-        )}
+        {/* 두 표정을 겹쳐 두고 opacity만 바꿔요. 찔릴 때 그림을 새로 불러오느라 깜빡이지 않아요. */}
+        <div ref={artRef} className="relative">
+          <BosalImage
+            color={member.color}
+            expression="default"
+            height={ART_HEIGHT}
+            className={cn("block transition-opacity duration-150", isPoked && "opacity-0")}
+          />
+          <BosalImage
+            color={member.color}
+            expression="poked"
+            height={ART_HEIGHT}
+            className={cn(
+              "absolute inset-0 opacity-0 transition-opacity duration-150",
+              isPoked && "opacity-100",
+            )}
+          />
+        </div>
       </div>
     </article>
   );

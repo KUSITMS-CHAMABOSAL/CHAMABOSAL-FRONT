@@ -1,9 +1,10 @@
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 
 import { isRoomGoneError, RoomGoneDialog, useTodayQuery } from "@/entities/room";
 import { useMeQuery } from "@/entities/session";
-import { paths } from "@/shared/config";
+import { paths, type RoomHomeState } from "@/shared/config";
 import { useTabBarToast } from "@/shared/lib";
+import { EntryPopups } from "@/widgets/home/entryPopups";
 import { RoomSummary } from "@/widgets/home/roomSummary";
 import { TodayBosals } from "@/widgets/home/todayBosals";
 
@@ -13,6 +14,9 @@ const HomePage = () => {
   const roomId = Number(useParams().roomId);
   const today = useTodayQuery(roomId);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isBackFromPotCelebration =
+    (location.state as RoomHomeState | null)?.fromPotCelebration ?? false;
   const openToast = useTabBarToast();
   const notReady = (label: string) => () => openToast(`${label}은 준비 중이에요`);
   const selectRoom = (id: number) => navigate(paths.room.home(id), { replace: true });
@@ -40,6 +44,16 @@ const HomePage = () => {
             today={today.data}
             onCertify={() => navigate(paths.room.certify(roomId))}
             onEditCertification={notReady("인증 수정")}
+          />
+          <EntryPopups
+            key={`popups-${roomId}`}
+            today={today.data}
+            isBackFromPotCelebration={isBackFromPotCelebration}
+            // 상태를 지워 새로고침이나 뒤로가기로 다시 뜨지 않게 해요.
+            onPotNoticeClose={() => navigate(location.pathname, { replace: true })}
+            onCertify={() => navigate(paths.room.certify(roomId))}
+            onRoomClosed={() => navigate(paths.root, { replace: true })}
+            onError={openToast}
           />
         </>
       )}

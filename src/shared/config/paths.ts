@@ -28,3 +28,8 @@ export const paths = {
     pot: (roomId: number, seq: number) => `/rooms/${roomId}/pots/${seq}`,
   },
 } as const;
+
+/** 방 홈으로 갈 때 넘기는 상태예요. 한 솥 축하를 보고 돌아오면 멤버에게 목표 달성 안내를 띄워요. */
+export interface RoomHomeState {
+  fromPotCelebration?: boolean;
+}

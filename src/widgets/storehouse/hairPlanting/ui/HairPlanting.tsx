@@ -76,8 +76,15 @@ const HairPlanting = ({ onClose, fadeIn = false }: HairPlantingProps) => {
   const { openToast } = useToast();
   const safeAreaBottom = useSafeAreaBottom();
   const timers = useRef<number[]>([]);
+  const isMounted = useRef(true);
 
-  useEffect(() => () => timers.current.forEach(window.clearTimeout), []);
+  useEffect(
+    () => () => {
+      isMounted.current = false;
+      timers.current.forEach(window.clearTimeout);
+    },
+    [],
+  );
 
   const later = (delay: number, run: () => void) => {
     timers.current.push(window.setTimeout(run, delay));
@@ -114,6 +121,7 @@ const HairPlanting = ({ onClose, fadeIn = false }: HairPlantingProps) => {
     // 확대하는 동안 심기를 요청하고, 확대가 끝나고 응답도 온 뒤에 나발이 돋아나요.
     const zoomed = new Promise<void>(resolve => later(PLANT_MOTION.zoomMs, resolve));
     void Promise.all([plant(index), zoomed]).then(([result]) => {
+      if (!isMounted.current) return;
       if (result !== "planted") {
         openToast(PLANT_FAILED_MESSAGE[result], { gap: TOAST_GAP.aboveButtons + safeAreaBottom });
         setSelected(null);
@@ -121,13 +129,15 @@ const HairPlanting = ({ onClose, fadeIn = false }: HairPlantingProps) => {
         return;
       }
       setPhase("planted");
-      later(PLANT_MOTION.growMs, () =>
+      later(PLANT_MOTION.growMs, () => {
+        if (!isMounted.current) return;
         openToast("나발이 심어졌어요", {
           gap: TOAST_GAP.bottom + safeAreaBottom,
           duration: PLANT_MOTION.toastMs,
-        }),
-      );
+        });
+      });
       later(PLANT_MOTION.holdMs, () => {
+        if (!isMounted.current) return;
         setSelected(null);
         setPhase("select");
       });

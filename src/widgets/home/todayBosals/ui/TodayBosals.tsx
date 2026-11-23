@@ -40,9 +40,7 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
   /** 이 화면에서 찌른 횟수예요. 서버는 내가 받은 콕만 알려줘서 움찔 연출에만 써요. */
   const [sentPokes, setSentPokes] = useState<Record<number, number>>({});
   const openToast = useTabBarToast();
-  const poke = usePokeMember(roomId, () =>
-    openToast("콕 찌르지 못했어요. 잠시 후 다시 시도해 주세요"),
-  );
+  const poke = usePokeMember(roomId, openToast);
   const { mutate: react, isPending: isReacting } = useReactCertification(roomId);
   const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(roomId, openToast);
 
@@ -90,7 +88,10 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
             오늘의 인증 남기기
           </Button>
         ) : (
-          <PokeButton onPoke={() => pokeMember(view.member)} />
+          <PokeButton
+            disabled={!today.round.isCertificationOpen}
+            onPoke={() => pokeMember(view.member)}
+          />
         );
     }
   };

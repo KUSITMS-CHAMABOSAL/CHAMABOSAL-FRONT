@@ -1,3 +1,4 @@
+import { FullScreenLoader } from "@toss/tds-mobile";
 import { useState } from "react";
 import { Navigate, useNavigate, useParams, useSearchParams } from "react-router";
 
@@ -26,7 +27,7 @@ const CertifyWritePage = () => {
   if (!isResult(result)) return <Navigate to={paths.room.certify(roomId)} replace />;
   if (!today.data) {
     if (today.error) throw today.error;
-    return null;
+    return <FullScreenLoader />;
   }
   if (isBlocked) return <Navigate to={paths.room.home(roomId)} replace />;
 

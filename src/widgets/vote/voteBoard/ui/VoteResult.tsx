@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { Button, Paragraph, Tooltip } from "@toss/tds-mobile";
+import { Button, FullScreenLoader, Paragraph, Tooltip } from "@toss/tds-mobile";
 
 import { BosalHead } from "@/entities/bosal";
 import { type RoundResultResponse, useRoundResultQuery } from "@/entities/vote";
@@ -89,8 +89,7 @@ const VoteResult = ({ roomId, roundId, isSeen }: VoteResultProps) => {
 
   if (!result) {
     if (error) throw error;
-    // 🔖 로딩 시안이 없어 아직 아무것도 그리지 않아요.
-    return null;
+    return <FullScreenLoader />;
   }
 
   const { resultType, picked } = result;

@@ -1,6 +1,6 @@
 import { startTransition, useState } from "react";
 
-import { useToast } from "@toss/tds-mobile";
+import { FullScreenLoader, useToast } from "@toss/tds-mobile";
 import { Navigate, useLocation, useNavigate } from "react-router";
 
 import { BOSAL_COLOR_NAME } from "@/entities/bosal";
@@ -122,8 +122,7 @@ const JoinRoomSteps = ({ token }: JoinRoomStepsProps) => {
   if (token === "") return <JoinBlocked reason="UNAVAILABLE" room={null} onAction={goToEntry} />;
 
   if (preview.error) throw preview.error;
-  // 🔖 로딩 시안이 없어 아직 아무것도 그리지 않아요.
-  if (!preview.data) return null;
+  if (!preview.data) return <FullScreenLoader />;
 
   const { status, room, previousNickname } = preview.data;
 

@@ -1,3 +1,4 @@
+import { FullScreenLoader } from "@toss/tds-mobile";
 import { Navigate, useNavigate, useParams } from "react-router";
 
 import { useRoundResultQuery } from "@/entities/vote";
@@ -12,10 +13,9 @@ const ForeheadTapPage = () => {
   const navigate = useNavigate();
   const result = useRoundResultQuery(roundId);
 
-  // 🔖 로딩 시안이 없어 아직 따로 그리지 않아요.
   if (!result.data) {
     if (result.error) throw result.error;
-    return null;
+    return <FullScreenLoader />;
   }
   // 이미 보냈거나 지목 없음·방어됨·투표 안 함·시간 지남이면 쳐도 저장되지 않아서 투표 탭으로 돌려보내요.
   // 🔖 안내 문구 시안이 없어 조용히 돌아가요.

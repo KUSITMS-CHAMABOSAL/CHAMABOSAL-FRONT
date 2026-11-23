@@ -1,3 +1,4 @@
+import { FullScreenLoader } from "@toss/tds-mobile";
 import { useNavigate, useParams } from "react-router";
 
 import { useReceivedTapsQuery } from "@/entities/vote";
@@ -14,10 +15,10 @@ const TapTapPage = () => {
   const toVote = () => navigate(paths.room.vote(roomId), { replace: true });
 
   // 처음 받지 못했을 때만 에러 화면이에요. 다시 받기만 실패하면 치던 화면을 그대로 둬요.
-  // 🔖 로딩, 톡톡 전달 전(isDelivered false) 시안이 없어 아직 따로 그리지 않아요.
+  // 🔖 톡톡 전달 전(isDelivered false) 시안이 없어 아직 따로 그리지 않아요.
   if (!received.data) {
     if (received.error) throw received.error;
-    return null;
+    return <FullScreenLoader />;
   }
 
   return (

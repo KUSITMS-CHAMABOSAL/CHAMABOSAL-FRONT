@@ -1,3 +1,4 @@
+import { FullScreenLoader } from "@toss/tds-mobile";
 import { Navigate, useLocation } from "react-router";
 
 import { useMeQuery } from "@/entities/session";
@@ -19,7 +20,7 @@ const EntryRedirect = () => {
   const me = useMeQuery();
   const state = useLocation().state as EntryState | null;
   if (me.error) throw me.error;
-  if (!me.data) return null;
+  if (!me.data) return <FullScreenLoader />;
   const roomId = me.data.rooms[0]?.roomId;
   if (roomId === undefined) return <Navigate to={paths.intro} replace />;
   return <Navigate to={getRoomPath(roomId, state?.tab)} replace />;

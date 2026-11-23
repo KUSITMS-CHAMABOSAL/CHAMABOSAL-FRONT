@@ -1,4 +1,4 @@
-import { Paragraph, useToast } from "@toss/tds-mobile";
+import { Paragraph, Skeleton, useToast } from "@toss/tds-mobile";
 
 import { useMeQuery } from "@/entities/session";
 import { SettingsList } from "@/widgets/settings/settingsList";
@@ -10,11 +10,7 @@ const SettingsPage = () => {
   const me = useMeQuery();
   const { openToast } = useToast();
 
-  if (!me.data) {
-    if (me.error) throw me.error;
-    // 🔖 로딩 시안이 없어 아직 아무것도 그리지 않아요.
-    return null;
-  }
+  if (me.error) throw me.error;
 
   return (
     <main className="min-h-svh bg-(--adaptiveBackground)">
@@ -24,12 +20,17 @@ const SettingsPage = () => {
         </Paragraph>
       </div>
       <div className="mt-2.5">
-        <SettingsList
-          me={me.data}
-          // 🔖 약관 화면은 각 이슈에서 연결해요.
-          onOpenTerms={() => openToast("이용약관은 준비 중이에요")}
-          onOpenPrivacy={() => openToast("개인정보처리방침은 준비 중이에요")}
-        />
+        {me.data ? (
+          <SettingsList
+            me={me.data}
+            // 🔖 약관 화면은 각 이슈에서 연결해요.
+            onOpenTerms={() => openToast("이용약관은 준비 중이에요")}
+            onOpenPrivacy={() => openToast("개인정보처리방침은 준비 중이에요")}
+          />
+        ) : (
+          // 제목은 그대로 두고 알림 4개와 약관·데이터 삭제 3개 자리만 비워요.
+          <Skeleton pattern="listOnly" repeatLastItemCount={7} />
+        )}
       </div>
     </main>
   );

@@ -35,6 +35,7 @@ import {
   SLOT_TAB,
 } from "../config/closetItems";
 import HairPlantCard from "./HairPlantCard";
+import ItemThumbnail from "./ItemThumbnail";
 import OutfitSlots from "./OutfitSlots";
 
 interface BosalClosetProps {
@@ -96,6 +97,9 @@ const LIST_IN: Keyframe[] = [
   { transform: "translateY(8px)", opacity: 0 },
   { transform: "translateY(0)", opacity: 1 },
 ];
+
+// 화면 밖 카드는 보일 때까지 그리지 않아요. 높이는 카드 높이(약 210px)로 잡아 스크롤바가 튀지 않게 해요.
+const CARD_CLASS = "[contain-intrinsic-size:auto_211px] [content-visibility:auto]";
 
 const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -263,11 +267,14 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
 
         {/* 탭마다 카드를 새로 마운트하면 저사양 기기에서 프레임이 튀어서, 모두 마운트해 두고 숨김만 바꿔요. */}
         <div ref={gridRef} className="grid grid-cols-2 gap-3.5 px-5">
-          <div className={cn(tab !== "all" && "hidden")}>
+          <div className={cn(CARD_CLASS, tab !== "all" && "hidden")}>
             <HairPlantCard onPlant={onPlantHair} onGuide={onHairGuide} />
           </div>
           {closetItems.map(item => (
-            <div key={item.id} className={cn(tab !== "all" && tabOf(item) !== tab && "hidden")}>
+            <div
+              key={item.id}
+              className={cn(CARD_CLASS, tab !== "all" && tabOf(item) !== tab && "hidden")}
+            >
               <ItemCard
                 name={item.name}
                 price={item.kind === "expression" ? undefined : item.price}
@@ -278,12 +285,10 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
                       <ShieldImage />
                     </div>
                   ) : (
-                    <BosalFigure
-                      dimmed
+                    <ItemThumbnail
                       color={myRoom.color}
-                      className="mt-3 h-[107px] w-[68px]"
-                      items={item.kind === "item" ? [item.code] : undefined}
-                      expression={item.kind === "expression" ? item.expression : "default"}
+                      code={item.kind === "item" ? item.code : undefined}
+                      expression={item.kind === "expression" ? item.expression : undefined}
                     />
                   )
                 }

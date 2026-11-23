@@ -19,6 +19,8 @@ interface BosalImageProps {
   items?: readonly string[];
   /** 렌더링 높이예요. 폭은 원본 비율로 따라가요. */
   height?: number;
+  /** 아이템 카드처럼 보살은 흐리게, 아이템만 또렷하게 보여줄 때 써요. */
+  dimmed?: boolean;
   className?: string;
 }
 
@@ -32,10 +34,16 @@ const BosalImage = ({
   fallenHairs = [],
   items = [],
   height = BOSAL_ART_HEIGHT,
+  dimmed = false,
   className,
 }: BosalImageProps) => {
   const scale = height / BOSAL_ART_HEIGHT;
   const fallen = useMemo(() => new Set(fallenHairs), [fallenHairs]);
+  const frame = {
+    viewBox: `0 0 ${HAIR_FRAME_WIDTH} ${BOSAL_ART_HEIGHT}`,
+    width: HAIR_FRAME_WIDTH * scale,
+    height,
+  };
 
   return (
     <span
@@ -44,38 +52,39 @@ const BosalImage = ({
         className,
       )}
     >
-      <img
-        src={BOSAL_ART[color][expression]}
-        alt=""
-        width={BOSAL_ART_WIDTH[expression] * scale}
-        height={height}
-        draggable={false}
-        className="block max-w-none"
-      />
-      <svg
-        viewBox={`0 0 ${HAIR_FRAME_WIDTH} ${BOSAL_ART_HEIGHT}`}
-        width={HAIR_FRAME_WIDTH * scale}
-        height={height}
-        className="absolute top-0 left-0 overflow-visible"
-        aria-hidden
-      >
-        <BosalHair color={color} fallenHairs={fallen} />
-        {items.filter(isItemCode).map(code => {
-          const art = ITEM_ART[code];
-          return (
-            <image
-              key={code}
-              href={art.href}
-              x={art.x}
-              y={art.y}
-              width={art.width}
-              height={art.height}
-              preserveAspectRatio="none"
-              transform={getItemTransform(art)}
-            />
-          );
-        })}
-      </svg>
+      {/* 그림과 나발을 한 덩어리로 흐려요. 따로 흐리면 나발 아래 머리가 비쳐 보여요. */}
+      <span className={cn("relative block", dimmed && "opacity-60")}>
+        <img
+          src={BOSAL_ART[color][expression]}
+          alt=""
+          width={BOSAL_ART_WIDTH[expression] * scale}
+          height={height}
+          draggable={false}
+          className="block max-w-none"
+        />
+        <svg {...frame} className="absolute top-0 left-0 overflow-visible" aria-hidden>
+          <BosalHair color={color} fallenHairs={fallen} />
+        </svg>
+      </span>
+      {items.length > 0 && (
+        <svg {...frame} className="absolute top-0 left-0 overflow-visible" aria-hidden>
+          {items.filter(isItemCode).map(code => {
+            const art = ITEM_ART[code];
+            return (
+              <image
+                key={code}
+                href={art.href}
+                x={art.x}
+                y={art.y}
+                width={art.width}
+                height={art.height}
+                preserveAspectRatio="none"
+                transform={getItemTransform(art)}
+              />
+            );
+          })}
+        </svg>
+      )}
     </span>
   );
 };

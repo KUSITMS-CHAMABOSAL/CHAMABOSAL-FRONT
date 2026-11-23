@@ -9,6 +9,7 @@ interface PokeButtonProps {
 const PokeButton = ({ onPoke }: PokeButtonProps) => (
   <Button
     size="xlarge"
+    display="block"
     onClick={() => {
       triggerTapHaptic();
       onPoke();

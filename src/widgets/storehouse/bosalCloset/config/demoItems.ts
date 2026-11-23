@@ -31,5 +31,3 @@ export const DEMO_ITEMS: readonly ClosetItem[] = [
   { kind: "expression", id: "failed", name: "못 참은 표정", expression: "failed" },
   { kind: "expression", id: "poked", name: "찔린 표정", expression: "poked" },
 ];
-
-export const DEMO_BOSAL_NAME = "윤지보살";

@@ -1,40 +1,56 @@
-import { useSyncExternalStore } from "react";
+import { useMemo } from "react";
 
-import { HAIR_PLANT_PRICE } from "../config/plant";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-interface HairPlantingState {
-  /** 뽑혀서 비어 있는 머리카락 인덱스 */
-  plucked: ReadonlySet<number>;
-  rice: number;
-}
+import { itemQueries, useStoreQuery } from "@/entities/item";
+import { sessionQueries, useMeQuery } from "@/entities/session";
+import { isApiError } from "@/shared/api";
 
-// ponytail: 머리카락·공양미 API 스펙이 없어 화면 목업으로 시작해요. 새로고침하면 처음으로 돌아가요.
-// 스펙이 나오면 조회 쿼리와 심기 mutation으로 바꿔요.
-// 시안의 빈 자리(7·30·33번)에 확대 정렬을 확인할 양옆 자리(왼쪽 1·14번, 오른쪽 12번)를 더했어요.
-// 공양미는 다섯 번 심고 여섯 번째에 '공양미가 부족해요'를 볼 수 있게 577석이에요.
-let state: HairPlantingState = { plucked: new Set([1, 7, 12, 14, 30, 33]), rice: 577 };
-const listeners = new Set<() => void>();
+import { replantNabal } from "../api/nabalApi";
 
-const subscribe = (listener: () => void) => {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-};
+export type PlantResult = "planted" | "notEnoughRice" | "notEmpty" | "failed";
 
-export type PlantResult = "planted" | "notEnoughRice" | "notEmpty";
+const NO_FALLEN: readonly number[] = [];
 
-const plant = (index: number): PlantResult => {
-  // 이미 심긴 자리에 다시 불려도 공양미를 깎지 않아요.
-  if (!state.plucked.has(index)) return "notEmpty";
-  if (state.rice < HAIR_PLANT_PRICE) return "notEnoughRice";
-  const plucked = new Set(state.plucked);
-  plucked.delete(index);
-  state = { plucked, rice: state.rice - HAIR_PLANT_PRICE };
-  listeners.forEach(listener => listener());
-  return "planted";
-};
-
-/** 곳간과 나발 심기 화면이 같은 머리카락·공양미 상태를 봐요. */
+/**
+ * 곳간과 나발 심기 화면이 같은 나발·공양미 상태를 봐요.
+ * 빠진 나발은 내 정보(`nabal.fallenNumbers`), 공양미는 곳간 조회(`riceBalance`)예요.
+ */
 export const useHairPlanting = () => {
-  const { plucked, rice } = useSyncExternalStore(subscribe, () => state);
+  const queryClient = useQueryClient();
+  const fallen = useMeQuery().data?.nabal.fallenNumbers ?? NO_FALLEN;
+  // 그릴 때마다 새 Set이면 memo로 감싼 보살 그림이 매번 다시 그려져요.
+  const plucked = useMemo<ReadonlySet<number>>(() => new Set(fallen), [fallen]);
+  const rice = useStoreQuery().data?.riceBalance ?? 0;
+  const { mutateAsync } = useMutation({
+    mutationFn: replantNabal,
+    onSuccess: ({ fallenNumbers, riceBalance }) => {
+      // 심은 자리가 바로 채워지게 응답으로 먼저 바꾸고, 나머지 값은 다시 받아요.
+      queryClient.setQueryData(
+        sessionQueries.me().queryKey,
+        me => me && { ...me, nabal: { ...me.nabal, fallenNumbers } },
+      );
+      queryClient.setQueryData(
+        itemQueries.store().queryKey,
+        store => store && { ...store, riceBalance },
+      );
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: sessionQueries.me().queryKey });
+      void queryClient.invalidateQueries({ queryKey: itemQueries.store().queryKey });
+    },
+  });
+
+  const plant = async (index: number): Promise<PlantResult> => {
+    try {
+      await mutateAsync([index]);
+      return "planted";
+    } catch (error) {
+      if (isApiError(error, "NABAL_001")) return "notEmpty";
+      if (isApiError(error, "STORE_001")) return "notEnoughRice";
+      return "failed";
+    }
+  };
+
   return { plucked, rice, plant };
 };

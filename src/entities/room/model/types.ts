@@ -61,6 +61,8 @@ export interface TodayMember {
   nickname: string;
   color: BosalColor;
   equippedItemCodes: string[];
+  /** 빠진 나발 번호(0~37). 보살은 사용자 단위라 모든 방에 같아요. */
+  fallenNabalNumbers: number[];
   isMe: boolean;
   monthlyEnduredCount: number;
   monthlyPickedCount: number;

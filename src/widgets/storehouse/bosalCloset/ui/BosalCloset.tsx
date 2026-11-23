@@ -4,6 +4,7 @@ import { Button, Paragraph, SegmentedControl } from "@toss/tds-mobile";
 
 import { BosalFigure } from "@/entities/bosal";
 import { ItemCard, ShieldImage } from "@/entities/item";
+import { useMeQuery } from "@/entities/session";
 import { EquipItemButton, type Outfit, useOutfit } from "@/features/storehouse/equipItem";
 import { useHairPlanting } from "@/features/storehouse/plantHair";
 import { cn, useTabBarToast } from "@/shared/lib";
@@ -12,7 +13,6 @@ import {
   CLOSET_TABS,
   type ClosetItem,
   type ClosetTab,
-  DEMO_BOSAL_NAME,
   DEMO_ITEMS,
   ITEM_TAB,
 } from "../config/demoItems";
@@ -66,6 +66,8 @@ const BosalCloset = ({ onPlantHair, onHairGuide }: BosalClosetProps) => {
   const [tab, setTab] = useState<ClosetTab>("all");
   const { outfit, toggleHat, toggleFaceItem, toggleExpression } = useOutfit();
   const { plucked, rice } = useHairPlanting();
+  // 보살 색과 닉네임은 방마다 달라요. 곳간은 방 밖이라 첫 번째 방의 내 보살로 보여줘요.
+  const myRoom = useMeQuery().data?.rooms[0];
   const openToast = useTabBarToast();
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -97,20 +99,23 @@ const BosalCloset = ({ onPlantHair, onHairGuide }: BosalClosetProps) => {
             ref={stageRef}
             className="absolute top-[18px] left-1/2 z-10 origin-bottom -translate-x-1/2"
           >
-            <BosalFigure
-              className="h-[119px] w-[76px]"
-              expression={outfit.expression}
-              hat={outfit.hat}
-              faceItem={outfit.faceItem}
-              pluckedHairs={plucked}
-            />
+            {myRoom && (
+              <BosalFigure
+                className="h-[119px] w-[76px]"
+                color={myRoom.color}
+                expression={outfit.expression}
+                hat={outfit.hat}
+                faceItem={outfit.faceItem}
+                pluckedHairs={plucked}
+              />
+            )}
           </div>
           <div className="absolute top-0 right-0">
             <OutfitSlots outfit={outfit} onSelect={changeTab} />
           </div>
           <div className="absolute inset-x-0 top-[155px] flex flex-col items-center gap-0.5">
             <Paragraph typography="t5" fontWeight="bold" color="var(--adaptiveGrey900)">
-              {DEMO_BOSAL_NAME}
+              {myRoom && `${myRoom.nickname}보살`}
             </Paragraph>
             <Paragraph typography="t6" fontWeight="semibold" color="var(--adaptiveGrey600)">
               {wornSummary(outfit)}
@@ -172,13 +177,16 @@ const BosalCloset = ({ onPlantHair, onHairGuide }: BosalClosetProps) => {
                       <ShieldImage />
                     </div>
                   ) : (
-                    <BosalFigure
-                      dimmed
-                      className="mt-3 h-[107px] w-[68px]"
-                      hat={item.kind === "hat" ? item.hat : null}
-                      faceItem={item.kind === "faceItem" ? item.faceItem : null}
-                      expression={item.kind === "expression" ? item.expression : "default"}
-                    />
+                    myRoom && (
+                      <BosalFigure
+                        dimmed
+                        color={myRoom.color}
+                        className="mt-3 h-[107px] w-[68px]"
+                        hat={item.kind === "hat" ? item.hat : null}
+                        faceItem={item.kind === "faceItem" ? item.faceItem : null}
+                        expression={item.kind === "expression" ? item.expression : "default"}
+                      />
+                    )
                   )
                 }
                 action={

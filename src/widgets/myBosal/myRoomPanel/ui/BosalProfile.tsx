@@ -12,10 +12,12 @@ const ART_HEIGHT = 119;
 interface BosalProfileProps {
   nickname: string;
   color: BosalColor;
+  /** 빠진 나발 번호예요. */
+  fallenHairs: readonly number[];
 }
 
 /** 내 보살 카드예요. 이 방에서 쓰는 닉네임과 보살 색을 보여줘요. */
-const BosalProfile = ({ nickname, color }: BosalProfileProps) => (
+const BosalProfile = ({ nickname, color, fallenHairs }: BosalProfileProps) => (
   <div
     className={cn(
       "relative flex h-[211px] flex-col items-center overflow-hidden rounded-sm bg-linear-to-b from-(--adaptiveBackground) pt-4.25",
@@ -26,7 +28,13 @@ const BosalProfile = ({ nickname, color }: BosalProfileProps) => (
       aria-hidden
       className="text-on-fill/30 pointer-events-none absolute top-12 left-px"
     />
-    <BosalImage color={color} expression="default" height={ART_HEIGHT} className="relative" />
+    <BosalImage
+      color={color}
+      expression="default"
+      fallenHairs={fallenHairs}
+      height={ART_HEIGHT}
+      className="relative"
+    />
     <div className="relative mt-2 flex w-42 flex-col items-center gap-1.5 text-center">
       <Paragraph typography="t5" fontWeight="bold" color="var(--adaptiveGrey900)">
         {`${nickname}보살`}

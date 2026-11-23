@@ -24,6 +24,7 @@ interface UnverifiedBosal {
   name: string;
   color: BosalColor;
   isMe: boolean;
+  fallenNabalNumbers: readonly number[];
 }
 
 interface UnverifiedCardProps {
@@ -75,12 +76,14 @@ const UnverifiedCard = ({ member, pokes = 0 }: UnverifiedCardProps) => {
           <BosalImage
             color={member.color}
             expression="default"
+            fallenHairs={member.fallenNabalNumbers}
             height={ART_HEIGHT}
             className={cn("block transition-opacity duration-150", isPoked && "opacity-0")}
           />
           <BosalImage
             color={member.color}
             expression="poked"
+            fallenHairs={member.fallenNabalNumbers}
             height={ART_HEIGHT}
             className={cn(
               "absolute inset-0 opacity-0 transition-opacity duration-150",

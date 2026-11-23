@@ -159,6 +159,7 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
                     status={getBosalStatus(member)}
                     // 🔖 서버는 내가 받은 콕 수만 줘요. 다른 보살의 콕 뱃지는 표시하지 않아요.
                     pokes={member.isMe ? today.me.receivedPokeCount : 0}
+                    fallenHairs={member.fallenNabalNumbers}
                   />
                 </button>
               ))}

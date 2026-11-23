@@ -8,7 +8,7 @@ interface EquipItemButtonProps {
 const EquipItemButton = ({ worn, onClick }: EquipItemButtonProps) => (
   <Button
     size="small"
-    display="full"
+    display="block"
     color={worn ? "dark" : "primary"}
     variant="weak"
     aria-pressed={worn}

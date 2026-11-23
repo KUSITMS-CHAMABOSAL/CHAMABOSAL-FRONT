@@ -52,7 +52,7 @@ const HairPlantCard = ({ onPlant, onGuide }: HairPlantCardProps) => {
         }
         action={
           // 빈 자리가 없으면 심을 곳이 없어 꺼요(화면 설계서 30-1 ⑥).
-          <Button size="small" display="full" disabled={plucked.size === 0} onClick={onPlant}>
+          <Button size="small" display="block" disabled={plucked.size === 0} onClick={onPlant}>
             심으러 가기 →
           </Button>
         }

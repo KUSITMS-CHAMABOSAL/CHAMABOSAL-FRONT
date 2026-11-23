@@ -292,7 +292,7 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
                   item.kind === "shield" || (item.kind === "item" && !item.isOwned) ? (
                     <Button
                       size="small"
-                      display="full"
+                      display="block"
                       variant="weak"
                       loading={item.kind === "shield" ? isBuyingShield : isBuyingItem}
                       onClick={() => buy(item)}

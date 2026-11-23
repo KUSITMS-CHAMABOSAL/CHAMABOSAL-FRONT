@@ -3,12 +3,13 @@ import type { ItemSlot } from "@/entities/item";
 
 export type ClosetTab = "all" | "hat" | "face" | "accessory" | "expression";
 
-// 🔖 시안 탭은 전체·모자·얼굴·표정이에요. 서버의 ACCESSORY 슬롯(옥반지, 에너지파)을 보여줄 탭이 없어 '소품'을 더했어요.
+// 슬롯 이름은 기획 '코스튬 가격표'(HAT 모자 / FACE 얼굴 / ACCESSORY 악세사리)를 따라요.
+// 탭 순서는 전체·모자·얼굴·악세사리·표정이에요(2026-11-24 확정).
 export const CLOSET_TABS: readonly { value: ClosetTab; label: string }[] = [
   { value: "all", label: "전체" },
   { value: "hat", label: "모자" },
   { value: "face", label: "얼굴" },
-  { value: "accessory", label: "소품" },
+  { value: "accessory", label: "악세사리" },
   { value: "expression", label: "표정" },
 ];
 

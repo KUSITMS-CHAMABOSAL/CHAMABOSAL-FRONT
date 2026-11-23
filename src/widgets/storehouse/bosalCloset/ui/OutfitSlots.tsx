@@ -34,7 +34,7 @@ const SlotItem = ({ code }: { code: ItemCode }) => {
   );
 };
 
-// 🔖 시안 슬롯은 모자·얼굴·표정 세 칸이에요. 소품(ACCESSORY) 칸은 시안이 없어 두지 않았어요.
+// 🔖 시안 슬롯은 모자·얼굴·표정 세 칸이에요. 악세사리(ACCESSORY) 칸은 시안이 없어 두지 않았어요.
 /** 위에서부터 모자, 얼굴, 표정 슬롯이에요. 누르면 해당 카테고리 탭으로 이동해요. */
 const OutfitSlots = ({ outfit, onSelect }: OutfitSlotsProps) => {
   const slots = [

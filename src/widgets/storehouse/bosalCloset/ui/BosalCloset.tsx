@@ -127,6 +127,7 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
         id: "shield",
         name: "이마 방어권",
         price: SHIELD_PRICE,
+        // 서버가 개수를 주지 않아 "보유 n개" 대신 보유 중/미보유로만 보여줘요(2026-11-24 확정).
         isOwned: store.defenseTicket.status === "OWNED",
       } as const,
       ...toClosetItems(storeItems),
@@ -161,6 +162,12 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
   );
 
   const buy = (item: ClosetItem) => {
+    if (item.kind === "expression") return;
+    // 공양미가 모자라면 요청하지 않아요(화면 설계서 30-1 ⑥). 서버도 STORE_001로 막아요.
+    if (rice < item.price) {
+      openToast("공양미가 부족해요");
+      return;
+    }
     const onError = (error: unknown) => openToast(getBuyErrorMessage(error));
     if (item.kind === "shield")
       buyShield(undefined, { onSuccess: () => openToast("이마 방어권을 샀어요"), onError });
@@ -237,11 +244,18 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
       </section>
 
       <section className="flex flex-col gap-3 py-3">
-        <div className="px-6">
-          <SegmentedControl value={tab} onChange={value => changeTab(value as ClosetTab)}>
+        {/* TDS SegmentedControl이 좌우 24px 여백을 갖고 있어서 감싸는 쪽에는 여백을 두지 않아요. */}
+        <div>
+          {/* 탭이 다섯 칸이라 같은 폭으로 나누면 "악세사리"가 들어가지 않아요. 글자 폭에 맞춰요. */}
+          <SegmentedControl
+            alignment="fluid"
+            value={tab}
+            onChange={value => changeTab(value as ClosetTab)}
+          >
             {CLOSET_TABS.map(({ value, label }) => (
               <SegmentedControl.Item key={value} value={value}>
-                {label}
+                {/* 칸이 넓어지면 같은 폭으로 나뉘어 "악세사리"가 두 줄로 갈라져서 줄바꿈을 막아요. */}
+                <span className="whitespace-nowrap">{label}</span>
               </SegmentedControl.Item>
             ))}
           </SegmentedControl>

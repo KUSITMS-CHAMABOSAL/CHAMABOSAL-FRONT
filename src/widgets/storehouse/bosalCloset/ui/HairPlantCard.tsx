@@ -24,8 +24,12 @@ const HairPlantCard = ({ onPlant, onGuide }: HairPlantCardProps) => {
         className="shadow-[0_2px_30px_var(--adaptiveGreyOpacity200)]"
         name="나발 심기"
         price={HAIR_PLANT_PRICE}
+        // 화면 설계서 30-1 ⑤ "현재 n곳 비어있어요"
         status={
           <>
+            <Paragraph.Text typography="t7" fontWeight="semibold" color="var(--adaptiveGrey600)">
+              현재{" "}
+            </Paragraph.Text>
             <Paragraph.Text typography="t7" fontWeight="semibold" color="var(--adaptiveRed600)">
               {plucked.size}
             </Paragraph.Text>
@@ -47,7 +51,8 @@ const HairPlantCard = ({ onPlant, onGuide }: HairPlantCardProps) => {
           </div>
         }
         action={
-          <Button size="small" display="full" onClick={onPlant}>
+          // 빈 자리가 없으면 심을 곳이 없어 꺼요(화면 설계서 30-1 ⑥).
+          <Button size="small" display="full" disabled={plucked.size === 0} onClick={onPlant}>
             심으러 가기 →
           </Button>
         }

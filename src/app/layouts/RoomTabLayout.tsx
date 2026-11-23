@@ -57,8 +57,11 @@ const RoomTabLayout = () => {
 
   if (param !== undefined && roomId === undefined) return <NotFoundPage />;
 
+  // 앱을 열 때 순서(정책서): 안 본 투표 결과 → 한 솥 축하 → 방 홈이에요.
+  // 이마 톡톡·목탁 수행은 앱을 열 때 띄우지 않고 투표 탭에서만 해요(백엔드 Q-107).
+  if (isRoomHome && today.data?.entry.unseenResultRoundId)
+    return <Navigate to={paths.room.vote(roomId)} replace />;
   // 솥을 다 채웠는데 축하를 안 봤으면 방 홈보다 먼저 띄워요. 투표·톡톡으로 채워도 방 홈에 오면 떠요.
-  // 🔖 결과(entry.unseenResultRoundId) 진입을 붙이면 이 앞에 둬요.
   if (isRoomHome && today.data?.entry.hasUnseenPotCelebration)
     return <Navigate to={paths.room.pot(roomId, today.data.room.potCompletedCount)} replace />;
 

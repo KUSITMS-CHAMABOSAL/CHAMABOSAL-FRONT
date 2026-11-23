@@ -9,14 +9,14 @@ export const voteQueries = {
       queryKey: [...voteQueries.all(), "room", roomId, "tab"],
       queryFn: () => getVoteTab(roomId),
     }),
-  receivedTaps: (roundId: number) =>
-    queryOptions({
-      queryKey: [...voteQueries.all(), roundId, "receivedTaps"],
-      queryFn: () => getReceivedTaps(roundId),
-    }),
   result: (roundId: number) =>
     queryOptions({
       queryKey: [...voteQueries.all(), roundId, "result"],
       queryFn: () => getRoundResult(roundId),
+    }),
+  receivedTaps: (roundId: number) =>
+    queryOptions({
+      queryKey: [...voteQueries.all(), roundId, "receivedTaps"],
+      queryFn: () => getReceivedTaps(roundId),
     }),
 };

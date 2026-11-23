@@ -1,3 +1,4 @@
+import { FullScreenLoader } from "@toss/tds-mobile";
 import { useNavigate, useParams } from "react-router";
 
 import { usePotCelebrationQuery } from "@/entities/room";
@@ -14,8 +15,7 @@ const PotCelebrationPage = () => {
 
   if (!pot.data) {
     if (pot.error) throw pot.error;
-    // 🔖 로딩 시안이 없어 아직 아무것도 그리지 않아요.
-    return null;
+    return <FullScreenLoader />;
   }
 
   return (

@@ -15,8 +15,8 @@ const GoalSelector = ({ value, onChange }: GoalSelectorProps) => (
     <Paragraph
       id="room-goal-label"
       typography="t6"
-      fontWeight="semibold"
-      color="var(--adaptiveGrey800)"
+      fontWeight="medium"
+      color="var(--adaptiveGrey900)"
     >
       절약 목표
     </Paragraph>

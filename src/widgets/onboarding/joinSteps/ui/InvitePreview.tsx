@@ -36,7 +36,7 @@ const InvitePreview = ({ room, inviterNickname, onJoin }: InvitePreviewProps) =>
           <Paragraph typography="st5" fontWeight="bold" color="var(--adaptiveGreen700)">
             {room.goalTitle}
           </Paragraph>
-          <Paragraph typography="t6" fontWeight="semibold" color="var(--adaptiveGrey600)">
+          <Paragraph typography="t6" fontWeight="semibold" color="var(--adaptiveGreyOpacity700)">
             {room.goalDescription}
           </Paragraph>
         </div>
@@ -90,7 +90,21 @@ const InvitePreview = ({ room, inviterNickname, onJoin }: InvitePreviewProps) =>
       />
       {/* 시안은 표와 버튼 사이가 101px이에요. 작은 화면에서는 줄어들어요. */}
       <div aria-hidden className="min-h-6 shrink basis-[101px]" />
-      <BottomCTA background="none" onClick={onJoin}>
+      <BottomCTA
+        background="none"
+        onClick={onJoin}
+        bottomAccessory={
+          // 시안처럼 버튼 아래 12px에 놓여요. 🔖 약관 화면(/terms, /privacy)이 생기면 링크로 바꿔요.
+          <Paragraph
+            className="-mt-3.5! text-center"
+            typography="t7"
+            fontWeight="semibold"
+            color="var(--adaptiveGreyOpacity600)"
+          >
+            시작하면 이용약관과 개인정보처리방침에 동의하게 돼요
+          </Paragraph>
+        }
+      >
         참여하기
       </BottomCTA>
     </section>

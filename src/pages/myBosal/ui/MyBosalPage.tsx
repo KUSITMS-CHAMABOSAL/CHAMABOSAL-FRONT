@@ -1,3 +1,4 @@
+import { Skeleton } from "@toss/tds-mobile";
 import { Navigate, useNavigate, useParams } from "react-router";
 
 import { useMeQuery } from "@/entities/session";
@@ -16,8 +17,15 @@ const MyBosalPage = () => {
   if (!me.data) {
     // 진입 분기처럼 내 정보를 못 받으면 라우트 오류 화면으로 보내요.
     if (me.error) throw me.error;
-    // 🔖 로딩 시안이 없어 아직 아무것도 그리지 않아요.
-    return null;
+    return (
+      <main className="min-h-svh bg-(--adaptiveBackground)">
+        {/* 제목, 내 보살, 인증 캘린더 순서예요. */}
+        <Skeleton
+          custom={["title", "subtitle", "card", "spacer(24)", "title", "card"]}
+          repeatLastItemCount={1}
+        />
+      </main>
+    );
   }
 
   const room = me.data.rooms.find(item => item.roomId === roomId);

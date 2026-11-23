@@ -58,7 +58,9 @@ const NicknameForm = ({
           </Top.TitleParagraph>
         }
         subtitleBottom={
-          <Top.SubtitleParagraph>친구들이 알아보기 쉬운 이름이 좋아요.</Top.SubtitleParagraph>
+          <Top.SubtitleParagraph fontWeight="regular">
+            친구들이 알아보기 쉬운 이름이 좋아요.
+          </Top.SubtitleParagraph>
         }
       />
       <TextField

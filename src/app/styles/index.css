@@ -15,10 +15,6 @@
   /* 인트로 배경 그라데이션. Figma color/secondary-mint/100과 중간 단계 */
   --color-mint-75: #e7fdf1;
   --color-mint-100: #ccfbe0;
-  /* 방 만들기에서 고른 절약 목표. Figma color/secondary-mint/50, button/secondary-fill-pressed, text/secondary-darker */
-  --color-mint-50: #e5fff0;
-  --color-mint-500: #23bc6b;
-  --color-mint-700: #199451;
   /* 내 보살 받기 배경 그라데이션 끝 색. Figma color/primary-purple/200 외에는 이름 없는 색이에요. */
   --color-bosal-pink-glow: rgb(255 208 218 / 0.3);
   --color-purple-200: #c2c3ff;
@@ -52,6 +48,27 @@
     from {
       opacity: 0;
       transform: translateY(var(--rank-rise));
+    }
+  }
+}
+
+/* 투표하러 가기 화면의 후보 미리보기가 쉬지 않고 왕복해요. 한 바퀴 8초: 4초 동안 왼쪽으로, 4초 동안 제자리로.
+   가고 오는 길 모두 Figma 프로토타입의 EASE_OUT_BACK이라 양 끝에서 튕기듯 방향을 바꿔요(alternate는 돌아올 때 곡선이 뒤집혀서 쓰지 않아요).
+   흘러갈 거리는 요소마다 --reel-distance로 넘겨요. 값은 voteBoard/config/motion.ts예요. */
+@theme inline {
+  --animate-vote-reel: vote-reel 8000ms linear infinite;
+
+  @keyframes vote-reel {
+    0% {
+      transform: translateX(0);
+      animation-timing-function: cubic-bezier(0.45, 1.45, 0.8, 1);
+    }
+    50% {
+      transform: translateX(var(--reel-distance));
+      animation-timing-function: cubic-bezier(0.45, 1.45, 0.8, 1);
+    }
+    100% {
+      transform: translateX(0);
     }
   }
 }

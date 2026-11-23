@@ -1,4 +1,4 @@
-import { Tab, Top } from "@toss/tds-mobile";
+import { Border, Tab, Top } from "@toss/tds-mobile";
 
 import type { MyRoom } from "@/entities/session";
 import { LeaveRoomButton } from "@/features/room/leaveRoom";
@@ -32,9 +32,15 @@ const MyRoomPanel = ({
     {/* 시안은 탭이 Top 시작에서 112.5px 아래에 있어요. TDS 부제목 줄(25.5px)이 시안(23.5px)보다 높아서 기본 아래 여백 24px에서 2px를 줄여요. */}
     <Top
       lowerGap={22}
-      title={<Top.TitleParagraph size={28}>내 보살</Top.TitleParagraph>}
+      title={
+        <Top.TitleParagraph size={28} color="var(--adaptiveGrey900)">
+          내 보살
+        </Top.TitleParagraph>
+      }
       subtitleBottom={
-        <Top.SubtitleParagraph typography="t5">내 캐릭터와 기록을 확인해요.</Top.SubtitleParagraph>
+        <Top.SubtitleParagraph typography="t5" fontWeight="regular">
+          내 캐릭터와 기록을 확인해요.
+        </Top.SubtitleParagraph>
       }
       right={
         // 아이콘은 24px이고 누르는 영역은 44px이에요. Top의 right는 오른쪽 여백이 없고 제목·부제목 가운데에
@@ -72,8 +78,10 @@ const MyRoomPanel = ({
           : []),
       ]}
     </Tab>
-    {/* 시안은 카드가 Top 시작에서 167px 아래예요. TDS 탭 높이가 시안(38px)과 달라 측정값으로 맞춰요. */}
-    <div className="px-5 pt-4.5">
+    {/* 시안처럼 탭 아래에 화면 너비만큼 선이 있어요. */}
+    <Border variant="full" />
+    {/* 시안은 카드가 Top 시작에서 167px 아래예요. TDS 탭 높이가 시안(38px)과 달라 측정값으로 맞추고, 탭 아래 선(1px)만큼 줄여요. */}
+    <div className="px-5 pt-4.25">
       <BosalProfile nickname={room.nickname} color={room.color} />
     </div>
     <div className="flex gap-2.5 px-5 py-4">

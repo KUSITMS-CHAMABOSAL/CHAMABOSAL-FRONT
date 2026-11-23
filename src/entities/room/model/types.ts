@@ -155,8 +155,8 @@ export interface NewColorResponse {
   color: BosalColor;
 }
 
-/** GET /api/rooms/{roomId}/members/me/leave-preview */
+/** GET /api/rooms/{roomId}/members/me/leave-preview. 지금 나가면 사라질 공양미예요(RICE-03). */
 export interface LeavePreview {
-  /** 지금 나가면 사라질 공양미 석. 목표를 채운 방이거나 잔액이 0석 이하면 0 */
+  /** 목표를 채운 방이거나 잔액이 0석 이하면 0이에요. 실제로는 나가는 순간의 값으로 깎여요. */
   riceToLose: number;
 }

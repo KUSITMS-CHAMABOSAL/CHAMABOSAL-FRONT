@@ -34,7 +34,7 @@ const JoinBlocked = ({ reason, room, onAction }: JoinBlockedProps) => (
           "들어갈 수 없는 방이에요."
         )}
       </Paragraph>
-      <Paragraph typography="t6" fontWeight="semibold" color="var(--adaptiveGrey600)">
+      <Paragraph typography="t6" fontWeight="semibold" color="var(--adaptiveGreyOpacity700)">
         {reason === "ROOM_LIMIT"
           ? "내 보살에서 참여중인 방을 확인하고 정리해주세요.\n방을 정리한 뒤 받은 링크로 다시 들어와 주세요."
           : reason === "ROOM_FULL"

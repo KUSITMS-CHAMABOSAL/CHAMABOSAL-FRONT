@@ -1,3 +1,4 @@
+import { Skeleton } from "@toss/tds-mobile";
 import { useLocation, useNavigate, useParams } from "react-router";
 
 import { isRoomGoneError, RoomGoneDialog, useTodayQuery } from "@/entities/room";
@@ -24,8 +25,18 @@ const HomePage = () => {
   const isRoomGone = isRoomGoneError(today.error);
   const leaveGoneRoom = () => void me.refetch().then(() => navigate(paths.root, { replace: true }));
 
-  // 🔖 로딩·에러·방 없음(첫 화면) 시안이 없어 아직 아무것도 그리지 않아요.
-  if (!me.data || (!today.data && !isRoomGone)) return null;
+  // 🔖 에러·방 없음(첫 화면) 시안이 없어 아직 로딩과 같이 그려요.
+  if (!me.data || (!today.data && !isRoomGone)) {
+    return (
+      <main className="min-h-svh bg-(--adaptiveBackground)">
+        {/* 방 이름, 방 요약, 공양미 한 솥, 오늘의 보살 순서예요. */}
+        <Skeleton
+          custom={["title", "subtitle", "card", "spacer(24)", "title", "card"]}
+          repeatLastItemCount={1}
+        />
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-svh bg-(--adaptiveBackground)">

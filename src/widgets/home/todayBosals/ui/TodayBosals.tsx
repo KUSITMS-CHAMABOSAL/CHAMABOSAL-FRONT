@@ -2,16 +2,17 @@ import { useRef, useState } from "react";
 
 import { Button, IconButton, Paragraph } from "@toss/tds-mobile";
 
-import { BosalCard, BosalStatusBadge } from "@/entities/bosal";
+import { BosalCard, BosalStatusBadge, InviteBosalCard } from "@/entities/bosal";
 import { CertificationCard } from "@/entities/certification";
-import type { TodayMember, TodayResponse } from "@/entities/room";
+import { MAX_MEMBERS, type TodayMember, type TodayResponse } from "@/entities/room";
 import { EditCertificationActions } from "@/features/certification/editCertification";
 import {
   ReactionButtons,
   useReactCertification,
 } from "@/features/certification/reactCertification";
 import { PokeButton, usePokeMember } from "@/features/member/pokeMember";
-import { cn, formatTime, formatWon, useTabBarToast } from "@/shared/lib";
+import { useCopyInviteLink } from "@/features/room/shareInvite";
+import { formatTime, formatWon, useTabBarToast } from "@/shared/lib";
 
 import { getBosalCardView, getBosalName, getBosalStatus } from "../lib/getBosalCardView";
 import type { BosalCardView } from "../model/types";
@@ -27,8 +28,8 @@ const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: r
 
 /**
  * 오늘의 보살들이에요. 첫 장은 격자이고, 옆으로 넘기면 보살마다 카드가 캐러셀로 이어져요.
- * 격자의 보살을 누르거나 넘기면 그 보살의 카드를 봐요. 끝에는 격자로 돌아가는 버튼이 있어요.
- * 혼자면 격자 없이 내 카드만 보여줘요.
+ * 격자의 보살을 누르거나 넘기면 그 보살의 카드를 봐요. 격자의 빈 칸은 친구 초대 칸이고, 캐러셀에는 들어온 보살만 있어요.
+ * 끝에는 격자로 돌아가는 버튼이 있어요.
  *
  * 넘기기는 브라우저 기본 가로 스크롤과 scroll-snap이에요. 드래그, 관성, 멈출 자리 맞추기를 WebView가
  * 합성 스레드에서 처리해서 자바스크립트 없이 부드럽고, 드래그 라이브러리가 필요 없어요.
@@ -43,8 +44,7 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
     openToast("콕 찌르지 못했어요. 잠시 후 다시 시도해 주세요"),
   );
   const { mutate: react, isPending: isReacting } = useReactCertification(roomId);
-  /** 혼자면 격자 없이 내 카드만 보여줘요. */
-  const isAlone = today.members.length <= 1;
+  const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(roomId, openToast);
 
   const goToPage = (page: number) => {
     scrollerRef.current?.querySelector(`[data-page="${page}"]`)?.scrollIntoView({
@@ -90,9 +90,7 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
             오늘의 인증 남기기
           </Button>
         ) : (
-          <div className="flex justify-center">
-            <PokeButton onPoke={() => pokeMember(view.member)} />
-          </div>
+          <PokeButton onPoke={() => pokeMember(view.member)} />
         );
     }
   };
@@ -136,36 +134,41 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
 
       <div
         ref={scrollerRef}
-        className={cn(
-          "flex snap-x snap-mandatory [scrollbar-width:none] items-start gap-[18px] overflow-x-auto overscroll-x-contain [&::-webkit-scrollbar]:hidden",
-          isAlone && "px-5",
-        )}
+        className="flex snap-x snap-mandatory [scrollbar-width:none] items-start gap-[18px] overflow-x-auto overscroll-x-contain [&::-webkit-scrollbar]:hidden"
       >
-        {!isAlone && (
-          <div data-page={0} className="flex w-full shrink-0 snap-center justify-center">
-            <div className="grid w-[296px] grid-cols-2 gap-2.5">
-              {today.members.map((member, index) => (
-                // 누르면 캐러셀에서 그 보살의 카드로 넘어가요. 캐러셀은 격자와 같은 순서예요.
-                <button
-                  key={member.memberId}
-                  type="button"
-                  aria-label={`${getBosalName(member)}의 인증 보기`}
-                  onClick={() => goToPage(index + 1)}
-                  className="touch-manipulation appearance-none border-0 bg-transparent p-0 text-left [-webkit-tap-highlight-color:transparent]"
-                >
-                  <BosalCard
-                    name={getBosalName(member)}
-                    color={member.color}
-                    status={getBosalStatus(member)}
-                    // 🔖 서버는 내가 받은 콕 수만 줘요. 다른 보살의 콕 뱃지는 표시하지 않아요.
-                    pokes={member.isMe ? today.me.receivedPokeCount : 0}
-                    fallenHairs={member.fallenNabalNumbers}
+        <div data-page={0} className="flex w-full shrink-0 snap-center justify-center">
+          <div className="grid w-[296px] grid-cols-2 gap-2.5">
+            {Array.from({ length: MAX_MEMBERS }, (_, index) => today.members[index] ?? null).map(
+              (member, index) =>
+                // 격자는 늘 네 칸이에요. 빈 칸은 정원 안팎 모두 친구 초대 칸이에요.
+                member ? (
+                  // 누르면 캐러셀에서 그 보살의 카드로 넘어가요. 캐러셀은 격자와 같은 순서예요.
+                  <button
+                    key={member.memberId}
+                    type="button"
+                    aria-label={`${getBosalName(member)}의 인증 보기`}
+                    onClick={() => goToPage(index + 1)}
+                    className="touch-manipulation appearance-none border-0 bg-transparent p-0 text-left [-webkit-tap-highlight-color:transparent]"
+                  >
+                    <BosalCard
+                      name={getBosalName(member)}
+                      color={member.color}
+                      status={getBosalStatus(member)}
+                      // 🔖 서버는 내가 받은 콕 수만 줘요. 다른 보살의 콕 뱃지는 표시하지 않아요.
+                      pokes={member.isMe ? today.me.receivedPokeCount : 0}
+                      fallenHairs={member.fallenNabalNumbers}
+                    />
+                  </button>
+                ) : (
+                  <InviteBosalCard
+                    key={`invite-${index}`}
+                    disabled={isCopying}
+                    onClick={() => copyInviteLink()}
                   />
-                </button>
-              ))}
-            </div>
+                ),
+            )}
           </div>
-        )}
+        </div>
         {today.members.map((member, index) => {
           const view = getBosalCardView(member);
           return (
@@ -179,18 +182,16 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
             </div>
           );
         })}
-        {!isAlone && (
-          <div className="flex h-[406px] shrink-0 snap-end items-center pr-5">
-            <IconButton
-              name="icon-arrow-left-small-mono"
-              variant="fill"
-              color="var(--adaptiveGrey700)"
-              iconSize={24}
-              aria-label="처음으로"
-              onClick={() => goToPage(0)}
-            />
-          </div>
-        )}
+        <div className="flex h-[406px] shrink-0 snap-end items-center pr-5">
+          <IconButton
+            name="icon-arrow-left-small-mono"
+            variant="fill"
+            color="var(--adaptiveGrey700)"
+            iconSize={24}
+            aria-label="처음으로"
+            onClick={() => goToPage(0)}
+          />
+        </div>
       </div>
     </section>
   );

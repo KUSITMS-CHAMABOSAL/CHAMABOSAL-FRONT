@@ -55,6 +55,8 @@ const LeaveRoomButton = ({ roomId, roomName, children }: LeaveRoomButtonProps) =
         roomName={roomName}
         riceToLose={preview.data?.riceToLose}
         isPending={isPending}
+        // 공양미 안내 없이 나가지 않게 받는 중에는 막아요. 받지 못했으면 서버가 정한 대로 나가요.
+        isPreviewLoading={preview.isPending || preview.isFetching}
         onClose={() => setIsConfirmOpen(false)}
         onConfirm={confirmLeave}
       />

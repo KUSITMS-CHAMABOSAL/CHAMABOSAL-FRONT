@@ -41,7 +41,9 @@ const PotDecisionDialog = ({
       onError: () => onError("선택을 저장하지 못했어요. 잠시 후 다시 시도해 주세요"),
     });
 
-  const confirmClose = () =>
+  // [더 수행하기] 요청 중에 [방 닫기]가 함께 나가지 않게 막아요.
+  const confirmClose = () => {
+    if (isContinuing) return;
     close(undefined, {
       onSuccess: onRoomClosed,
       onError: () => {
@@ -49,6 +51,7 @@ const PotDecisionDialog = ({
         onError("방을 닫지 못했어요. 잠시 후 다시 시도해 주세요");
       },
     });
+  };
 
   return (
     <>
@@ -61,7 +64,10 @@ const PotDecisionDialog = ({
           </ConfirmDialog.Description>
         }
         cancelButton={
-          <ConfirmDialog.CancelButton onClick={() => setIsConfirmingClose(true)}>
+          <ConfirmDialog.CancelButton
+            disabled={isContinuing}
+            onClick={() => setIsConfirmingClose(true)}
+          >
             방 닫기
           </ConfirmDialog.CancelButton>
         }

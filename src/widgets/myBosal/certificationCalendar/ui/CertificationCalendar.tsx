@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { IconButton, Paragraph, TableRow } from "@toss/tds-mobile";
+import { IconButton, Paragraph, Skeleton, TableRow } from "@toss/tds-mobile";
 
 import { useCalendarQuery, usePrefetchCalendar } from "@/entities/certification";
 import { cn } from "@/shared/lib";
@@ -47,8 +47,9 @@ const CertificationCalendar = ({ roomId }: CertificationCalendarProps) => {
   // 다음 달은 이미 보고 온 달이라 캐시에 있어요.
   usePrefetchCalendar(roomId, thisMonth ? shiftMonth(month ?? thisMonth, -1) : undefined);
 
-  // 🔖 로딩·에러 시안이 없어 아직 아무것도 그리지 않아요.
-  if (!thisMonth) return null;
+  // 🔖 에러 시안이 없어 아직 로딩과 같이 그려요.
+  if (!thisMonth)
+    return <Skeleton className="pt-3" custom={["title", "card"]} repeatLastItemCount={1} />;
 
   const shownMonth = month ?? thisMonth;
   // 다음 달을 받는 동안에는 이전 달 데이터가 남아 있어서, 달이 같을 때만 표시해요.

@@ -1,3 +1,4 @@
+import { FullScreenLoader } from "@toss/tds-mobile";
 import { useNavigate, useParams } from "react-router";
 
 import { useMeQuery } from "@/entities/session";
@@ -15,8 +16,7 @@ const VotePage = () => {
   if (!data || !me.data) {
     const failure = error ?? me.error;
     if (failure) throw failure;
-    // 🔖 로딩 시안이 없어 아직 아무것도 그리지 않아요.
-    return null;
+    return <FullScreenLoader />;
   }
 
   return (

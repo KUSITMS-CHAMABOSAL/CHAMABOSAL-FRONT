@@ -1,3 +1,4 @@
+import { FullScreenLoader } from "@toss/tds-mobile";
 import { createBrowserRouter } from "react-router";
 
 import { NotFoundPage } from "@/pages/notFound";
@@ -14,6 +15,8 @@ export const router = createBrowserRouter([
   {
     path: "/",
     ErrorBoundary: RouteErrorBoundary,
+    // 앱을 처음 열 때 화면 코드를 불러오는 동안이에요.
+    HydrateFallback: FullScreenLoader,
     children: [
       { index: true, Component: EntryRedirect },
       {

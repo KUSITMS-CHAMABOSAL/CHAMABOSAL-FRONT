@@ -1,15 +1,28 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Button, Paragraph, SegmentedControl } from "@toss/tds-mobile";
 
 import { BosalFigure, isItemCode } from "@/entities/bosal";
-import { ItemCard, ShieldImage, type StoreItem, useStoreQuery } from "@/entities/item";
+import {
+  ItemCard,
+  ShieldImage,
+  type StoreItem,
+  type StoreResponse,
+  useStoreQuery,
+} from "@/entities/item";
 import { type MyRoom, useMeQuery } from "@/entities/session";
+import {
+  getBuyErrorMessage,
+  SHIELD_PRICE,
+  useBuyDefenseTicket,
+  useBuyItem,
+} from "@/features/storehouse/buyItem";
 import {
   EquipItemButton,
   getWornItems,
   type Outfit,
   useOutfit,
+  useSaveEquippedItems,
 } from "@/features/storehouse/equipItem";
 import { useHairPlanting } from "@/features/storehouse/plantHair";
 import { cn, useTabBarToast } from "@/shared/lib";
@@ -18,7 +31,6 @@ import {
   CLOSET_TABS,
   type ClosetItem,
   type ClosetTab,
-  DEMO_SHIELD,
   EXPRESSION_ITEMS,
   SLOT_TAB,
 } from "../config/closetItems";
@@ -54,6 +66,17 @@ const tabOf = (item: ClosetItem): ClosetTab => {
   }
 };
 
+/** 입은 아이템 중 보유한 것의 ID예요. 착용 저장 API에 보내요. */
+const getOwnedWornIds = (outfit: Outfit, storeItems: StoreItem[]) => {
+  const worn: readonly string[] = getWornItems(outfit);
+  return storeItems
+    .filter(item => item.isOwned && worn.includes(item.code))
+    .map(item => item.itemId);
+};
+
+const isSameIds = (a: number[], b: number[]) =>
+  a.length === b.length && a.every(id => b.includes(id));
+
 /** 곳간 아이템이에요. 그림이 없는 코드는 빼요. */
 const toClosetItems = (items: StoreItem[]) =>
   items.flatMap(({ itemId, code, name, price, slot, isOwned }) =>
@@ -85,28 +108,74 @@ const BosalCloset = (props: BosalClosetProps) => {
   // 보살 색과 닉네임은 방마다 달라요. 곳간은 방 밖이라 첫 번째 방의 내 보살로 보여줘요.
   const myRoom = me.data?.rooms[0];
   if (!store.data || !myRoom) return null;
-  return <Closet {...props} storeItems={store.data.items} myRoom={myRoom} />;
+  return <Closet {...props} store={store.data} myRoom={myRoom} />;
 };
 
 interface ClosetProps extends BosalClosetProps {
-  storeItems: StoreItem[];
+  store: StoreResponse;
   myRoom: MyRoom;
 }
 
-const Closet = ({ onPlantHair, onHairGuide, storeItems, myRoom }: ClosetProps) => {
+const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
+  const storeItems = store.items;
   const stageRef = useRef<HTMLDivElement>(null);
   const [tab, setTab] = useState<ClosetTab>("all");
   const closetItems = useMemo(
-    () => [DEMO_SHIELD, ...toClosetItems(storeItems), ...EXPRESSION_ITEMS],
-    [storeItems],
+    () => [
+      {
+        kind: "shield",
+        id: "shield",
+        name: "이마 방어권",
+        price: SHIELD_PRICE,
+        isOwned: store.defenseTicket.status === "OWNED",
+      } as const,
+      ...toClosetItems(storeItems),
+      ...EXPRESSION_ITEMS,
+    ],
+    [storeItems, store.defenseTicket.status],
   );
-  const { outfit, toggleItem, toggleExpression } = useOutfit(
+  const { outfit, toggleItem, wear, toggleExpression } = useOutfit(
     toClosetItems(storeItems.filter(item => item.isEquipped)),
   );
   const wornItems = getWornItems(outfit);
   const { plucked, rice } = useHairPlanting();
   const openToast = useTabBarToast();
   const gridRef = useRef<HTMLDivElement>(null);
+  const { mutate: buyItem, isPending: isBuyingItem } = useBuyItem();
+  const { mutate: buyShield, isPending: isBuyingShield } = useBuyDefenseTicket();
+  const { mutate: saveEquipped } = useSaveEquippedItems();
+
+  // 입어 보는 동안에는 저장하지 않고, 곳간을 떠날 때 바뀌었으면 한 번에 저장해요(API 문서 STORE-03).
+  const latest = useRef({ outfit, storeItems });
+  useEffect(() => {
+    latest.current = { outfit, storeItems };
+  });
+  useEffect(
+    () => () => {
+      const { outfit: last, storeItems: items } = latest.current;
+      const next = getOwnedWornIds(last, items);
+      const saved = items.filter(item => item.isEquipped).map(item => item.itemId);
+      if (!isSameIds(next, saved)) saveEquipped(next);
+    },
+    [saveEquipped],
+  );
+
+  const buy = (item: ClosetItem) => {
+    const onError = (error: unknown) => openToast(getBuyErrorMessage(error));
+    if (item.kind === "shield")
+      buyShield(undefined, { onSuccess: () => openToast("이마 방어권을 샀어요"), onError });
+    if (item.kind === "item")
+      buyItem(item.itemId, {
+        onSuccess: () => {
+          // 서버가 사는 순간 입혀서 화면도 바로 입혀요.
+          wear(item);
+          playStage(SQUASH, 380);
+          openToast("아이템을 사서 입혔어요");
+        },
+        onError,
+      });
+  };
+
   const playStage = (keyframes: Keyframe[], duration: number) => {
     if (prefersReducedMotion()) return;
     stageRef.current?.animate(keyframes, { duration, easing: "ease-out" });
@@ -188,23 +257,7 @@ const Closet = ({ onPlantHair, onHairGuide, storeItems, myRoom }: ClosetProps) =
               <ItemCard
                 name={item.name}
                 price={item.kind === "expression" ? undefined : item.price}
-                status={
-                  item.kind === "shield" ? (
-                    <>
-                      보유{" "}
-                      <Paragraph.Text
-                        typography="t7"
-                        fontWeight="semibold"
-                        color="var(--adaptiveBlue600)"
-                      >
-                        {item.owned}
-                      </Paragraph.Text>
-                      개
-                    </>
-                  ) : item.kind === "expression" || item.isOwned ? (
-                    "보유 중"
-                  ) : null
-                }
+                status={item.kind === "expression" || item.isOwned ? "보유 중" : "미보유"}
                 thumbnail={
                   item.kind === "shield" ? (
                     <div className="mt-1">
@@ -221,12 +274,14 @@ const Closet = ({ onPlantHair, onHairGuide, storeItems, myRoom }: ClosetProps) =
                   )
                 }
                 action={
-                  item.kind === "shield" ? (
+                  // 방어권은 보유 개수 제한이 없어 늘 살 수 있어요. 꾸미기 아이템은 보유하면 입어요.
+                  item.kind === "shield" || (item.kind === "item" && !item.isOwned) ? (
                     <Button
                       size="small"
                       display="full"
                       variant="weak"
-                      onClick={() => openToast("데모에서는 구매할 수 없어요")}
+                      loading={item.kind === "shield" ? isBuyingShield : isBuyingItem}
+                      onClick={() => buy(item)}
                     >
                       구매하기
                     </Button>

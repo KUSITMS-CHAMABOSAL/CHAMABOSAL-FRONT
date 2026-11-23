@@ -16,8 +16,7 @@ export interface Outfit {
 
 /**
  * 곳간에서 입어 보는 착용 상태예요. 처음에는 서버의 착용 아이템으로 시작해요.
- * 이미 입은 아이템을 다시 누르면 벗어요.
- * 🔖 구매(POST /api/items/{itemId}/purchases)와 착용 저장(PUT /api/users/me/equipped-items)은 아직 연결하지 않았어요.
+ * 이미 입은 아이템을 다시 누르면 벗어요. 저장은 곳간을 떠날 때 `useSaveEquippedItems`로 한 번에 해요.
  */
 export const useOutfit = (equipped: readonly OutfitItem[]) => {
   const [outfit, setOutfit] = useState<Outfit>(() => ({
@@ -30,13 +29,16 @@ export const useOutfit = (equipped: readonly OutfitItem[]) => {
       ...prev,
       items: { ...prev.items, [slot]: prev.items[slot] === code ? undefined : code },
     }));
+  /** 산 아이템을 입혀요. 서버도 사는 순간 입혀요. */
+  const wear = ({ code, slot }: OutfitItem) =>
+    setOutfit(prev => ({ ...prev, items: { ...prev.items, [slot]: code } }));
   const toggleExpression = (expression: BosalExpression) =>
     setOutfit(prev => ({
       ...prev,
       expression: prev.expression === expression ? "default" : expression,
     }));
 
-  return { outfit, toggleItem, toggleExpression };
+  return { outfit, toggleItem, wear, toggleExpression };
 };
 
 /** 그릴 때 쓰는 착용 아이템 목록이에요. */

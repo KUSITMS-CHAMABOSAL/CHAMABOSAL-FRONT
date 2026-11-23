@@ -19,7 +19,7 @@ export const SLOT_TAB: Record<ItemSlot, ClosetTab> = {
 };
 
 export type ClosetItem =
-  | { kind: "shield"; id: string; name: string; price: number; owned: number }
+  | { kind: "shield"; id: string; name: string; price: number; isOwned: boolean }
   | {
       kind: "item";
       id: string;
@@ -31,15 +31,6 @@ export type ClosetItem =
       isOwned: boolean;
     }
   | { kind: "expression"; id: string; name: string; expression: BosalExpression };
-
-// 🔖 방어권 구매는 아직 연결하지 않아 데모 값이에요. 보유 수는 GET /api/store 의 defenseTicket으로 바꿔요.
-export const DEMO_SHIELD: ClosetItem = {
-  kind: "shield",
-  id: "shield",
-  name: "이마 방어권",
-  price: 100,
-  owned: 1,
-};
 
 export const EXPRESSION_ITEMS: readonly ClosetItem[] = [
   { kind: "expression", id: "patient", name: "참은 표정", expression: "patient" },

@@ -3,7 +3,6 @@ import { Navigate, useNavigate, useParams } from "react-router";
 
 import { useMeQuery } from "@/entities/session";
 import { paths } from "@/shared/config";
-import { useTabBarToast } from "@/shared/lib";
 import { CertificationCalendar } from "@/widgets/myBosal/certificationCalendar";
 import { MyRoomPanel } from "@/widgets/myBosal/myRoomPanel";
 
@@ -12,7 +11,6 @@ const MyBosalPage = () => {
   const me = useMeQuery();
   const roomId = Number(useParams().roomId);
   const navigate = useNavigate();
-  const openToast = useTabBarToast();
 
   if (!me.data) {
     // 진입 분기처럼 내 정보를 못 받으면 라우트 오류 화면으로 보내요.
@@ -40,8 +38,7 @@ const MyBosalPage = () => {
         fallenHairs={me.data.nabal.fallenNumbers}
         canCreateRoom={me.data.canCreateRoom}
         onSelectRoom={id => navigate(paths.my(id), { replace: true })}
-        // 🔖 방 만들기(/rooms/new)는 각 이슈에서 연결해요.
-        onCreateRoom={() => openToast("방 만들기는 준비 중이에요")}
+        onCreateRoom={() => navigate(paths.createRoom)}
         onOpenSettings={() => navigate(paths.settings)}
       />
       {/* 방을 바꾸면 보던 달을 이번 달로 되돌려요. */}

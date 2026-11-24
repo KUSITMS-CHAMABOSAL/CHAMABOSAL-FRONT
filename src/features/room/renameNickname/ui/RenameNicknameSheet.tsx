@@ -8,6 +8,7 @@ import {
   isSubmittableNickname,
   NICKNAME_INVALID_MESSAGE,
   NICKNAME_MAX_LENGTH,
+  NicknameHelp,
   NICKNAME_TAKEN_MESSAGE,
   trimNickname,
 } from "@/entities/room";
@@ -81,7 +82,7 @@ const RenameNicknameSheet = ({
         variant="box"
         value={value}
         hasError={errorMessage !== null}
-        help={errorMessage ?? `${trimmed.length}/${NICKNAME_MAX_LENGTH}`}
+        help={<NicknameHelp message={errorMessage} length={trimmed.length} />}
         aria-label="방 닉네임"
         onChange={event => setValue(limitLength(event.target.value, NICKNAME_MAX_LENGTH, event))}
         onCompositionStart={() => setIsComposing(true)}

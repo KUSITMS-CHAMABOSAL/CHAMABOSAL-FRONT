@@ -9,6 +9,7 @@ import {
   NICKNAME_AVAILABLE_MESSAGE,
   NICKNAME_INVALID_MESSAGE,
   NICKNAME_MAX_LENGTH,
+  NicknameHelp,
   NICKNAME_TAKEN_MESSAGE,
   trimNickname,
 } from "@/entities/room";
@@ -40,13 +41,13 @@ const NicknameForm = ({
   const isInvalid = hasInvalidCharacter(value, isComposing);
   const isTaken = takenNickname !== null && isSameNickname(nickname, takenNickname);
   const canSubmit = isSubmittableNickname(value) && !isTaken;
-  const help = isInvalid
+  const message = isInvalid
     ? NICKNAME_INVALID_MESSAGE
     : isTaken
       ? NICKNAME_TAKEN_MESSAGE
       : canSubmit
         ? NICKNAME_AVAILABLE_MESSAGE
-        : `${nickname.length}/${NICKNAME_MAX_LENGTH}`;
+        : null;
 
   return (
     <main>
@@ -71,7 +72,7 @@ const NicknameForm = ({
         placeholder="한글, 영문 대소문자, 숫자 가능"
         value={value}
         hasError={isInvalid || isTaken}
-        help={help}
+        help={<NicknameHelp message={message} length={nickname.length} />}
         onChange={event => setValue(limitLength(event.target.value, NICKNAME_MAX_LENGTH, event))}
         onCompositionStart={() => setIsComposing(true)}
         onCompositionEnd={() => {

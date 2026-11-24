@@ -82,7 +82,12 @@ const RoomSummary = ({ rooms, today, onSelectRoom, onRoomInfo }: RoomSummaryProp
           </Button>
         </div>
       )}
-      <RicePotGauge rice={pot.amount} capacity={pot.goalAmount} days={room.daysTogether} />
+      <RicePotGauge
+        rice={pot.amount}
+        capacity={pot.goalAmount}
+        reward={pot.rewardAmount}
+        days={room.daysTogether}
+      />
     </section>
   );
 };

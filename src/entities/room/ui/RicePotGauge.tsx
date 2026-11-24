@@ -3,13 +3,14 @@ import type { CSSProperties } from "react";
 import { Paragraph, ProgressBar } from "@toss/tds-mobile";
 
 import riceBowl from "../assets/icon_rice_bowl.svg";
-import { POT_REWARD } from "../config/pot";
 
 interface RicePotGaugeProps {
   /** 지금까지 모은 공양미(석)예요. */
   rice: number;
   /** 한 솥 용량(석)이에요. 서버 `pot.goalAmount` */
   capacity: number;
+  /** 가득 채우면 다 같이 받는 공양미(석)예요. 서버 `pot.rewardAmount` */
+  reward: number;
   /** 방을 만든 뒤 함께 참은 날 수예요. */
   days: number;
 }
@@ -17,7 +18,7 @@ interface RicePotGaugeProps {
 /**
  * 공양미 한 솥 진행 바예요. 밥그릇이 진행 위치를 따라가요(시안 설명: 밥그릇 위치 = 바 폭 × 진행률 - 13).
  */
-const RicePotGauge = ({ rice, capacity, days }: RicePotGaugeProps) => {
+const RicePotGauge = ({ rice, capacity, reward, days }: RicePotGaugeProps) => {
   const progress = capacity > 0 ? Math.min(rice / capacity, 1) : 0;
   return (
     <div className="flex flex-col px-6 pt-5 pb-[19px]">
@@ -61,7 +62,7 @@ const RicePotGauge = ({ rice, capacity, days }: RicePotGaugeProps) => {
           가득 채우면 다 같이
         </Paragraph>
         <Paragraph typography="st12" fontWeight="bold" color="var(--adaptiveBlue600)">
-          {`+${POT_REWARD}석`}
+          {`+${reward}석`}
         </Paragraph>
       </div>
     </div>

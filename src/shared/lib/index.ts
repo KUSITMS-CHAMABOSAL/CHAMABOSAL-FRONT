@@ -3,3 +3,4 @@ export { formatClock, formatTime, minutesUntil, secondsUntil } from "./formatDat
 export { formatWon } from "./formatWon";
 export { limitLength } from "./limitLength";
 export { useTabBarToast } from "./useTabBarToast";
+export { useLockScroll } from "./useLockScroll";

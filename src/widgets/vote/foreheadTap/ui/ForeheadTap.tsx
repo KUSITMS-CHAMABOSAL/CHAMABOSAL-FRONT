@@ -3,7 +3,7 @@ import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { FixedBottomCTA, Paragraph, Tooltip, Top } from "@toss/tds-mobile";
 
 import { useForeheadTaps } from "@/features/vote/tapForehead";
-import { cn } from "@/shared/lib";
+import { cn, useLockScroll } from "@/shared/lib";
 import { triggerTapHaptic } from "@/shared/lib/appsInToss";
 
 import glowBase from "../assets/glow_base.svg";
@@ -60,6 +60,7 @@ const glowPressed = (index: number): Keyframe => ({
  * 칠 때마다 빛과 보살이 시안-02 모양으로 커졌다 돌아오고, 짧은 햅틱과 툴팁(2초)이 따라와요.
  */
 const ForeheadTap = ({ roundId, nickname, onQuit }: ForeheadTapProps) => {
+  useLockScroll();
   const { count, tap } = useForeheadTaps(roundId);
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const tooltipTimer = useRef<number | undefined>(undefined);

@@ -1,15 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { Button, Paragraph, SegmentedControl } from "@toss/tds-mobile";
+import { Paragraph, SegmentedControl } from "@toss/tds-mobile";
 
 import { BosalFigure, isItemCode } from "@/entities/bosal";
-import {
-  ItemCard,
-  ShieldImage,
-  type StoreItem,
-  type StoreResponse,
-  useStoreQuery,
-} from "@/entities/item";
+import { type StoreItem, type StoreResponse, useStoreQuery } from "@/entities/item";
 import { type MyRoom, useMeQuery } from "@/entities/session";
 import {
   getBuyErrorMessage,
@@ -18,7 +12,6 @@ import {
   useBuyItem,
 } from "@/features/storehouse/buyItem";
 import {
-  EquipItemButton,
   getWornItems,
   type Outfit,
   useOutfit,
@@ -28,8 +21,8 @@ import { useHairPlanting } from "@/features/storehouse/plantHair";
 import { cn, useTabBarToast } from "@/shared/lib";
 
 import { CLOSET_TABS, type ClosetItem, type ClosetTab, SLOT_TAB } from "../config/closetItems";
+import ClosetCard from "./ClosetCard";
 import HairPlantCard from "./HairPlantCard";
-import ItemThumbnail from "./ItemThumbnail";
 import OutfitSlots from "./OutfitSlots";
 
 interface BosalClosetProps {
@@ -131,7 +124,8 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
   const { outfit, toggleItem, wear } = useOutfit(
     toClosetItems(storeItems.filter(item => item.isEquipped)),
   );
-  const wornItems = getWornItems(outfit);
+  // 같은 착용이면 같은 배열을 넘겨 BosalFigure의 memo가 탭 전환 때 다시 그리지 않게 해요.
+  const wornItems = useMemo(() => getWornItems(outfit), [outfit]);
   const { plucked, rice } = useHairPlanting();
   const openToast = useTabBarToast();
   const gridRef = useRef<HTMLDivElement>(null);
@@ -192,6 +186,14 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
       gridRef.current?.animate(LIST_IN, { duration: 240, easing: "ease-out" });
     }
   };
+
+  // 카드의 memo가 유지되게 버튼 처리는 같은 함수로 넘기고, 누를 때 최신 상태로 실행해요.
+  const actions = useRef({ buy, toggle });
+  useEffect(() => {
+    actions.current = { buy, toggle };
+  });
+  const onBuy = useCallback((item: ClosetItem) => actions.current.buy(item), []);
+  const onToggle = useCallback((item: ClosetItem) => actions.current.toggle(item), []);
 
   const wornNames = closetItems.filter(item => isWorn(item, outfit)).map(item => item.name);
 
@@ -261,39 +263,18 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
             <HairPlantCard onPlant={onPlantHair} onGuide={onHairGuide} />
           </div>
           {closetItems.map(item => (
+            // 탭 숨김은 감싸는 div만 바꿔서, 탭을 바꿔도 카드는 다시 그리지 않아요.
             <div
               key={item.id}
               className={cn(CARD_CLASS, tab !== "all" && tabOf(item) !== tab && "hidden")}
             >
-              <ItemCard
-                name={item.name}
-                price={item.price}
-                status={item.isOwned ? "보유 중" : "미보유"}
-                thumbnail={
-                  item.kind === "shield" ? (
-                    <div className="mt-1">
-                      <ShieldImage />
-                    </div>
-                  ) : (
-                    <ItemThumbnail color={myRoom.color} code={item.code} />
-                  )
-                }
-                action={
-                  // 방어권은 보유 개수 제한이 없어 늘 살 수 있어요. 꾸미기 아이템은 보유하면 입어요.
-                  item.kind === "shield" || (item.kind === "item" && !item.isOwned) ? (
-                    <Button
-                      size="small"
-                      display="block"
-                      variant="weak"
-                      loading={item.kind === "shield" ? isBuyingShield : isBuyingItem}
-                      onClick={() => buy(item)}
-                    >
-                      구매하기
-                    </Button>
-                  ) : (
-                    <EquipItemButton worn={isWorn(item, outfit)} onClick={() => toggle(item)} />
-                  )
-                }
+              <ClosetCard
+                item={item}
+                color={myRoom.color}
+                worn={isWorn(item, outfit)}
+                buying={item.kind === "shield" ? isBuyingShield : isBuyingItem}
+                onBuy={onBuy}
+                onToggle={onToggle}
               />
             </div>
           ))}

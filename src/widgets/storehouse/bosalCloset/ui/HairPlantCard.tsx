@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 import { Button, Paragraph } from "@toss/tds-mobile";
 
 import { BosalGreyFigure } from "@/entities/bosal";
@@ -69,4 +71,5 @@ const HairPlantCard = ({ onPlant, onGuide }: HairPlantCardProps) => {
   );
 };
 
-export default HairPlantCard;
+// 탭이나 착용이 바뀌어도 다시 그리지 않아요. 회색 보살 나발 38가닥을 그려서 비용이 커요.
+export default memo(HairPlantCard);

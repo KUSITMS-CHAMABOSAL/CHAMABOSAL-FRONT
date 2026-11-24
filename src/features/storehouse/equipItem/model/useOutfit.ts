@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import type { BosalExpression, ItemCode } from "@/entities/bosal";
+import type { ItemCode } from "@/entities/bosal";
 import type { ItemSlot } from "@/entities/item";
 
 export interface OutfitItem {
@@ -11,7 +11,6 @@ export interface OutfitItem {
 export interface Outfit {
   /** 슬롯마다 하나씩 입어요. 같은 슬롯의 다른 아이템을 입으면 바뀌어요. */
   items: Partial<Record<ItemSlot, ItemCode>>;
-  expression: BosalExpression;
 }
 
 /**
@@ -21,24 +20,17 @@ export interface Outfit {
 export const useOutfit = (equipped: readonly OutfitItem[]) => {
   const [outfit, setOutfit] = useState<Outfit>(() => ({
     items: Object.fromEntries(equipped.map(({ slot, code }) => [slot, code])),
-    expression: "default",
   }));
 
   const toggleItem = ({ code, slot }: OutfitItem) =>
     setOutfit(prev => ({
-      ...prev,
       items: { ...prev.items, [slot]: prev.items[slot] === code ? undefined : code },
     }));
   /** 산 아이템을 입혀요. 서버도 사는 순간 입혀요. */
   const wear = ({ code, slot }: OutfitItem) =>
-    setOutfit(prev => ({ ...prev, items: { ...prev.items, [slot]: code } }));
-  const toggleExpression = (expression: BosalExpression) =>
-    setOutfit(prev => ({
-      ...prev,
-      expression: prev.expression === expression ? "default" : expression,
-    }));
+    setOutfit(prev => ({ items: { ...prev.items, [slot]: code } }));
 
-  return { outfit, toggleItem, wear, toggleExpression };
+  return { outfit, toggleItem, wear };
 };
 
 /** 그릴 때 쓰는 착용 아이템 목록이에요. */

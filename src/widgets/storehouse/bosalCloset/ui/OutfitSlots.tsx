@@ -1,7 +1,5 @@
 import type { CSSProperties } from "react";
 
-import { Paragraph } from "@toss/tds-mobile";
-
 import { ITEM_ART, type ItemCode } from "@/entities/bosal";
 import type { Outfit } from "@/features/storehouse/equipItem";
 import { cn } from "@/shared/lib";
@@ -13,13 +11,6 @@ interface OutfitSlotsProps {
   outfit: Outfit;
   onSelect: (tab: ClosetTab) => void;
 }
-
-const EXPRESSION_LABEL = {
-  default: "",
-  patient: "참음",
-  failed: "못 참음",
-  poked: "찔림",
-} as const;
 
 /** 슬롯 칸(48px) 안에 아이템 그림을 비율대로 줄여 넣어요. */
 const SlotItem = ({ code }: { code: ItemCode }) => {
@@ -34,8 +25,7 @@ const SlotItem = ({ code }: { code: ItemCode }) => {
   );
 };
 
-// 🔖 시안 슬롯은 모자·얼굴·표정 세 칸이에요. 악세사리(ACCESSORY) 칸은 시안이 없어 두지 않았어요.
-/** 위에서부터 모자, 얼굴, 표정 슬롯이에요. 누르면 해당 카테고리 탭으로 이동해요. */
+/** 위에서부터 모자, 얼굴, 악세사리 슬롯이에요. 누르면 해당 카테고리 탭으로 이동해요. */
 const OutfitSlots = ({ outfit, onSelect }: OutfitSlotsProps) => {
   const slots = [
     {
@@ -51,14 +41,10 @@ const OutfitSlots = ({ outfit, onSelect }: OutfitSlotsProps) => {
       content: outfit.items.FACE && <SlotItem code={outfit.items.FACE} />,
     },
     {
-      tab: "expression",
-      label: "표정",
-      filled: outfit.expression !== "default",
-      content: (
-        <Paragraph typography="st13" fontWeight="semibold" color="var(--adaptiveGrey700)">
-          {EXPRESSION_LABEL[outfit.expression]}
-        </Paragraph>
-      ),
+      tab: "accessory",
+      label: "악세사리",
+      filled: outfit.items.ACCESSORY !== undefined,
+      content: outfit.items.ACCESSORY && <SlotItem code={outfit.items.ACCESSORY} />,
     },
   ] as const;
 

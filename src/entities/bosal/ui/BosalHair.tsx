@@ -15,7 +15,7 @@ interface BosalHairProps {
 
 /**
  * 보살 그림(88×139) 위에 그리는 나발 38가닥이에요. SVG 안에 넣어 써요.
- * 색별 그림 파일에는 나발이 없어서, 빠진 나발만 비우고 그려요. 가닥마다 `data-hair`로 찾을 수 있어요.
+ * 색별 그림 파일에는 나발이 없어서, 빠진 나발만 비우고 그려요.
  */
 const BosalHair = ({ color, fallenHairs }: BosalHairProps) => {
   const gradientId = useId();
@@ -32,14 +32,7 @@ const BosalHair = ({ color, fallenHairs }: BosalHairProps) => {
       <g fill={`url(#${gradientId})`}>
         {HAIRS.map(([cx, cy], index) =>
           fallenHairs.has(index) ? null : (
-            <circle
-              key={index}
-              data-hair={index}
-              cx={cx}
-              cy={cy}
-              r={HAIR_CURL_RADIUS}
-              className="origin-center transform-fill"
-            />
+            <circle key={index} cx={cx} cy={cy} r={HAIR_CURL_RADIUS} />
           ),
         )}
       </g>

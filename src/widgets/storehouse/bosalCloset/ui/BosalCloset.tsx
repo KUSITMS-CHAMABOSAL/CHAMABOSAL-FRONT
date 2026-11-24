@@ -27,13 +27,7 @@ import {
 import { useHairPlanting } from "@/features/storehouse/plantHair";
 import { cn, useTabBarToast } from "@/shared/lib";
 
-import {
-  CLOSET_TABS,
-  type ClosetItem,
-  type ClosetTab,
-  EXPRESSION_ITEMS,
-  SLOT_TAB,
-} from "../config/closetItems";
+import { CLOSET_TABS, type ClosetItem, type ClosetTab, SLOT_TAB } from "../config/closetItems";
 import HairPlantCard from "./HairPlantCard";
 import ItemThumbnail from "./ItemThumbnail";
 import OutfitSlots from "./OutfitSlots";
@@ -49,8 +43,6 @@ const isWorn = (item: ClosetItem, outfit: Outfit) => {
   switch (item.kind) {
     case "item":
       return outfit.items[item.slot] === item.code;
-    case "expression":
-      return outfit.expression === item.expression;
     case "shield":
       return false;
   }
@@ -60,8 +52,6 @@ const tabOf = (item: ClosetItem): ClosetTab => {
   switch (item.kind) {
     case "item":
       return SLOT_TAB[item.slot];
-    case "expression":
-      return "expression";
     case "shield":
       return "all";
   }
@@ -135,11 +125,10 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
         isOwned: store.defenseTicket.status === "OWNED",
       } as const,
       ...toClosetItems(storeItems),
-      ...EXPRESSION_ITEMS,
     ],
     [storeItems, store.defenseTicket.status],
   );
-  const { outfit, toggleItem, wear, toggleExpression } = useOutfit(
+  const { outfit, toggleItem, wear } = useOutfit(
     toClosetItems(storeItems.filter(item => item.isEquipped)),
   );
   const wornItems = getWornItems(outfit);
@@ -166,7 +155,6 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
   );
 
   const buy = (item: ClosetItem) => {
-    if (item.kind === "expression") return;
     // 공양미가 모자라면 요청하지 않아요(화면 설계서 30-1 ⑥). 서버도 STORE_001로 막아요.
     if (rice < item.price) {
       openToast("공양미가 부족해요");
@@ -194,7 +182,6 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
 
   const toggle = (item: ClosetItem) => {
     if (item.kind === "item") toggleItem(item);
-    if (item.kind === "expression") toggleExpression(item.expression);
     // 착용을 바꾼 순간에만 눌렸다 튀어요. effect로 걸면 StrictMode의 마운트 재실행에서도 재생돼요.
     playStage(SQUASH, 380);
   };
@@ -219,7 +206,6 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
             <BosalFigure
               className="h-[119px] w-[76px]"
               color={myRoom.color}
-              expression={outfit.expression}
               items={wornItems}
               pluckedHairs={plucked}
             />
@@ -250,7 +236,7 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
       <section className="flex flex-col gap-3 py-3">
         {/* TDS SegmentedControl이 좌우 24px 여백을 갖고 있어서 감싸는 쪽에는 여백을 두지 않아요. */}
         <div>
-          {/* 탭이 다섯 칸이라 같은 폭으로 나누면 "악세사리"가 들어가지 않아요. 글자 폭에 맞춰요. */}
+          {/* 같은 폭으로 나누면 좁은 화면에서 "악세사리"가 들어가지 않아요. 넘치면 글자 폭에 맞춰요. */}
           <SegmentedControl
             size="small"
             alignment="fluid"
@@ -260,7 +246,7 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
             {CLOSET_TABS.map(({ value, label }) => (
               <SegmentedControl.Item key={value} value={value}>
                 {/*
-                  TDS는 넘치지 않으면 칸을 같은 폭(375px에서 64px)으로 나눠서, 안쪽 여백(14px)을 빼면 "악세사리"(52px)가 들어가지 않아요.
+                  TDS는 넘치지 않으면 칸을 같은 폭(360px에서 78px)으로 나눠서, 안쪽 여백(14px)을 빼면 "악세사리"(52px)가 들어가지 않아요.
                   줄바꿈을 막고 좌우를 8px씩 여백 안으로 당겨 가운데에 맞춰요.
                 */}
                 <span className="-mx-2 whitespace-nowrap">{label}</span>
@@ -281,19 +267,15 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
             >
               <ItemCard
                 name={item.name}
-                price={item.kind === "expression" ? undefined : item.price}
-                status={item.kind === "expression" || item.isOwned ? "보유 중" : "미보유"}
+                price={item.price}
+                status={item.isOwned ? "보유 중" : "미보유"}
                 thumbnail={
                   item.kind === "shield" ? (
                     <div className="mt-1">
                       <ShieldImage />
                     </div>
                   ) : (
-                    <ItemThumbnail
-                      color={myRoom.color}
-                      code={item.kind === "item" ? item.code : undefined}
-                      expression={item.kind === "expression" ? item.expression : undefined}
-                    />
+                    <ItemThumbnail color={myRoom.color} code={item.code} />
                   )
                 }
                 action={

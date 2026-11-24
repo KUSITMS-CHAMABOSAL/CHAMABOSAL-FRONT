@@ -8,7 +8,10 @@ interface ResultSceneProps {
   glow: string;
   title: ReactNode;
   description: ReactNode;
-  /** "오늘의 가장 흔들린 보살" 아래 내용이에요. */
+  /** 보살 위의 한 줄이에요. 내가 뽑혔으면 "오늘의 톡톡 보살로 뽑혔어요"를 빨갛게 보여줘요. */
+  label?: string;
+  labelColor?: string;
+  /** 위 한 줄 아래 내용이에요. */
   children: ReactNode;
 }
 
@@ -16,7 +19,14 @@ interface ResultSceneProps {
  * 투표 결과와 투표 없음 화면의 공통 틀이에요(시안 투표-10~13). 배경 빛, 제목, "오늘의 가장 흔들린 보살"을 놓아요.
  * 위치와 간격은 시안 웹뷰 높이(718px)에 대한 비율이라 화면이 길어도 빈 곳이 아래로 몰리지 않아요.
  */
-const ResultScene = ({ glow, title, description, children }: ResultSceneProps) => {
+const ResultScene = ({
+  glow,
+  title,
+  description,
+  label = "오늘의 가장 흔들린 보살",
+  labelColor = "var(--adaptiveBlue600)",
+  children,
+}: ResultSceneProps) => {
   const safeAreaBottom = useSafeAreaBottom();
   return (
     <div
@@ -46,8 +56,8 @@ const ResultScene = ({ glow, title, description, children }: ResultSceneProps) =
       </div>
       {/* 사이 간격은 2.2%(16px)예요. */}
       <div className="relative flex flex-col items-center gap-[2.2svh] text-center">
-        <Paragraph typography="t7" fontWeight="semibold" color="var(--adaptiveBlue600)">
-          오늘의 가장 흔들린 보살
+        <Paragraph typography="t7" fontWeight="semibold" color={labelColor}>
+          {label}
         </Paragraph>
         {children}
       </div>

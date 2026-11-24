@@ -152,7 +152,7 @@ const JoinRoomSteps = ({ token }: JoinRoomStepsProps) => {
         onAction={() =>
           navigate(
             reason === "ROOM_LIMIT" && firstRoomId !== undefined
-              ? paths.room.home(firstRoomId)
+              ? paths.my(firstRoomId)
               : paths.root,
             { replace: true },
           )

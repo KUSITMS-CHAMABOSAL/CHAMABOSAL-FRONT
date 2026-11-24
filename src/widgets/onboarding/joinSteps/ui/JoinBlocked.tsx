@@ -11,7 +11,7 @@ interface JoinBlockedProps {
   reason: JoinBlockedReason;
   /** `UNAVAILABLE`이면 서버가 방 정보를 주지 않아 이름표를 그리지 않아요. */
   room: RoomSummary | null;
-  /** 방 2개면 첫 번째 방 홈, 나머지는 진입 분기로 가요. */
+  /** 방 2개면 첫 번째 방의 내 보살, 나머지는 진입 분기로 가요. */
   onAction: () => void;
 }
 

@@ -7,7 +7,6 @@ interface DeleteMyDataDialogProps {
   onConfirm: () => void;
 }
 
-// 시안의 확인 버튼은 [나가기]인데 방 나가기 시안을 복사한 것으로 보여 [삭제하기]로 바꿨어요. 🔖 디자이너 확인
 const DeleteMyDataDialog = ({ open, isPending, onClose, onConfirm }: DeleteMyDataDialogProps) => (
   <ConfirmDialog
     open={open}

@@ -19,7 +19,6 @@ const getDescription = (riceToLose: number | undefined) =>
     ? LEFT_NOTICE
     : `${LEFT_NOTICE} 이 방에서 모은 공양미는 ${riceToLose}석 사라져요.`;
 
-// 시안 제목 "~에서 나가시겠어요?"는 문구 규칙(과도한 경어 금지)에 따라 "나갈까요?"로 바꿨어요.
 const LeaveRoomDialog = ({
   open,
   roomName,

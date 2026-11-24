@@ -229,6 +229,16 @@ const VoteResult = ({ roomId, roundId, isSeen }: VoteResultProps) => {
           </Button>
         </Tooltip>
       )}
+      {/* 지목된 보살이 방어권을 고민하는 동안 다른 보살에게 알려요. 5초마다 다시 받아 끝나면 사라져요.
+          🔖 시안이 없어 방어 결과의 방패와 같은 꼴로 만들었어요. */}
+      {!result.isMePicked && result.isDefensePending && picked && (
+        <span className="flex items-center gap-1">
+          <img src={shield} alt="" aria-hidden className="size-4 motion-safe:animate-pulse" />
+          <Paragraph typography="t7" fontWeight="semibold" color="var(--adaptiveGreyOpacity600)">
+            {`${picked.nickname}보살이 방어권 사용을 고민 중이에요`}
+          </Paragraph>
+        </span>
+      )}
       {isDefending && picked && (
         <ShieldDefendScene color={picked.color} onEnd={() => setIsDefending(false)} />
       )}

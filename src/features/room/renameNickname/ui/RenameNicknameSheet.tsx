@@ -37,6 +37,7 @@ const RenameNicknameSheet = ({
   onClose,
 }: RenameNicknameSheetProps) => {
   const [value, setValue] = useState(nickname);
+  const [isComposing, setIsComposing] = useState(false);
   /** 서버가 중복이라고 답한 닉네임이에요. 응답 전에 입력을 바꿔도 지금 값에 오류가 붙지 않아요. */
   const [takenNickname, setTakenNickname] = useState<string | null>(null);
   const { mutate: rename, isPending } = useRenameNickname(roomId);
@@ -44,7 +45,7 @@ const RenameNicknameSheet = ({
 
   const trimmed = trimNickname(value);
   const isTaken = takenNickname !== null && isSameNickname(trimmed, takenNickname);
-  const isInvalid = hasInvalidCharacter(value);
+  const isInvalid = hasInvalidCharacter(value, isComposing);
   const errorMessage = isInvalid
     ? NICKNAME_INVALID_MESSAGE
     : isTaken
@@ -83,7 +84,11 @@ const RenameNicknameSheet = ({
         help={errorMessage ?? `${trimmed.length}/${NICKNAME_MAX_LENGTH}`}
         aria-label="방 닉네임"
         onChange={event => setValue(limitLength(event.target.value, NICKNAME_MAX_LENGTH, event))}
-        onCompositionEnd={() => setValue(prev => prev.slice(0, NICKNAME_MAX_LENGTH))}
+        onCompositionStart={() => setIsComposing(true)}
+        onCompositionEnd={() => {
+          setIsComposing(false);
+          setValue(prev => prev.slice(0, NICKNAME_MAX_LENGTH));
+        }}
       />
     </BottomSheet>
   );

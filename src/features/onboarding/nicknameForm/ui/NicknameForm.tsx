@@ -34,9 +34,10 @@ const NicknameForm = ({
   onSubmit,
 }: NicknameFormProps) => {
   const [value, setValue] = useState(initialNickname);
+  const [isComposing, setIsComposing] = useState(false);
   const nickname = trimNickname(value);
 
-  const isInvalid = hasInvalidCharacter(value);
+  const isInvalid = hasInvalidCharacter(value, isComposing);
   const isTaken = takenNickname !== null && isSameNickname(nickname, takenNickname);
   const canSubmit = isSubmittableNickname(value) && !isTaken;
   const help = isInvalid
@@ -72,7 +73,11 @@ const NicknameForm = ({
         hasError={isInvalid || isTaken}
         help={help}
         onChange={event => setValue(limitLength(event.target.value, NICKNAME_MAX_LENGTH, event))}
-        onCompositionEnd={() => setValue(prev => prev.slice(0, NICKNAME_MAX_LENGTH))}
+        onCompositionStart={() => setIsComposing(true)}
+        onCompositionEnd={() => {
+          setIsComposing(false);
+          setValue(prev => prev.slice(0, NICKNAME_MAX_LENGTH));
+        }}
       />
       <FixedBottomCTA disabled={!canSubmit} loading={isPending} onClick={() => onSubmit(nickname)}>
         다음

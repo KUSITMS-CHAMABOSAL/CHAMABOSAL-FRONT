@@ -2,10 +2,10 @@ import beadEarring from "../assets/item_bead_earring.svg";
 import duckLips from "../assets/item_duck_lips.svg";
 import energyWave from "../assets/item_energy_wave.svg";
 import eyebrowPiercing from "../assets/item_eyebrow_piercing.svg";
-import gyaruHairpin from "../assets/item_gyaru_hairpin.png";
+import gyaruHairpin from "../assets/item_gyaru_hairpin.svg";
 import headset from "../assets/item_headset.svg";
 import jadeRing from "../assets/item_jade_ring.svg";
-import leopardGlasses from "../assets/item_leopard_glasses.png";
+import leopardGlasses from "../assets/item_leopard_glasses.svg";
 import rudolphHeadband from "../assets/item_rudolph_headband.svg";
 import rudolphNose from "../assets/item_rudolph_nose.svg";
 import santaBeard from "../assets/item_santa_beard.svg";
@@ -37,17 +37,23 @@ const fromDesign = (href: string, x: number, y: number, width: number, height: n
 
 /**
  * 아이템마다 보살 위에 겹칠 그림과 자리예요. 시안 `item/착용샷`(2717:81073)에서 보살 기준 좌표를 옮겼어요.
- * 산타 수염과 갸루 머리핀은 회전된 레이어라 시안에 그려진 자리를 재서 옮겼어요.
+ * 옥반지와 산타 수염 그림은 배경이 섞이지 않은 기획 '코스튬 가격표'의 SVG를 써요. 산타 수염 자리는 가격표 착용샷에서 계산했어요.
+ * 갸루 머리핀과 호피 안경은 무늬가 사진이라, 가격표 SVG에서 캔버스 배경을 빼고 무늬 사진만 그리는 크기에 맞게 줄였어요.
+ * 모양은 벡터라 모양 밖은 투명해요.
  */
 export const ITEM_ART: Record<ItemCode, ItemArt> = {
-  SANTA_HAT: { href: santaHat, x: 13.75, y: -16.78, width: 68.4, height: 34.66, rotate: 6.67 },
+  // 시안 레이어(17.54, -13, 52.57×30.95)는 모자 그림(49.96×25.32)을 6.67° 돌린 상자예요. 가운데에 원래 크기로 놓고 돌려요.
+  SANTA_HAT: {
+    ...fromDesign(santaHat, 43.82 - 49.96 / 2, 2.48 - 25.32 / 2, 49.96, 25.32),
+    rotate: 6.67,
+  },
   HEADSET: fromDesign(headset, 0, 4, 77, 67),
   RUDOLPH_HEADBAND: fromDesign(rudolphHeadband, 1, -8, 72.58, 77),
-  GYARU_HAIRPIN: fromDesign(gyaruHairpin, 49.2, 17.3, 17.67, 14.33),
+  GYARU_HAIRPIN: fromDesign(gyaruHairpin, 49, 17, 19.04, 15.87),
   SUNGLASSES: fromDesign(sunglasses, 18, 55, 40, 5),
   EYEBROW_PIERCING: fromDesign(eyebrowPiercing, 53, 44, 2, 8),
   LEOPARD_GLASSES: fromDesign(leopardGlasses, 18, 54, 41, 7),
-  SANTA_BEARD: fromDesign(santaBeard, 17.5, 61.5, 43, 38),
+  SANTA_BEARD: fromDesign(santaBeard, 16, 60.4, 43.7, 38),
   RUDOLPH_NOSE: { href: rudolphNose, x: 38.25, y: 61.91, width: 12.88, height: 12.88 },
   DUCK_LIPS: fromDesign(duckLips, 30, 62, 17, 8),
   BEAD_EARRING: fromDesign(beadEarring, 1, 57, 75, 5),

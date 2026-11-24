@@ -5,6 +5,7 @@ import { Button, FullScreenLoader, Paragraph, Tooltip } from "@toss/tds-mobile";
 import { BosalHead } from "@/entities/bosal";
 import { type RoundResultResponse, useRoundResultQuery } from "@/entities/vote";
 import { useConfirmResultSeen } from "@/features/room/confirmResultSeen";
+import { ShieldAction } from "@/features/vote/applyShield";
 import { paths } from "@/shared/config";
 import { cn, formatWon } from "@/shared/lib";
 
@@ -19,6 +20,7 @@ import ringPicked from "../assets/result_ring_picked.svg";
 import statueBody from "../assets/statue_all_safe_body.svg";
 import statueFace from "../assets/statue_all_safe_face.svg";
 import ResultScene from "./ResultScene";
+import ShieldDefendScene from "./ShieldDefendScene";
 
 interface VoteResultProps {
   roomId: number;
@@ -64,6 +66,7 @@ const getVoteSummary = ({ voteCounts, allBosalCount }: RoundResultResponse) =>
 /**
  * 투표 결과예요(시안 투표-10~12). 지목된 보살과 번뇌비, 지목이 없으면 득표를 보여줘요.
  * 이마 톡톡을 보낼 수 있을 때만 [이마 톡톡 하러가기]가 켜져요. 방어했거나 지목이 없으면 툴팁으로 2초 알려요.
+ * 내가 지목됐으면 톡톡 대신 이마 방어권을 쓰는 버튼을 보여줘요.
  */
 const VoteResult = ({ roomId, roundId, isSeen }: VoteResultProps) => {
   const navigate = useNavigate();
@@ -71,9 +74,15 @@ const VoteResult = ({ roomId, roundId, isSeen }: VoteResultProps) => {
     refetchWhileTappable: true,
   });
   const { mutate: confirmSeen } = useConfirmResultSeen(roomId);
-  /** 툴팁을 닫은 회차예요. 방을 바꿔 회차가 달라지면 새로 열려요. */
-  const [tooltipClosedRound, setTooltipClosedRound] = useState<number | null>(null);
+  /**
+   * 툴팁을 닫은 회차와 결과예요. 방을 바꿔 회차가 달라지거나,
+   * 보고 있는 동안 지목된 보살이 방어해 결과가 바뀌면 새로 열려요.
+   */
+  const [tooltipClosedKey, setTooltipClosedKey] = useState<string | null>(null);
+  /** 방어권을 써서 "방어!" 연출을 보여주는 중이에요. 뒤에서는 결과가 방어로 바뀌어요. */
+  const [isDefending, setIsDefending] = useState(false);
   const hasResult = result !== undefined;
+  const tooltipKey = result ? `${roundId}:${result.resultType}` : null;
 
   // 결과를 처음 그릴 때 한 번 봤다고 저장해요.
   useEffect(() => {
@@ -82,10 +91,10 @@ const VoteResult = ({ roomId, roundId, isSeen }: VoteResultProps) => {
 
   // 결과가 그려진 뒤부터 2초를 세요. 결과를 늦게 받아도 툴팁을 볼 수 있어요.
   useEffect(() => {
-    if (!hasResult) return;
-    const timer = window.setTimeout(() => setTooltipClosedRound(roundId), TOOLTIP_MS);
+    if (tooltipKey === null) return;
+    const timer = window.setTimeout(() => setTooltipClosedKey(tooltipKey), TOOLTIP_MS);
     return () => window.clearTimeout(timer);
-  }, [hasResult, roundId]);
+  }, [tooltipKey]);
 
   if (!result) {
     if (error) throw error;
@@ -94,6 +103,8 @@ const VoteResult = ({ roomId, roundId, isSeen }: VoteResultProps) => {
 
   const { resultType, picked } = result;
   const isDefended = resultType === "DEFENDED";
+  // 내가 뽑혔으면 톡톡 대신 방어권을 쓸 수 있어요(시안 결과·이마톡톡-아이템사용제한-02, 03).
+  const isMeToDefend = result.isMePicked && resultType === "PICKED";
   const tooltip = isDefended
     ? `${picked?.nickname ?? ""}보살이 방어권을 사용했어요`
     : picked
@@ -105,6 +116,10 @@ const VoteResult = ({ roomId, roundId, isSeen }: VoteResultProps) => {
       glow={GLOW[resultType]}
       title="오늘의 투표 종료"
       description="다음 투표는 모든 보살이 인증하면 바로 열려요."
+      {...(isMeToDefend && {
+        label: "오늘의 톡톡 보살로 뽑혔어요",
+        labelColor: "var(--adaptiveRed600)",
+      })}
     >
       {picked ? (
         <div
@@ -114,20 +129,23 @@ const VoteResult = ({ roomId, roundId, isSeen }: VoteResultProps) => {
             isDefended ? "bg-(--adaptiveBackground)" : "bg-(--adaptiveBackground)/80",
           )}
         >
-          <span className="flex items-center gap-1.5 rounded-[14px] border border-solid border-(--adaptiveGreyOpacity200) bg-(--adaptiveGrey700) px-2.5 py-1.5">
-            {picked.certificationResult === "FAILED" && (
-              <span aria-hidden className="relative size-5">
-                <img
-                  src={moneyWithWings}
-                  alt=""
-                  className="absolute inset-[4.54%_4.74%_4.54%_6.4%]"
-                />
-              </span>
-            )}
-            <Paragraph typography="t7" fontWeight="bold" color="var(--adaptiveBackground)">
-              {getPickedAmount(picked)}
-            </Paragraph>
-          </span>
+          {/* 내가 뽑힌 시안에는 번뇌비 칩이 없어요. */}
+          {!isMeToDefend && (
+            <span className="flex items-center gap-1.5 rounded-[14px] border border-solid border-(--adaptiveGreyOpacity200) bg-(--adaptiveGrey700) px-2.5 py-1.5">
+              {picked.certificationResult === "FAILED" && (
+                <span aria-hidden className="relative size-5">
+                  <img
+                    src={moneyWithWings}
+                    alt=""
+                    className="absolute inset-[4.54%_4.74%_4.54%_6.4%]"
+                  />
+                </span>
+              )}
+              <Paragraph typography="t7" fontWeight="bold" color="var(--adaptiveBackground)">
+                {getPickedAmount(picked)}
+              </Paragraph>
+            </span>
+          )}
           <div aria-hidden className="relative size-[91px]">
             {isDefended && (
               <img
@@ -182,23 +200,38 @@ const VoteResult = ({ roomId, roundId, isSeen }: VoteResultProps) => {
           </div>
         </>
       )}
-      <Tooltip
-        open={tooltip !== null && tooltipClosedRound !== roundId}
-        size="small"
-        placement="bottom"
-        messageAlign="center"
-        message={tooltip}
-      >
-        <Button
-          size="medium"
-          color={result.canTap ? "primary" : "dark"}
-          variant={result.canTap ? "fill" : "weak"}
-          disabled={!result.canTap}
-          onClick={() => navigate(paths.room.foreheadTap(roomId, roundId))}
+      {isMeToDefend ? (
+        <ShieldAction
+          roundId={roundId}
+          ticketCount={result.defenseTicketCount ?? 0}
+          usableUntil={result.defenseUsableUntil}
+          canUse={result.canUseDefense}
+          // 미인증으로 뽑혔으면 쓸 수 없어 안내 팝업을 띄우지 않아요(설계서 24 ①).
+          showIntro={!isSeen && picked?.certificationResult != null}
+          onDefended={() => setIsDefending(true)}
+        />
+      ) : (
+        <Tooltip
+          open={tooltip !== null && tooltipClosedKey !== tooltipKey}
+          size="small"
+          placement="bottom"
+          messageAlign="center"
+          message={tooltip}
         >
-          이마 톡톡 하러가기
-        </Button>
-      </Tooltip>
+          <Button
+            size="medium"
+            color={result.canTap ? "primary" : "dark"}
+            variant={result.canTap ? "fill" : "weak"}
+            disabled={!result.canTap}
+            onClick={() => navigate(paths.room.foreheadTap(roomId, roundId))}
+          >
+            이마 톡톡 하러가기
+          </Button>
+        </Tooltip>
+      )}
+      {isDefending && picked && (
+        <ShieldDefendScene color={picked.color} onEnd={() => setIsDefending(false)} />
+      )}
     </ResultScene>
   );
 };

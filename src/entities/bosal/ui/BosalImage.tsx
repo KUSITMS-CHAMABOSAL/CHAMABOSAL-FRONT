@@ -62,12 +62,12 @@ const BosalImage = ({
           draggable={false}
           className="block max-w-none"
         />
-        <svg {...frame} className="absolute top-0 left-0 overflow-visible" aria-hidden>
+        <svg {...frame} className="absolute top-0 left-0 overflow-visible!" aria-hidden>
           <BosalHair color={color} fallenHairs={fallen} />
         </svg>
       </span>
       {items.length > 0 && (
-        <svg {...frame} className="absolute top-0 left-0 overflow-visible" aria-hidden>
+        <svg {...frame} className="absolute top-0 left-0 overflow-visible!" aria-hidden>
           {items.filter(isItemCode).map(code => {
             const art = ITEM_ART[code];
             return (

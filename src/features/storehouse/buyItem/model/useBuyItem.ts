@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { itemQueries } from "@/entities/item";
+import { ITEM_EQUIP_SCOPE, itemQueries } from "@/entities/item";
 import { roomQueries } from "@/entities/room";
 import { sessionQueries } from "@/entities/session";
 
@@ -13,6 +13,8 @@ import { purchaseDefenseTicket, purchaseItem } from "../api/purchaseApi";
 export const useBuyItem = () => {
   const queryClient = useQueryClient();
   return useMutation({
+    // 구매 중에 곳간을 떠나도, 떠날 때의 착용 저장이 구매가 끝난 뒤에 나가요.
+    scope: ITEM_EQUIP_SCOPE,
     mutationFn: purchaseItem,
     onSuccess: ({ riceBalance, equippedItemIds }, itemId) => {
       queryClient.setQueryData(

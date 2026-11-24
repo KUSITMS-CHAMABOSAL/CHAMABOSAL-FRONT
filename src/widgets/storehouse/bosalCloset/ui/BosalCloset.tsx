@@ -50,19 +50,16 @@ const tabOf = (item: ClosetItem): ClosetTab => {
   }
 };
 
-/** 입은 아이템 중 보유한 것의 ID예요. 착용 저장 API에 보내요. */
-const getOwnedWornIds = (outfit: Outfit, storeItems: StoreItem[]) => {
-  const worn: readonly string[] = getWornItems(outfit);
-  return storeItems
+/** 저장할 착용 아이템 코드예요. 보유 여부는 저장 요청이 나갈 때 걸러요. */
+const getWornCodes = (outfit: Outfit, storeItems: StoreItem[]): string[] => [
+  ...getWornItems(outfit),
+  // 그림이 없는 아이템은 곳간에 보이지 않아 벗을 수 없어요. 같은 슬롯에 다른 아이템을 입었을 때만 바꿔요.
+  ...storeItems
     .filter(
-      item =>
-        item.isOwned &&
-        (worn.includes(item.code) ||
-          // 그림이 없는 아이템은 곳간에 보이지 않아 벗을 수 없어요. 같은 슬롯에 다른 아이템을 입었을 때만 바꿔요.
-          (item.isEquipped && !isItemCode(item.code) && outfit.items[item.slot] === undefined)),
+      item => item.isEquipped && !isItemCode(item.code) && outfit.items[item.slot] === undefined,
     )
-    .map(item => item.itemId);
-};
+    .map(item => item.code),
+];
 
 /** 곳간 아이템이에요. 그림이 없는 코드는 빼요. */
 const toClosetItems = (items: StoreItem[]) =>
@@ -140,6 +137,8 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
   // 직접 바꾼 방문만 저장해요. 들어올 때 캐시가 옛 착용이었으면 다시 받은 서버 값과 달라 보여도 저장하지 않아요.
   // 바꿨으면 서버 값과 같아 보여도 보내요. 앞 방문의 저장이 끝나기 전에 받은 서버 값은 옛 착용일 수 있어요.
   const changed = useRef(false);
+  // 구매 중인 아이템이에요. 응답 전에 떠나면 산 아이템을 입은 것으로 저장해요. 서버가 사는 순간 입혀요.
+  const buying = useRef<Extract<ClosetItem, { kind: "item" }> | null>(null);
   const latest = useRef({ outfit, storeItems });
   useEffect(() => {
     latest.current = { outfit, storeItems };
@@ -148,7 +147,9 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
     () => () => {
       if (!changed.current) return;
       const { outfit: last, storeItems: items } = latest.current;
-      saveEquipped(getOwnedWornIds(last, items));
+      const pending = buying.current;
+      const outfit = pending ? { items: { ...last.items, [pending.slot]: pending.code } } : last;
+      saveEquipped(getWornCodes(outfit, items));
     },
     [saveEquipped],
   );
@@ -162,7 +163,8 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
     const onError = (error: unknown) => openToast(getBuyErrorMessage(error));
     if (item.kind === "shield")
       buyShield(undefined, { onSuccess: () => openToast("이마 방어권을 샀어요"), onError });
-    if (item.kind === "item")
+    if (item.kind === "item") {
+      buying.current = item;
       buyItem(item.itemId, {
         onSuccess: () => {
           // 서버가 사는 순간 입혀서 화면도 바로 입혀요.
@@ -171,7 +173,11 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
           openToast("아이템을 사서 입혔어요");
         },
         onError,
+        onSettled: () => {
+          buying.current = null;
+        },
       });
+    }
   };
 
   const playStage = (keyframes: Keyframe[], duration: number) => {

@@ -1,3 +1,4 @@
 export { default as EquipItemButton } from "./ui/EquipItemButton";
-export { useOutfit } from "./model/useOutfit";
-export type { Outfit } from "./model/useOutfit";
+export { getWornItems, useOutfit } from "./model/useOutfit";
+export type { Outfit, OutfitItem } from "./model/useOutfit";
+export { useSaveEquippedItems } from "./model/useSaveEquippedItems";

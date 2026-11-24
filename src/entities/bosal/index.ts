@@ -2,13 +2,8 @@ export { STATUS_EXPRESSION } from "./config/art";
 export * from "./config/colorName";
 export * from "./config/greyHairCurls";
 export * from "./config/hairCurls";
-export type {
-  BosalColor,
-  BosalExpression,
-  BosalFaceItem,
-  BosalHat,
-  BosalStatus,
-} from "./model/types";
+export { isItemCode, ITEM_ART } from "./config/items";
+export type { BosalColor, BosalExpression, BosalStatus, ItemCode } from "./model/types";
 export { default as BosalCard } from "./ui/BosalCard";
 export { default as BosalFigure } from "./ui/BosalFigure";
 export { default as BosalHead } from "./ui/BosalHead";

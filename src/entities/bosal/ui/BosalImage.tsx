@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { cn } from "@/shared/lib";
 
 import { BOSAL_ART, BOSAL_ART_HEIGHT, BOSAL_ART_WIDTH } from "../config/art";
+import { getItemTransform, ITEM_ART, isItemCode } from "../config/items";
 import type { BosalColor, BosalExpression } from "../model/types";
 import BosalHair from "./BosalHair";
 
@@ -14,24 +15,35 @@ interface BosalImageProps {
   expression: BosalExpression;
   /** 빠진 나발 번호(0~37)예요. 서버의 `fallenNabalNumbers`, `nabal.fallenNumbers` */
   fallenHairs?: readonly number[];
+  /** 착용한 아이템 코드예요. 서버의 `equippedItemCodes`. 그림이 없는 코드는 빼요. */
+  items?: readonly string[];
   /** 렌더링 높이예요. 폭은 원본 비율로 따라가요. */
   height?: number;
+  /** 아이템 카드처럼 보살은 흐리게, 아이템만 또렷하게 보여줄 때 써요. */
+  dimmed?: boolean;
   className?: string;
 }
 
 /**
  * 보살 캐릭터 그림이에요. 표정마다 폭이 달라서 왼쪽 위를 기준으로 그려요.
- * 나발은 그림 파일에서 빼고 위에 따로 그려서, 빠진 나발만 비워요.
+ * 나발은 그림 파일에서 빼고 위에 따로 그려서, 빠진 나발만 비워요. 착용 아이템도 그 위에 겹쳐요.
  */
 const BosalImage = ({
   color,
   expression,
   fallenHairs = [],
+  items = [],
   height = BOSAL_ART_HEIGHT,
+  dimmed = false,
   className,
 }: BosalImageProps) => {
   const scale = height / BOSAL_ART_HEIGHT;
   const fallen = useMemo(() => new Set(fallenHairs), [fallenHairs]);
+  const frame = {
+    viewBox: `0 0 ${HAIR_FRAME_WIDTH} ${BOSAL_ART_HEIGHT}`,
+    width: HAIR_FRAME_WIDTH * scale,
+    height,
+  };
 
   return (
     <span
@@ -40,23 +52,39 @@ const BosalImage = ({
         className,
       )}
     >
-      <img
-        src={BOSAL_ART[color][expression]}
-        alt=""
-        width={BOSAL_ART_WIDTH[expression] * scale}
-        height={height}
-        draggable={false}
-        className="block max-w-none"
-      />
-      <svg
-        viewBox={`0 0 ${HAIR_FRAME_WIDTH} ${BOSAL_ART_HEIGHT}`}
-        width={HAIR_FRAME_WIDTH * scale}
-        height={height}
-        className="absolute top-0 left-0 overflow-visible"
-        aria-hidden
-      >
-        <BosalHair color={color} expression={expression} fallenHairs={fallen} />
-      </svg>
+      {/* 그림과 나발을 한 덩어리로 흐려요. 따로 흐리면 나발 아래 머리가 비쳐 보여요. */}
+      <span className={cn("relative block", dimmed && "opacity-60")}>
+        <img
+          src={BOSAL_ART[color][expression]}
+          alt=""
+          width={BOSAL_ART_WIDTH[expression] * scale}
+          height={height}
+          draggable={false}
+          className="block max-w-none"
+        />
+        <svg {...frame} className="absolute top-0 left-0 overflow-visible!" aria-hidden>
+          <BosalHair color={color} fallenHairs={fallen} />
+        </svg>
+      </span>
+      {items.length > 0 && (
+        <svg {...frame} className="absolute top-0 left-0 overflow-visible!" aria-hidden>
+          {items.filter(isItemCode).map(code => {
+            const art = ITEM_ART[code];
+            return (
+              <image
+                key={code}
+                href={art.href}
+                x={art.x}
+                y={art.y}
+                width={art.width}
+                height={art.height}
+                preserveAspectRatio="none"
+                transform={getItemTransform(art)}
+              />
+            );
+          })}
+        </svg>
+      )}
     </span>
   );
 };

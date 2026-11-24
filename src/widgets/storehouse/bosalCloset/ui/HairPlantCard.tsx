@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 import { Button, Paragraph } from "@toss/tds-mobile";
 
 import { BosalGreyFigure } from "@/entities/bosal";
@@ -24,8 +26,12 @@ const HairPlantCard = ({ onPlant, onGuide }: HairPlantCardProps) => {
         className="shadow-[0_2px_30px_var(--adaptiveGreyOpacity200)]"
         name="나발 심기"
         price={HAIR_PLANT_PRICE}
+        // 화면 설계서 30-1 ⑤ "현재 n곳 비어있어요"
         status={
           <>
+            <Paragraph.Text typography="t7" fontWeight="semibold" color="var(--adaptiveGrey600)">
+              현재{" "}
+            </Paragraph.Text>
             <Paragraph.Text typography="t7" fontWeight="semibold" color="var(--adaptiveRed600)">
               {plucked.size}
             </Paragraph.Text>
@@ -47,7 +53,8 @@ const HairPlantCard = ({ onPlant, onGuide }: HairPlantCardProps) => {
           </div>
         }
         action={
-          <Button size="small" display="full" onClick={onPlant}>
+          // 빈 자리가 없으면 심을 곳이 없어 꺼요(화면 설계서 30-1 ⑥).
+          <Button size="small" display="block" disabled={plucked.size === 0} onClick={onPlant}>
             심으러 가기 →
           </Button>
         }
@@ -64,4 +71,5 @@ const HairPlantCard = ({ onPlant, onGuide }: HairPlantCardProps) => {
   );
 };
 
-export default HairPlantCard;
+// 탭이나 착용이 바뀌어도 다시 그리지 않아요. 회색 보살 나발 38가닥을 그려서 비용이 커요.
+export default memo(HairPlantCard);

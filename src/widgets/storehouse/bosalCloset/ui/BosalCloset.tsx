@@ -54,12 +54,15 @@ const tabOf = (item: ClosetItem): ClosetTab => {
 const getOwnedWornIds = (outfit: Outfit, storeItems: StoreItem[]) => {
   const worn: readonly string[] = getWornItems(outfit);
   return storeItems
-    .filter(item => item.isOwned && worn.includes(item.code))
+    .filter(
+      item =>
+        item.isOwned &&
+        (worn.includes(item.code) ||
+          // 그림이 없는 아이템은 곳간에 보이지 않아 벗을 수 없어요. 같은 슬롯에 다른 아이템을 입었을 때만 바꿔요.
+          (item.isEquipped && !isItemCode(item.code) && outfit.items[item.slot] === undefined)),
+    )
     .map(item => item.itemId);
 };
-
-const isSameIds = (a: number[], b: number[]) =>
-  a.length === b.length && a.every(id => b.includes(id));
 
 /** 곳간 아이템이에요. 그림이 없는 코드는 빼요. */
 const toClosetItems = (items: StoreItem[]) =>
@@ -134,16 +137,18 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
   const { mutate: saveEquipped } = useSaveEquippedItems();
 
   // 입어 보는 동안에는 저장하지 않고, 곳간을 떠날 때 바뀌었으면 한 번에 저장해요(API 문서 STORE-03).
+  // 직접 바꾼 방문만 저장해요. 들어올 때 캐시가 옛 착용이었으면 다시 받은 서버 값과 달라 보여도 저장하지 않아요.
+  // 바꿨으면 서버 값과 같아 보여도 보내요. 앞 방문의 저장이 끝나기 전에 받은 서버 값은 옛 착용일 수 있어요.
+  const changed = useRef(false);
   const latest = useRef({ outfit, storeItems });
   useEffect(() => {
     latest.current = { outfit, storeItems };
   });
   useEffect(
     () => () => {
+      if (!changed.current) return;
       const { outfit: last, storeItems: items } = latest.current;
-      const next = getOwnedWornIds(last, items);
-      const saved = items.filter(item => item.isEquipped).map(item => item.itemId);
-      if (!isSameIds(next, saved)) saveEquipped(next);
+      saveEquipped(getOwnedWornIds(last, items));
     },
     [saveEquipped],
   );
@@ -176,6 +181,7 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
 
   const toggle = (item: ClosetItem) => {
     if (item.kind === "item") toggleItem(item);
+    changed.current = true;
     // 착용을 바꾼 순간에만 눌렸다 튀어요. effect로 걸면 StrictMode의 마운트 재실행에서도 재생돼요.
     playStage(SQUASH, 380);
   };

@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { itemQueries } from "@/entities/item";
 import { roomQueries } from "@/entities/room";
 import { sessionQueries } from "@/entities/session";
+import { useTabBarToast } from "@/shared/lib";
 
 import { saveEquippedItems } from "../api/equipApi";
 
@@ -13,7 +14,10 @@ import { saveEquippedItems } from "../api/equipApi";
  */
 export const useSaveEquippedItems = () => {
   const queryClient = useQueryClient();
+  const openToast = useTabBarToast();
   return useMutation({
+    // 착용 목록을 통째로 바꾸는 API라, 곳간을 빠르게 드나들어도 보낸 순서대로 하나씩 저장해요.
+    scope: { id: "equipped-items" },
     mutationFn: saveEquippedItems,
     onMutate: async itemIds => {
       const storeKey = itemQueries.store().queryKey;
@@ -34,6 +38,13 @@ export const useSaveEquippedItems = () => {
       if (!store) return;
       const codes = store.items.filter(item => item.isEquipped).map(item => item.code);
       queryClient.setQueryData(meKey, prev => prev && { ...prev, equippedItemCodes: codes });
+    },
+    // 곳간을 떠난 뒤에 실패해서 mutate의 콜백은 불리지 않아요. 훅에서 알려요.
+    // 재시도는 하지 않아요. 곳간 캐시는 비워서, 다시 들어오면 미리 바꾼 착용 대신 서버 착용으로 시작해요.
+    // 떠나 있는 동안 곳간 조회는 쓰는 화면이 없어 무효화만으로는 다시 받지 않아요.
+    onError: () => {
+      openToast("착용을 저장하지 못했어요. 다시 입혀 주세요");
+      void queryClient.resetQueries({ queryKey: itemQueries.store().queryKey });
     },
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: itemQueries.store().queryKey });

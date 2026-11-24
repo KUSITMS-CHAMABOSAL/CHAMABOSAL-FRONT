@@ -66,4 +66,5 @@ export const getItemTransform = ({ x, y, width, height, rotate }: ItemArt) =>
   rotate ? `rotate(${rotate} ${x + width / 2} ${y + height / 2})` : undefined;
 
 /** 서버가 새 아이템을 더해도 그림이 없는 코드는 그리지 않아요. */
-export const isItemCode = (code: string): code is ItemCode => code in ITEM_ART;
+// `in`은 "toString" 같은 Object.prototype 이름도 통과시켜서 자체 키만 봐요.
+export const isItemCode = (code: string): code is ItemCode => Object.hasOwn(ITEM_ART, code);

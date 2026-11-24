@@ -87,7 +87,7 @@ const PracticeComplete = ({ onClaimBonus, onClose }: PracticeCompleteProps) => {
         <Paragraph
           typography="t7"
           fontWeight="semibold"
-          color="var(--adaptiveGrey600)"
+          color="var(--adaptiveGreyOpacity600)"
           className="text-center!"
         >
           머릿속 번뇌가 모두 사라졌어요

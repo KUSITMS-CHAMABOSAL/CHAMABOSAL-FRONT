@@ -11,7 +11,8 @@ export const useJoinRoom = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: joinRoom,
-    onSuccess: ({ roomId }) => {
+    onSuccess: ({ roomId, isNewUser }) => {
+      if (isNewUser) logEvent("signup_complete", { entry: "invite" });
       // 다시 받기 전이라 참여 전 내 방 목록이에요. 이미 멤버였으면(200) 새 참여가 아니라 세지 않아요.
       const me = queryClient.getQueryData(sessionQueries.me().queryKey);
       if (me && !me.rooms.some(room => room.roomId === roomId))

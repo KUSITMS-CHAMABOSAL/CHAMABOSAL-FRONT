@@ -19,7 +19,8 @@ export const useCreateRoom = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createRoom,
-    onSuccess: (_, draft) => {
+    onSuccess: ({ isNewUser }, draft) => {
+      if (isNewUser) logEvent("signup_complete", { entry: "direct" });
       logEvent("room_create_complete", {
         goal_category: GOAL_CATEGORY[draft.goal],
         target_rice: draft.potGoalAmount,

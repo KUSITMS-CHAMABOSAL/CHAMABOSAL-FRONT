@@ -32,12 +32,15 @@ interface UnverifiedCardProps {
   member: UnverifiedBosal;
   /** 이 화면에서 콕 찌른 횟수예요. 늘 때마다 움찔해요. */
   pokes?: number;
-  /** 투표 중이에요. 친구 카드는 콕 찌를 수 없다고 알려요(시안 2-1. 투표중). */
+  /** 투표 중이에요. 친구 카드는 콕 찌를 수 없다고(시안 2-1. 투표중), 내 카드는 인증할 수 없다고 알려요(화면설계서 8-2). */
   isVoting?: boolean;
 }
 
 const getMessage = (member: UnverifiedBosal, isVoting: boolean) => {
-  if (!member.isMe && isVoting) return "투표 중에는 콕 찌를 수 없어요.";
+  if (isVoting)
+    return member.isMe
+      ? `${member.name}은 투표 중이라 인증할 수 없어요.\n투표가 끝나면 새 인증이 열려요.`
+      : "투표 중에는 콕 찌를 수 없어요.";
   const next = member.isMe ? "친구에게 오늘의 순간을 인증해요!" : "콕 찔러서 알려줄까요?";
   return `${member.name}은 아직 인증하지 않았어요.\n${next}`;
 };

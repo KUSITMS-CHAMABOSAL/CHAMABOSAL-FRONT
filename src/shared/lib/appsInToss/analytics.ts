@@ -30,7 +30,7 @@ interface AnalyticsEventParams {
   signup_complete: { entry: "direct" | "invite" };
   poke_send: { is_first_today: boolean };
   item_purchase: {
-    item_type: "hat" | "face" | "expression" | "shield" | "nabal";
+    item_type: "hat" | "face" | "accessory" | "shield" | "nabal";
     price: number;
     balance_after: number;
   };

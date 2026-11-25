@@ -5,8 +5,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { itemQueries, useStoreQuery } from "@/entities/item";
 import { sessionQueries, useMeQuery } from "@/entities/session";
 import { isApiError } from "@/shared/api";
+import { logEvent } from "@/shared/lib/appsInToss";
 
 import { replantNabal } from "../api/nabalApi";
+import { HAIR_PLANT_PRICE } from "../config/plant";
 
 export type PlantResult = "planted" | "notEnoughRice" | "notEmpty" | "failed";
 
@@ -24,7 +26,13 @@ export const useHairPlanting = () => {
   const rice = useStoreQuery().data?.riceBalance ?? 0;
   const { mutateAsync } = useMutation({
     mutationFn: replantNabal,
-    onSuccess: ({ fallenNumbers, riceBalance }) => {
+    onSuccess: ({ fallenNumbers, riceBalance }, nabalNumbers) => {
+      // 화면은 한 가닥씩 심어서 한 번에 1건이에요.
+      logEvent("item_purchase", {
+        item_type: "nabal",
+        price: HAIR_PLANT_PRICE * nabalNumbers.length,
+        balance_after: riceBalance,
+      });
       // 심은 자리가 바로 채워지게 응답으로 먼저 바꾸고, 나머지 값은 다시 받아요.
       queryClient.setQueryData(
         sessionQueries.me().queryKey,

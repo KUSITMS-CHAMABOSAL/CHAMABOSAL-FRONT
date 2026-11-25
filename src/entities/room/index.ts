@@ -21,5 +21,6 @@ export type {
   TodayMember,
   TodayResponse,
 } from "./model/types";
+export { default as NicknameHelp } from "./ui/NicknameHelp";
 export { default as RicePotGauge } from "./ui/RicePotGauge";
 export { default as RoomGoneDialog } from "./ui/RoomGoneDialog";

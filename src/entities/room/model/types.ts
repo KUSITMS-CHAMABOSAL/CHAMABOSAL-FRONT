@@ -24,6 +24,8 @@ export interface TodayPot {
   /** 지금 솥에 찬 석 */
   amount: number;
   goalAmount: number;
+  /** 지금 솥을 다 채우면 멤버 전원이 받는 개인 공양미예요. 한 솥 축하의 `rewardAmount`와 같은 값이에요. */
+  rewardAmount: number;
 }
 
 export interface TodayRound {

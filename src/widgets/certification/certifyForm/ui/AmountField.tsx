@@ -12,9 +12,10 @@ interface AmountFieldProps {
 
 const commaize = (value: number | null) => (value === null ? "" : value.toLocaleString("ko-KR"));
 
-/** 숫자만 남겨 금액으로 바꿔요. 최대 금액을 넘으면 바꾸지 않아요. */
+/** 숫자만 남겨 금액으로 바꿔요. 0으로 시작하거나 최대 금액을 넘으면 바꾸지 않아요. */
 const toAmount = (digits: string, previous: number | null) => {
   if (digits === "") return null;
+  if (digits.startsWith("0")) return previous;
   const amount = Number(digits);
   return amount > SPENT_AMOUNT_MAX ? previous : amount;
 };

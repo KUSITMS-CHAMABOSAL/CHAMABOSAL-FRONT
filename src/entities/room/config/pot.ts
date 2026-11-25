@@ -1,6 +1,3 @@
-/** 한 솥을 가득 채우면 다 같이 받는 공양미예요. 디자인 문구 "가득 채우면 다 같이 +30석" */
-export const POT_REWARD = 30;
-
 /** 방장이 고르는 공양미 한 솥 목표예요. 300~700석, 50석 단위 */
 export const POT_GOAL_MIN = 300;
 export const POT_GOAL_MAX = 700;

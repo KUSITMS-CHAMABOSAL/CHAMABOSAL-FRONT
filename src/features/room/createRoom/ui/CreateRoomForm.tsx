@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { FixedBottomCTA, NumericSpinner, Paragraph, TextField, Top } from "@toss/tds-mobile";
 
-import { MAX_MEMBERS, MIN_RICE_MEMBERS, type RoomGoal } from "@/entities/room";
+import { MAX_MEMBERS, MIN_RICE_MEMBERS, ROOM_GOAL_LABEL, type RoomGoal } from "@/entities/room";
 import { MIN_VOTERS } from "@/entities/vote";
 import { limitLength } from "@/shared/lib";
 
@@ -23,12 +23,21 @@ interface CreateRoomFormProps {
   onSubmit: (draft: RoomDraft) => void;
 }
 
+const toGoalRoomName = (goal: RoomGoal) => `${ROOM_GOAL_LABEL[goal]} 방`;
+
 /** 방 만들기 첫 화면이에요. 목표, 방 이름, 인원, 목표 공양미를 정해요. */
 const CreateRoomForm = ({ isPending, onSubmit }: CreateRoomFormProps) => {
-  const [goal, setGoal] = useState<RoomGoal>("DELIVERY");
+  const [goal, setGoal] = useState<RoomGoal | null>(null);
   const [name, setName] = useState("");
   const [memberLimit, setMemberLimit] = useState(MIN_RICE_MEMBERS);
   const [potGoalAmount, setPotGoalAmount] = useState(DEFAULT_POT_GOAL);
+
+  // 목표를 고르면 방 이름을 "[목표] 방"으로 채워요. 직접 고친 이름은 목표를 바꿔도 그대로 둬요.
+  const selectGoal = (next: RoomGoal) => {
+    const isAutoName = name === "" || (goal !== null && name === toGoalRoomName(goal));
+    setGoal(next);
+    if (isAutoName) setName(toGoalRoomName(next));
+  };
 
   return (
     <main className="flex flex-col gap-4 pb-6">
@@ -41,7 +50,7 @@ const CreateRoomForm = ({ isPending, onSubmit }: CreateRoomFormProps) => {
           </Top.TitleParagraph>
         }
       />
-      <GoalSelector value={goal} onChange={setGoal} />
+      <GoalSelector value={goal} onChange={selectGoal} />
       {/* TDS 입력칸 라벨(13px) 대신 다른 항목 제목과 같은 15px로 그려요. */}
       <section className="flex flex-col gap-1.5 pt-3">
         <Paragraph
@@ -98,9 +107,9 @@ const CreateRoomForm = ({ isPending, onSubmit }: CreateRoomFormProps) => {
       {/* 슬라이더 아래 툴팁이 버튼에 가리지 않도록 아래 여백을 둬요. */}
       <div aria-hidden className="h-16" />
       <FixedBottomCTA
-        disabled={!isSubmittableRoomName(name)}
+        disabled={goal === null || !isSubmittableRoomName(name)}
         loading={isPending}
-        onClick={() => onSubmit({ goal, name: name.trim(), memberLimit, potGoalAmount })}
+        onClick={() => goal && onSubmit({ goal, name: name.trim(), memberLimit, potGoalAmount })}
       >
         방 만들기
       </FixedBottomCTA>

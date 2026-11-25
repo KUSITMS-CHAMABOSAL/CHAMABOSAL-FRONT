@@ -21,7 +21,6 @@
 | 최대 4명까지 함께할 수 있어요     | `MAX_MEMBERS = 4`                                                      | `entities/room/config`            |
 | 참여중인 방이 2개예요             | `MAX_JOINED_ROOMS = 2`                                                 | `entities/room/config`            |
 | 2명부터 인증·투표 공양미가 쌓이고 | `MIN_RICE_MEMBERS = 2`                                                 | `entities/room/config`            |
-| 공양미 한 솥 300석, +30석         | `POT_REWARD` (용량은 서버 `pot.goalAmount`)                            | `entities/room/config`            |
 | 수정 및 삭제는 10분이내로만 가능  | `EDIT_WINDOW_MINUTES = 10`                                             | `entities/certification/config`   |
 | 한 줄 기록 1~50자, 쓴 금액        | `MEMO_MAX_LENGTH = 50`, `SPENT_AMOUNT_MIN`, `SPENT_AMOUNT_MAX`         | `entities/certification/config`   |
 | 인증 사진 10MB                    | `PHOTO_MAX_BYTES`                                                      | `entities/certification/config`   |

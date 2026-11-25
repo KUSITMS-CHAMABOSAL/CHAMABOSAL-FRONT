@@ -8,7 +8,7 @@ import DeleteMyDataDialog from "./DeleteMyDataDialog";
 /** 시안 설정 항목 글자예요. 17px 보통 굵기, 가장 진한 글자색이에요. */
 const ROW_TEXT = { fontWeight: "regular", color: "var(--adaptiveGrey900)" } as const;
 
-// 🔖 지운 뒤 어디로 갈지(첫 화면, 미니앱 닫기) 정해지지 않았어요. 지금은 진입 분기로 가요.
+// 지운 뒤에는 진입 분기로 가요. 참여 중인 방이 없어져 첫 화면(인트로)으로 가요.
 /** 설정 목록의 [내 데이터 삭제] 줄과 확인 다이얼로그예요. */
 const DeleteMyDataRow = () => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);

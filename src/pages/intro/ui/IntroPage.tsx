@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 import { BottomCTA, Paragraph } from "@toss/tds-mobile";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 import { paths } from "@/shared/config";
 import { logEvent } from "@/shared/lib/appsInToss";
@@ -55,10 +55,29 @@ const IntroPage = () => {
             <Paragraph typography="t7" fontWeight="medium" color="var(--adaptiveGrey900)">
               초대받았다면 친구에게 받은 링크로 들어와주세요.
             </Paragraph>
-            {/* 🔖 약관 화면(/terms, /privacy)이 생기면 링크로 바꿔요. */}
             <Paragraph typography="st12" color="var(--adaptiveGreyOpacity700)">
-              시작하면 <span className="underline">이용약관</span>과{" "}
-              <span className="underline">개인정보처리방침</span>에 동의하게 돼요.
+              {/* 링크는 문단의 글자 스타일을 물려받지 않아서 같은 값을 넘기고, 둘레 글자도 Text로 감싸요. */}
+              <Paragraph.Text>시작하면 </Paragraph.Text>
+              <Paragraph.Link
+                as={Link}
+                to={paths.terms}
+                type="underline"
+                typography="st12"
+                color="var(--adaptiveGreyOpacity700)"
+              >
+                <Paragraph.Text>이용약관</Paragraph.Text>
+              </Paragraph.Link>
+              <Paragraph.Text>과 </Paragraph.Text>
+              <Paragraph.Link
+                as={Link}
+                to={paths.privacy}
+                type="underline"
+                typography="st12"
+                color="var(--adaptiveGreyOpacity700)"
+              >
+                <Paragraph.Text>개인정보처리방침</Paragraph.Text>
+              </Paragraph.Link>
+              <Paragraph.Text>에 동의하게 돼요.</Paragraph.Text>
             </Paragraph>
           </div>
         }

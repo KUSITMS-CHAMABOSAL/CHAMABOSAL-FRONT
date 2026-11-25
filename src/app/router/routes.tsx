@@ -40,6 +40,14 @@ export const router = createBrowserRouter([
             path: "settings",
             lazy: { Component: async () => (await import("@/pages/settings")).SettingsPage },
           },
+          {
+            path: "terms",
+            lazy: { Component: async () => (await import("@/pages/legal")).TermsPage },
+          },
+          {
+            path: "privacy",
+            lazy: { Component: async () => (await import("@/pages/legal")).PrivacyPage },
+          },
           // 시안에 하단 탭바가 없어요. 방 홈의 [방 정보]로 들어와요.
           {
             path: "rooms/:roomId/info",

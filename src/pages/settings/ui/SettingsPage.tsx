@@ -1,6 +1,8 @@
-import { Paragraph, Skeleton, useToast } from "@toss/tds-mobile";
+import { Paragraph, Skeleton } from "@toss/tds-mobile";
+import { useNavigate } from "react-router";
 
 import { useMeQuery } from "@/entities/session";
+import { paths } from "@/shared/config";
 import { SettingsList } from "@/widgets/settings/settingsList";
 
 /**
@@ -8,7 +10,7 @@ import { SettingsList } from "@/widgets/settings/settingsList";
  */
 const SettingsPage = () => {
   const me = useMeQuery();
-  const { openToast } = useToast();
+  const navigate = useNavigate();
 
   // 처음 받지 못했을 때만 에러 화면이에요. 다시 받기만 실패하면 보던 설정을 그대로 둬요.
   if (!me.data && me.error) throw me.error;
@@ -24,9 +26,8 @@ const SettingsPage = () => {
         {me.data ? (
           <SettingsList
             me={me.data}
-            // 🔖 약관 화면은 각 이슈에서 연결해요.
-            onOpenTerms={() => openToast("이용약관은 준비 중이에요")}
-            onOpenPrivacy={() => openToast("개인정보처리방침은 준비 중이에요")}
+            onOpenTerms={() => navigate(paths.terms)}
+            onOpenPrivacy={() => navigate(paths.privacy)}
           />
         ) : (
           // 제목은 그대로 두고 알림 4개와 약관·데이터 삭제 3개 자리만 비워요.

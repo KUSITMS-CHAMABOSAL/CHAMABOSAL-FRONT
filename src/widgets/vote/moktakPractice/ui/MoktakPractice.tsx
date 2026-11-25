@@ -160,7 +160,9 @@ const MoktakPractice = ({
         open={quitOpen}
         quitting={isPending}
         onQuit={quit}
-        onClose={() => setQuitOpen(false)}
+        onClose={() => {
+          if (!isPending) setQuitOpen(false);
+        }}
       />
     </main>
   );

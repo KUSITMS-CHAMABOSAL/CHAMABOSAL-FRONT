@@ -93,13 +93,16 @@ const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: r
 const BosalCloset = (props: BosalClosetProps) => {
   const store = useStoreQuery();
   const me = useMeQuery();
-  if (store.error) throw store.error;
   if (me.error) throw me.error;
+  if (!me.data) return <ClosetSkeleton />;
   // 방이 없으면 곳간을 볼 수 없어 진입 분기(인트로)로 보내요.
-  if (me.data && me.data.rooms.length === 0) return <Navigate to={paths.root} replace />;
+  if (me.data.rooms.length === 0) return <Navigate to={paths.root} replace />;
+
+  if (store.error) throw store.error;
+  if (!store.data) return <ClosetSkeleton />;
+
   // 보살 색과 닉네임은 방마다 달라요. 곳간은 방 밖이라 첫 번째 방의 내 보살로 보여줘요.
-  const myRoom = me.data?.rooms[0];
-  if (!store.data || !myRoom) return <ClosetSkeleton />;
+  const myRoom = me.data.rooms[0];
   return <Closet {...props} store={store.data} myRoom={myRoom} />;
 };
 

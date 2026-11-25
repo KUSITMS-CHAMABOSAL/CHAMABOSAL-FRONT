@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Navigate } from "react-router";
 
 import { Paragraph, SegmentedControl } from "@toss/tds-mobile";
 
@@ -18,6 +19,7 @@ import {
   useSaveEquippedItems,
 } from "@/features/storehouse/equipItem";
 import { useHairPlanting } from "@/features/storehouse/plantHair";
+import { paths } from "@/shared/config";
 import { cn, useTabBarToast } from "@/shared/lib";
 
 import { CLOSET_TABS, type ClosetItem, type ClosetTab, SLOT_TAB } from "../config/closetItems";
@@ -93,6 +95,8 @@ const BosalCloset = (props: BosalClosetProps) => {
   const me = useMeQuery();
   if (store.error) throw store.error;
   if (me.error) throw me.error;
+  // 방이 없으면 곳간을 볼 수 없어 진입 분기(인트로)로 보내요.
+  if (me.data && me.data.rooms.length === 0) return <Navigate to={paths.root} replace />;
   // 보살 색과 닉네임은 방마다 달라요. 곳간은 방 밖이라 첫 번째 방의 내 보살로 보여줘요.
   const myRoom = me.data?.rooms[0];
   if (!store.data || !myRoom) return <ClosetSkeleton />;

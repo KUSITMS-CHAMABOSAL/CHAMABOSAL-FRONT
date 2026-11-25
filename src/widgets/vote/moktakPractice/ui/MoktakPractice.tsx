@@ -89,10 +89,15 @@ const MoktakPractice = ({
 
   /**
    * [종료하기]도 친 횟수를 보내야 서버가 이 회차 수행을 끝내요(받은 톡톡보다 적으면 보상 없이 끝나요).
+   * 한 번도 치지 않았으면 서버 요청 없이 즉시 나가요.
    * 회차가 이미 끝나 다시 보내도 안 되는 거절이면 그대로 나가요. 투표 탭이 상태를 다시 받아 맞춰요.
    * 그 밖의 실패(네트워크·서버 오류)는 시트에 남아 다시 누르게 해요. 토스 뒤로가기로는 언제든 나갈 수 있어요.
    */
-  const quit = () =>
+  const quit = () => {
+    if (counted.current === 0) {
+      onQuit();
+      return;
+    }
     complete(counted.current, {
       onSuccess: onQuit,
       onError: error => {
@@ -101,6 +106,7 @@ const MoktakPractice = ({
         openToast("종료하지 못했어요. 다시 시도해 주세요");
       },
     });
+  };
 
   /** 친 횟수예요. 화면이 다시 그려지기 전에 탭이 몰려도 빠짐없이 세려고 ref로도 들고 있어요. */
   const counted = useRef(0);

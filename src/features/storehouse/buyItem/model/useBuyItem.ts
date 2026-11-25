@@ -72,7 +72,12 @@ export const useBuyDefenseTicket = () => {
           store && {
             ...store,
             riceBalance,
-            defenseTicket: { ...store.defenseTicket, status: "OWNED" as const },
+            // 구매 응답에는 개수가 없어 하나 늘려요. 다음에 곳간을 다시 받으면 서버 값으로 맞춰져요.
+            defenseTicket: {
+              ...store.defenseTicket,
+              status: "OWNED" as const,
+              count: store.defenseTicket.count + 1,
+            },
           },
       );
     },

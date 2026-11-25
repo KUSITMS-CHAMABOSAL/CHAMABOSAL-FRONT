@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import { isRoomGoneError, RoomGoneDialog, useTodayQuery } from "@/entities/room";
 import { useMeQuery } from "@/entities/session";
 import { paths } from "@/shared/config";
-import { RoomInfo } from "@/widgets/room/roomInfo";
+import { RoomInfo, RoomInfoSkeleton } from "@/widgets/room/roomInfo";
 
 /** 방 정보예요. 방 홈의 [방 정보]로 들어와요. 홈과 같은 오늘 탭 응답을 써요. */
 const RoomInfoPage = () => {
@@ -16,10 +16,9 @@ const RoomInfoPage = () => {
   const isRoomGone = isRoomGoneError(today.error);
   const leaveGoneRoom = () => void me.refetch().then(() => navigate(paths.root, { replace: true }));
 
-  // 🔖 로딩·에러 시안이 없어 아직 아무것도 그리지 않아요.
   if (!today.data && !isRoomGone) {
     if (today.error) throw today.error;
-    return null;
+    return <RoomInfoSkeleton />;
   }
 
   return (

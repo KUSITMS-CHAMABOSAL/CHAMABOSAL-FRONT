@@ -18,6 +18,12 @@ interface ClosetCardProps {
   onToggle: (item: ClosetItem) => void;
 }
 
+/** 방어권은 "보유 2개"처럼 개수로, 꾸미기 아이템은 보유 중으로 보여줘요. 없으면 둘 다 미보유예요. */
+const getStatus = (item: ClosetItem) => {
+  if (item.kind === "shield") return item.count > 0 ? `보유 ${item.count}개` : "미보유";
+  return item.isOwned ? "보유 중" : "미보유";
+};
+
 /**
  * 곳간 아이템 카드 한 장이에요.
  * 착용이 바뀌어도 착용 값이 그대로인 카드는 memo로 다시 그리지 않아요. 탭 숨김은 감싸는 쪽이 해요.
@@ -26,7 +32,7 @@ const ClosetCard = ({ item, color, worn, buying, onBuy, onToggle }: ClosetCardPr
   <ItemCard
     name={item.name}
     price={item.price}
-    status={item.isOwned ? "보유 중" : "미보유"}
+    status={getStatus(item)}
     thumbnail={
       item.kind === "shield" ? (
         <div className="mt-1">

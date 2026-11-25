@@ -44,6 +44,8 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
   const { mutate: react, isPending: isReacting } = useReactCertification(roomId, openToast);
   /** 리액션은 인증이 속한 회차가 인증 중일 때만 받아요. 투표가 시작되면 남긴 리액션만 보여줘요. */
   const canReact = today.round.status === "CERTIFYING";
+  /** 투표 중이면 친구 카드 문구가 바뀌어요. 콕 찌르기는 인증 시간에만 돼요(POKE_002). */
+  const isVoting = today.round.status === "VOTING";
   const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(
     roomId,
     "home_card",
@@ -93,6 +95,8 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
         ) : (
           <PokeButton
             disabled={!today.round.isCertificationOpen}
+            // 투표 중에는 카드 문구가 이유를 알려서 버튼은 그대로 "콕 찌르기"예요(시안 2-1).
+            disabledLabel={isVoting ? "콕 찌르기" : "지금은 콕 찌를 수 없어요"}
             onPoke={() => pokeMember(view.member)}
           />
         );
@@ -120,6 +124,7 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
           <UnverifiedCard
             member={{ ...view.member, name: getBosalName(view.member) }}
             pokes={sentPokes[view.member.memberId]}
+            isVoting={isVoting}
           />
         );
     }

@@ -20,6 +20,7 @@ const RoomSummary = ({ rooms, today, onSelectRoom, onRoomInfo }: RoomSummaryProp
   const openToast = useTabBarToast();
   const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(
     room.roomId,
+    "home_card",
     openToast,
   );
 

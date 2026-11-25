@@ -4,7 +4,9 @@ import { deepLinks } from "@/shared/config";
 import {
   copyToClipboard,
   createShareLink,
+  type InviteEntryPoint,
   isClipboardPermissionError,
+  logEvent,
 } from "@/shared/lib/appsInToss";
 
 import { issueInviteToken } from "../api/inviteTokenApi";
@@ -25,9 +27,11 @@ let latestRequest = 0;
  * 초대 토큰으로 토스 공유 링크를 만들어 클립보드에 복사해요.
  * 결과는 화면마다 다른 토스트(탭바 위, 화면 아래)로 알리도록 `notify`로 넘겨요.
  * 더 새 요청이 있으면 쓰기와 토스트를 건너뛰어요.
+ * 복사에 성공하면 어디서 복사했는지(`entryPoint`)를 분석 이벤트로 보내요.
  */
 export const useCopyInviteLink = (
   roomId: number,
+  entryPoint: InviteEntryPoint,
   notify: (message: string, succeeded: boolean) => void,
 ) =>
   useMutation({
@@ -45,7 +49,9 @@ export const useCopyInviteLink = (
       }
     },
     onSuccess: copied => {
-      if (copied) notify(COPIED_MESSAGE, true);
+      if (!copied) return;
+      logEvent("invite_link_copy", { entry_point: entryPoint });
+      notify(COPIED_MESSAGE, true);
     },
     onError: error =>
       notify(isClipboardPermissionError(error) ? PERMISSION_DENIED_MESSAGE : FAILED_MESSAGE, false),

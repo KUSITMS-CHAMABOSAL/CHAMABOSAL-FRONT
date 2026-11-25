@@ -70,7 +70,11 @@ interface VoteContentProps {
 const VoteContent = ({ roomId, view, onVoteClosed }: VoteContentProps) => {
   const navigate = useNavigate();
   const openToast = useTabBarToast();
-  const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(roomId, openToast);
+  const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(
+    roomId,
+    "vote_tab",
+    openToast,
+  );
 
   switch (view.kind) {
     case "beforeFirstVote":

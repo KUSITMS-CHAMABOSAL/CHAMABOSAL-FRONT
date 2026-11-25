@@ -5,6 +5,7 @@ import { FixedBottomCTA, Paragraph, Top, useToast } from "@toss/tds-mobile";
 import { Moktak, useCompleteMoktak } from "@/features/vote/strikeMoktak";
 import { isApiError } from "@/shared/api";
 import { cn, useLockScroll } from "@/shared/lib";
+import { logEvent } from "@/shared/lib/appsInToss";
 
 import { COMPLETE_DELAY_MS, PRACTICE_BACKGROUND } from "../config/scene";
 import PracticeComplete from "./PracticeComplete";
@@ -65,6 +66,14 @@ const MoktakPractice = ({
 
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
+  /** 수행을 끝냈다고 세요. 받은 톡톡만큼 다 쳤는지가 `completed`예요. */
+  const logSession = (tapCount: number) =>
+    logEvent("tap_session_complete", {
+      role: "receiver",
+      tap_count: tapCount,
+      completed: tapCount >= goal,
+    });
+
   /** 목표에 닿는 타격에서 한 번 완료를 보내요. */
   const finish = (finalCount: number) => {
     if (sending.current) return;
@@ -74,6 +83,7 @@ const MoktakPractice = ({
     complete(finalCount, {
       // 응답이 빨리 와도 마지막 타격이 끝날 시간(COMPLETE_DELAY_MS)은 채우고 넘어가요.
       onSuccess: () => {
+        logSession(finalCount);
         timer.current = window.setTimeout(
           () => setCompleted(true),
           Math.max(0, COMPLETE_DELAY_MS - (performance.now() - startedAt)),
@@ -94,12 +104,18 @@ const MoktakPractice = ({
    * 그 밖의 실패(네트워크·서버 오류)는 시트에 남아 다시 누르게 해요. 토스 뒤로가기로는 언제든 나갈 수 있어요.
    */
   const quit = () => {
-    if (counted.current === 0) {
+    const tapCount = counted.current;
+    if (tapCount === 0) {
+      // 요청이 없으니 여기서 바로 세요.
+      logSession(0);
       onQuit();
       return;
     }
-    complete(counted.current, {
-      onSuccess: onQuit,
+    complete(tapCount, {
+      onSuccess: () => {
+        logSession(tapCount);
+        onQuit();
+      },
       onError: error => {
         if (isApiError(error, ...QUIT_FINAL_ERRORS)) return onQuit();
         // 🔖 실패 문구는 시안이 없어 임시예요.

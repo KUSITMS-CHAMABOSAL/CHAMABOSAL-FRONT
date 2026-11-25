@@ -132,6 +132,8 @@ export interface RoomMembership {
   memberId: number;
   nickname: string;
   color: BosalColor;
+  /** 처음 보살을 받아 방에 등록됐는지예요. 나간 방을 포함해 방 멤버였던 적이 있거나 이미 멤버(200)면 false */
+  isNewUser: boolean;
 }
 
 /** 한 솥에 넣은 멤버별 석이에요. 같은 석이면 같은 순위(1, 1, 3)이고 먼저 넣은 멤버가 앞이에요. */

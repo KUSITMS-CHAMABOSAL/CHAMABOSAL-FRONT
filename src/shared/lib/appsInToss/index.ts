@@ -1,3 +1,4 @@
+export { type InviteEntryPoint, logEvent } from "./analytics";
 export { copyToClipboard, isClipboardPermissionError } from "./clipboard";
 export { triggerTapHaptic } from "./haptic";
 export { getAnonymousKeyAuthCode } from "./login";

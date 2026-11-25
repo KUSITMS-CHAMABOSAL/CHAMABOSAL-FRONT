@@ -1,10 +1,19 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { ITEM_EQUIP_SCOPE, itemQueries } from "@/entities/item";
+import { ITEM_EQUIP_SCOPE, type ItemSlot, itemQueries } from "@/entities/item";
 import { roomQueries } from "@/entities/room";
 import { sessionQueries } from "@/entities/session";
+import { logEvent } from "@/shared/lib/appsInToss";
 
 import { purchaseDefenseTicket, purchaseItem } from "../api/purchaseApi";
+import { SHIELD_PRICE } from "../config/price";
+
+/** 데이터 트래킹 정의서의 `item_type` 값이에요. */
+const SLOT_ITEM_TYPE = {
+  HAT: "hat",
+  FACE: "face",
+  ACCESSORY: "accessory",
+} as const satisfies Record<ItemSlot, string>;
 
 /**
  * 꾸미기 아이템을 사요. 사면 서버가 바로 입혀요(같은 슬롯 아이템은 벗어요).
@@ -17,6 +26,16 @@ export const useBuyItem = () => {
     scope: ITEM_EQUIP_SCOPE,
     mutationFn: purchaseItem,
     onSuccess: ({ riceBalance, equippedItemIds }, itemId) => {
+      // 슬롯과 가격은 바꾸기 전 곳간 목록에서 읽어요.
+      const item = queryClient
+        .getQueryData(itemQueries.store().queryKey)
+        ?.items.find(storeItem => storeItem.itemId === itemId);
+      if (item)
+        logEvent("item_purchase", {
+          item_type: SLOT_ITEM_TYPE[item.slot],
+          price: item.price,
+          balance_after: riceBalance,
+        });
       queryClient.setQueryData(
         itemQueries.store().queryKey,
         store =>
@@ -41,7 +60,12 @@ export const useBuyDefenseTicket = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: purchaseDefenseTicket,
-    onSuccess: ({ riceBalance }) =>
+    onSuccess: ({ riceBalance }) => {
+      logEvent("item_purchase", {
+        item_type: "shield",
+        price: SHIELD_PRICE,
+        balance_after: riceBalance,
+      });
       queryClient.setQueryData(
         itemQueries.store().queryKey,
         store =>
@@ -55,6 +79,7 @@ export const useBuyDefenseTicket = () => {
               count: store.defenseTicket.count + 1,
             },
           },
-      ),
+      );
+    },
   });
 };

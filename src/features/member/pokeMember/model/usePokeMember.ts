@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { roomQueries } from "@/entities/room";
 import { isApiError } from "@/shared/api";
+import { logEvent } from "@/shared/lib/appsInToss";
 
 import { createPoke, MAX_POKES_PER_REQUEST } from "../api/pokeApi";
 
@@ -30,6 +31,8 @@ export const usePokeMember = (roomId: number, onError: (message: string) => void
   const { mutate } = useMutation({
     mutationFn: ({ memberId, count }: { memberId: number; count: number }) =>
       createPoke(roomId, memberId, count),
+    // 누를 때마다 보내지 않고, 모아 보낸 요청이 성공하면 누른 횟수를 담아 1건 보내요.
+    onSuccess: (_, { count }) => logEvent("poke_send", { poke_count: count }),
     onError: error => {
       if (isApiError(error, "POKE_002", "POKE_003", "ROOM_009"))
         void queryClient.invalidateQueries({ queryKey: roomQueries.today(roomId).queryKey });

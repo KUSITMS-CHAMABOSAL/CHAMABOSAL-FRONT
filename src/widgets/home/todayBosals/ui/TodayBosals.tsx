@@ -46,7 +46,11 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
   const canReact = today.round.status === "CERTIFYING";
   /** 투표 중이면 친구 카드 문구가 바뀌어요. 콕 찌르기는 인증 시간에만 돼요(POKE_002). */
   const isVoting = today.round.status === "VOTING";
-  const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(roomId, openToast);
+  const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(
+    roomId,
+    "home_card",
+    openToast,
+  );
 
   const goToPage = (page: number) => {
     scrollerRef.current?.querySelector(`[data-page="${page}"]`)?.scrollIntoView({

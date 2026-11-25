@@ -202,6 +202,8 @@ const VoteResult = ({ roomId, roundId, isSeen }: VoteResultProps) => {
       )}
       {isMeToDefend ? (
         <ShieldAction
+          // 방을 바꿔 회차가 달라지면 안내 팝업과 남은 시간을 새로 시작해요.
+          key={roundId}
           roundId={roundId}
           ticketCount={result.defenseTicketCount ?? 0}
           usableUntil={result.defenseUsableUntil}

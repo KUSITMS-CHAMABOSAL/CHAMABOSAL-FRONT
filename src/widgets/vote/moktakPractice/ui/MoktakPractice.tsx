@@ -5,6 +5,7 @@ import { FixedBottomCTA, Paragraph, Top, useToast } from "@toss/tds-mobile";
 import { Moktak, useCompleteMoktak } from "@/features/vote/strikeMoktak";
 import { isApiError } from "@/shared/api";
 import { cn, useLockScroll } from "@/shared/lib";
+import { logEvent } from "@/shared/lib/appsInToss";
 
 import { COMPLETE_DELAY_MS, PRACTICE_BACKGROUND } from "../config/scene";
 import PracticeComplete from "./PracticeComplete";
@@ -124,7 +125,19 @@ const MoktakPractice = ({
           종료하기
         </FixedBottomCTA>
       )}
-      <QuitPracticeSheet open={quitOpen} onQuit={onQuit} onClose={() => setQuitOpen(false)} />
+      <QuitPracticeSheet
+        open={quitOpen}
+        onQuit={() => {
+          // 중간에 나가면 서버에 보내는 요청이 없어서, 종료를 확정할 때 바로 세요.
+          logEvent("tap_session_complete", {
+            role: "receiver",
+            tap_count: counted.current,
+            completed: false,
+          });
+          onQuit();
+        }}
+        onClose={() => setQuitOpen(false)}
+      />
     </main>
   );
 };

@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import { sessionQueries } from "@/entities/session";
 import { voteQueries } from "@/entities/vote";
+import { logEvent } from "@/shared/lib/appsInToss";
 
 import { sendTaps, startTaps } from "../api/tapApi";
 
@@ -28,8 +29,11 @@ export const useForeheadTaps = (roundId: number) => {
       // 개발 모드(StrictMode)는 떼자마자 다시 붙여요. 한 틱 뒤에도 떨어져 있을 때만 떠난 거예요.
       window.setTimeout(() => {
         if (mounted.current) return;
-        sendTaps(roundId, counted.current)
+        const count = counted.current;
+        sendTaps(roundId, count)
           .then(() => {
+            // 서버 기록과 같게, 떠나는 방법과 관계없이 보낸 횟수(0번 포함)를 세요.
+            logEvent("tap_session_complete", { role: "sender", tap_count: count });
             // 투표 탭 상태와 공양미가 바뀌어요.
             void queryClient.invalidateQueries({ queryKey: voteQueries.all() });
             void queryClient.invalidateQueries({ queryKey: sessionQueries.me().queryKey });

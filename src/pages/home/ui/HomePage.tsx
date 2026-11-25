@@ -1,4 +1,3 @@
-import { Skeleton } from "@toss/tds-mobile";
 import { useLocation, useNavigate, useParams } from "react-router";
 
 import { isRoomGoneError, RoomGoneDialog, useTodayQuery } from "@/entities/room";
@@ -6,8 +5,8 @@ import { useMeQuery } from "@/entities/session";
 import { paths, type RoomHomeState } from "@/shared/config";
 import { useTabBarToast } from "@/shared/lib";
 import { EntryPopups } from "@/widgets/home/entryPopups";
-import { RoomSummary } from "@/widgets/home/roomSummary";
-import { TodayBosals } from "@/widgets/home/todayBosals";
+import { RoomSummary, RoomSummarySkeleton } from "@/widgets/home/roomSummary";
+import { TodayBosals, TodayBosalsSkeleton } from "@/widgets/home/todayBosals";
 
 /** 방 홈이에요. 내 방 목록과 고른 방의 오늘 탭을 받아 위젯에 넘겨요. */
 const HomePage = () => {
@@ -29,11 +28,8 @@ const HomePage = () => {
   if (!me.data || (!today.data && !isRoomGone)) {
     return (
       <main className="min-h-svh bg-(--adaptiveBackground)">
-        {/* 방 이름, 방 요약, 공양미 한 솥, 오늘의 보살 순서예요. */}
-        <Skeleton
-          custom={["title", "subtitle", "card", "spacer(24)", "title", "card"]}
-          repeatLastItemCount={1}
-        />
+        <RoomSummarySkeleton />
+        <TodayBosalsSkeleton />
       </main>
     );
   }

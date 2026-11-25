@@ -1,11 +1,16 @@
 import { useLocation, useNavigate } from "react-router";
 
+import { useStoreQuery } from "@/entities/item";
+import { useMeQuery } from "@/entities/session";
 import { paths } from "@/shared/config";
-import { HairPlanting } from "@/widgets/storehouse/hairPlanting";
+import { HairPlanting, HairPlantingSkeleton } from "@/widgets/storehouse/hairPlanting";
 
 const HairPlantingPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  // 빠진 나발은 내 정보, 공양미는 곳간 조회에서 와요. 둘 다 받기 전에 그리면 빈자리 0곳·0석이 잠깐 보여요.
+  const me = useMeQuery();
+  const store = useStoreQuery();
 
   // 나발 빠짐 설명에서 넘어오면 내용만 나타나게 해요(HairGuidePage가 state로 알려줘요).
   const state = location.state as { fadeIn?: boolean; openedDirectly?: boolean } | null;
@@ -16,6 +21,12 @@ const HairPlantingPage = () => {
     location.key === "default" || state?.openedDirectly === true
       ? navigate(paths.storehouse, { replace: true })
       : navigate(-1);
+
+  if (!me.data || !store.data) {
+    const failure = me.error ?? store.error;
+    if (failure) throw failure;
+    return <HairPlantingSkeleton />;
+  }
 
   return <HairPlanting onClose={close} fadeIn={fadeIn} />;
 };

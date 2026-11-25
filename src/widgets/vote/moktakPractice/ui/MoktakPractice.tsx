@@ -10,13 +10,27 @@ import { COMPLETE_DELAY_MS, PRACTICE_BACKGROUND } from "../config/scene";
 import PracticeComplete from "./PracticeComplete";
 import QuitPracticeSheet from "./QuitPracticeSheet";
 
+/**
+ * [종료하기]를 다시 보내도 같은 결과인 거절이에요. 없는 회차, 멤버·지목 아님, 보상 없는 결과,
+ * 받은 톡톡 없음, 수행 시간 지남(다음 투표 열림), 아직 전달 전이에요.
+ */
+const QUIT_FINAL_ERRORS = [
+  "ROUND_001",
+  "ROOM_002",
+  "TAP_005",
+  "MOKTAK_001",
+  "MOKTAK_002",
+  "MOKTAK_003",
+  "MOKTAK_005",
+];
+
 interface MoktakPracticeProps {
   roundId: number;
   /** 친구들에게 받은 톡톡 합계예요. 이만큼 쳐야 수행이 끝나요. 수행 중 톡톡이 더 오면 늘어나요. */
   goal: number;
   /** 이미 수행을 마친 회차면 바로 완료 화면을 보여줘요. */
   alreadyDone: boolean;
-  /** 확인 시트에서 [종료하기]를 눌렀을 때예요. */
+  /** 확인 시트에서 [종료하기]를 눌러 친 횟수를 보낸 뒤예요. 다시 보내도 안 되는 거절이어도 불러요. */
   onQuit: () => void;
   onClaimBonus: () => void;
   /** 완료 화면의 [닫기]예요. */
@@ -42,7 +56,7 @@ const MoktakPractice = ({
   const [completed, setCompleted] = useState(false);
   /** 완료를 저장하지 못했어요. 갇히지 않게 [종료하기]를 다시 보여줘요. */
   const [saveFailed, setSaveFailed] = useState(false);
-  const { mutate: complete } = useCompleteMoktak(roundId);
+  const { mutate: complete, isPending } = useCompleteMoktak(roundId);
   const { openToast } = useToast();
   const reachedGoal = count >= goal;
   /** 완료를 보내는 중이에요. 같은 프레임에 연타가 겹쳐도 한 번만 보내요. */
@@ -65,13 +79,31 @@ const MoktakPractice = ({
           Math.max(0, COMPLETE_DELAY_MS - (performance.now() - startedAt)),
         );
       },
-      onError: error => {
+      onError: () => {
         sending.current = false;
         setSaveFailed(true);
-        // 수행 중 톡톡이 더 왔어요. 받은 톡톡을 다시 받으면 목표가 늘어 이어서 칠 수 있고,
-        // 다시 받지 못해도 [종료하기]로 나갈 수 있어요.
-        if (isApiError(error, "MOKTAK_004")) return;
         openToast("수행 결과를 저장하지 못했어요");
+      },
+    });
+  };
+
+  /**
+   * [종료하기]도 친 횟수를 보내야 서버가 이 회차 수행을 끝내요(받은 톡톡보다 적으면 보상 없이 끝나요).
+   * 한 번도 치지 않았으면 서버 요청 없이 즉시 나가요.
+   * 회차가 이미 끝나 다시 보내도 안 되는 거절이면 그대로 나가요. 투표 탭이 상태를 다시 받아 맞춰요.
+   * 그 밖의 실패(네트워크·서버 오류)는 시트에 남아 다시 누르게 해요. 토스 뒤로가기로는 언제든 나갈 수 있어요.
+   */
+  const quit = () => {
+    if (counted.current === 0) {
+      onQuit();
+      return;
+    }
+    complete(counted.current, {
+      onSuccess: onQuit,
+      onError: error => {
+        if (isApiError(error, ...QUIT_FINAL_ERRORS)) return onQuit();
+        // 🔖 실패 문구는 시안이 없어 임시예요.
+        openToast("종료하지 못했어요. 다시 시도해 주세요");
       },
     });
   };
@@ -124,7 +156,14 @@ const MoktakPractice = ({
           종료하기
         </FixedBottomCTA>
       )}
-      <QuitPracticeSheet open={quitOpen} onQuit={onQuit} onClose={() => setQuitOpen(false)} />
+      <QuitPracticeSheet
+        open={quitOpen}
+        quitting={isPending}
+        onQuit={quit}
+        onClose={() => {
+          if (!isPending) setQuitOpen(false);
+        }}
+      />
     </main>
   );
 };

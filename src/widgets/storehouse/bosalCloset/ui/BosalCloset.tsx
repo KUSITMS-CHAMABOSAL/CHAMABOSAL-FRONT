@@ -22,6 +22,7 @@ import { cn, useTabBarToast } from "@/shared/lib";
 
 import { CLOSET_TABS, type ClosetItem, type ClosetTab, SLOT_TAB } from "../config/closetItems";
 import ClosetCard from "./ClosetCard";
+import ClosetSkeleton from "./ClosetSkeleton";
 import HairPlantCard from "./HairPlantCard";
 import OutfitSlots from "./OutfitSlots";
 
@@ -94,7 +95,7 @@ const BosalCloset = (props: BosalClosetProps) => {
   if (me.error) throw me.error;
   // 보살 색과 닉네임은 방마다 달라요. 곳간은 방 밖이라 첫 번째 방의 내 보살로 보여줘요.
   const myRoom = me.data?.rooms[0];
-  if (!store.data || !myRoom) return null;
+  if (!store.data || !myRoom) return <ClosetSkeleton />;
   return <Closet {...props} store={store.data} myRoom={myRoom} />;
 };
 

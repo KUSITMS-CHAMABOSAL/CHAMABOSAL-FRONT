@@ -19,7 +19,8 @@ export const SLOT_TAB: Record<ItemSlot, ClosetTab> = {
 };
 
 export type ClosetItem =
-  | { kind: "shield"; id: string; name: string; price: number; isOwned: boolean }
+  /** 방어권은 여러 개 가질 수 있어 보유 개수로 보여줘요. */
+  | { kind: "shield"; id: string; name: string; price: number; count: number }
   | {
       kind: "item";
       id: string;

@@ -60,7 +60,7 @@ const getBlockedReason = (error: unknown): JoinBlockedReason | null => {
 };
 
 interface JoinRoomStepsProps {
-  /** 초대 링크의 `code`예요. */
+  /** 초대 링크의 `code`예요. 단계를 옮길 때 기록(state)에 함께 넘겨요. */
   token: string;
 }
 
@@ -95,9 +95,9 @@ const JoinRoomSteps = ({ token }: JoinRoomStepsProps) => {
         // 참여한 뒤라 보살 받기 기록은 온보딩이나 방 홈으로 바꿔, 뒤로가기로 다시 오지 않게 해요.
         onReceive={() =>
           needsTour
-            ? navigate(paths.invite(token), {
+            ? navigate(paths.invite(), {
                 replace: true,
-                state: { step: "tour", roomId: step.roomId },
+                state: { token, step: "tour", roomId: step.roomId },
               })
             : navigate(paths.room.home(step.roomId), { replace: true })
         }
@@ -171,7 +171,7 @@ const JoinRoomSteps = ({ token }: JoinRoomStepsProps) => {
       <InvitePreview
         room={room}
         inviterNickname={preview.data.inviterNickname}
-        onJoin={() => navigate(paths.invite(token), { state: { step: "nickname" } })}
+        onJoin={() => navigate(paths.invite(), { state: { token, step: "nickname" } })}
       />
     );
   }
@@ -192,9 +192,10 @@ const JoinRoomSteps = ({ token }: JoinRoomStepsProps) => {
               startTransition(() => {
                 setJoinedRoomId(joined.roomId);
                 // 닉네임 기록을 보살 받기로 바꿔서, 앞으로 가기로 닉네임에 다시 오지 않게 해요.
-                void navigate(paths.invite(token), {
+                void navigate(paths.invite(), {
                   replace: true,
                   state: {
+                    token,
                     step: "bosal",
                     roomId: joined.roomId,
                     nickname: joined.nickname,

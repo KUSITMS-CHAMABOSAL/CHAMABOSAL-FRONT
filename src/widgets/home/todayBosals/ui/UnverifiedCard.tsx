@@ -32,15 +32,18 @@ interface UnverifiedCardProps {
   member: UnverifiedBosal;
   /** 이 화면에서 콕 찌른 횟수예요. 늘 때마다 움찔해요. */
   pokes?: number;
+  /** 투표 중이에요. 친구 카드는 콕 찌를 수 없다고 알려요(시안 2-1. 투표중). */
+  isVoting?: boolean;
 }
 
-const getMessage = (member: UnverifiedBosal) => {
+const getMessage = (member: UnverifiedBosal, isVoting: boolean) => {
+  if (!member.isMe && isVoting) return "투표 중에는 콕 찌를 수 없어요.";
   const next = member.isMe ? "친구에게 오늘의 순간을 인증해요!" : "콕 찔러서 알려줄까요?";
   return `${member.name}은 아직 인증하지 않았어요.\n${next}`;
 };
 
 /** 아직 인증하지 않은 보살의 캐러셀 카드예요. 찔린 횟수가 늘면 표정이 잠깐 '찔림'으로 바뀌고 움찔해요. */
-const UnverifiedCard = ({ member, pokes = 0 }: UnverifiedCardProps) => {
+const UnverifiedCard = ({ member, pokes = 0, isVoting = false }: UnverifiedCardProps) => {
   const [isPoked, setIsPoked] = useState(false);
   const artRef = useRef<HTMLDivElement>(null);
   const lastPokes = useRef(pokes);
@@ -69,7 +72,7 @@ const UnverifiedCard = ({ member, pokes = 0 }: UnverifiedCardProps) => {
         </Paragraph>
       </div>
       <Paragraph typography="t6" color="var(--adaptiveGrey900)" className="whitespace-pre-line">
-        {getMessage(member)}
+        {getMessage(member, isVoting)}
       </Paragraph>
       <div className="flex min-h-0 flex-1 items-center justify-center">
         {/* 두 표정을 겹쳐 두고 opacity만 바꿔요. 찔릴 때 그림을 새로 불러오느라 깜빡이지 않아요. */}

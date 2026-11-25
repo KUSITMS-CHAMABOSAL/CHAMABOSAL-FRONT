@@ -4,14 +4,16 @@ import handPalm from "../assets/hand_palm.svg";
 
 interface QuitPracticeSheetProps {
   open: boolean;
-  /** [종료하기]예요. 친 횟수는 저장하지 않고 나가요. */
+  /** [종료하기]예요. 친 횟수를 보내 이 회차 수행을 끝내요. */
   onQuit: () => void;
+  /** 종료를 보내는 중이에요. 두 번 보내지 않게 [종료하기]를 로딩으로 바꿔요. */
+  quitting?: boolean;
   /** [더 수행하기]와 바깥 누르기예요. */
   onClose: () => void;
 }
 
 /** 수행 중 [종료하기]를 누르면 한 번 더 묻는 시트예요(시안 목탁-09). */
-const QuitPracticeSheet = ({ open, onQuit, onClose }: QuitPracticeSheetProps) => (
+const QuitPracticeSheet = ({ open, onQuit, quitting, onClose }: QuitPracticeSheetProps) => (
   <BottomSheet
     open={open}
     onClose={onClose}
@@ -33,7 +35,7 @@ const QuitPracticeSheet = ({ open, onQuit, onClose }: QuitPracticeSheetProps) =>
     cta={
       <BottomSheet.DoubleCTA
         leftButton={
-          <Button color="dark" variant="weak" onClick={onQuit}>
+          <Button color="dark" variant="weak" loading={quitting} onClick={onQuit}>
             종료하기
           </Button>
         }

@@ -28,7 +28,8 @@ interface AnalyticsEventParams {
     completed?: boolean;
   };
   signup_complete: { entry: "direct" | "invite" };
-  poke_send: { is_first_today: boolean };
+  /** 1.5초 모아 보낸 요청 한 번이 1건이고, 그 안에 누른 횟수를 `poke_count`로 보내요. */
+  poke_send: { poke_count: number };
   item_purchase: {
     item_type: "hat" | "face" | "accessory" | "shield" | "nabal";
     price: number;

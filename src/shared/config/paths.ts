@@ -17,6 +17,8 @@ export const paths = {
   hairGuide: "/storehouse/hair/guide",
   my: (roomId: number) => `/my/${roomId}`,
   settings: "/settings",
+  terms: "/terms",
+  privacy: "/privacy",
   room: {
     home: (roomId: number) => `/rooms/${roomId}`,
     info: (roomId: number) => `/rooms/${roomId}/info`,

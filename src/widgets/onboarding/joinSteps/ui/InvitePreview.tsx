@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 
 import { Badge, Border, BottomCTA, Paragraph, TableRow } from "@toss/tds-mobile";
+import { Link } from "react-router";
 
 import { ROOM_GOAL_LABEL, type RoomSummary } from "@/entities/room";
+import { paths } from "@/shared/config";
 import { logEvent } from "@/shared/lib/appsInToss";
 
 import envelopeFlap from "../assets/envelope_flap.svg";
@@ -110,14 +112,37 @@ const InvitePreview = ({ room, inviterNickname, onJoin }: InvitePreviewProps) =>
           background="none"
           onClick={onJoin}
           bottomAccessory={
-            // 시안처럼 버튼 아래 12px에 놓여요. 🔖 약관 화면(/terms, /privacy)이 생기면 링크로 바꿔요.
+            // 시안처럼 버튼 아래 12px에 놓여요. 인트로처럼 약관 이름에 밑줄을 그어 누를 수 있게 해요.
             <Paragraph
               className="-mt-3.5! text-center"
               typography="t7"
               fontWeight="semibold"
               color="var(--adaptiveGreyOpacity600)"
             >
-              시작하면 이용약관과 개인정보처리방침에 동의하게 돼요
+              {/* 링크는 문단의 글자 스타일을 물려받지 않아서 같은 값을 넘기고, 둘레 글자도 Text로 감싸요. */}
+              <Paragraph.Text>시작하면 </Paragraph.Text>
+              <Paragraph.Link
+                as={Link}
+                to={paths.terms}
+                type="underline"
+                typography="t7"
+                fontWeight="semibold"
+                color="var(--adaptiveGreyOpacity600)"
+              >
+                <Paragraph.Text>이용약관</Paragraph.Text>
+              </Paragraph.Link>
+              <Paragraph.Text>과 </Paragraph.Text>
+              <Paragraph.Link
+                as={Link}
+                to={paths.privacy}
+                type="underline"
+                typography="t7"
+                fontWeight="semibold"
+                color="var(--adaptiveGreyOpacity600)"
+              >
+                <Paragraph.Text>개인정보처리방침</Paragraph.Text>
+              </Paragraph.Link>
+              <Paragraph.Text>에 동의하게 돼요</Paragraph.Text>
             </Paragraph>
           }
         >

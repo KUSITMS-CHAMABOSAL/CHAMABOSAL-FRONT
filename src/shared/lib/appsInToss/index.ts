@@ -1,5 +1,6 @@
 export { type InviteEntryPoint, logEvent } from "./analytics";
 export { copyToClipboard, isClipboardPermissionError } from "./clipboard";
+export { openExternalUrl } from "./externalUrl";
 export { triggerTapHaptic } from "./haptic";
 export { getAnonymousKeyAuthCode } from "./login";
 export { isPhotoPermissionError, type PickedPhoto, pickAlbumPhoto, takePhoto } from "./photos";

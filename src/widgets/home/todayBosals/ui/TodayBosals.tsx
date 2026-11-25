@@ -89,7 +89,15 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
         );
       case "unverified":
         return view.member.isMe ? (
-          <Button size="xlarge" color="dark" variant="weak" display="block" onClick={onCertify}>
+          <Button
+            size="xlarge"
+            color="dark"
+            variant="weak"
+            display="block"
+            // 인증할 수 없는 시간에 누르면 인증 화면이 바로 방 홈으로 돌려보내서 꺼요(화면설계서 8-2).
+            disabled={!today.round.isCertificationOpen}
+            onClick={onCertify}
+          >
             오늘의 인증 남기기
           </Button>
         ) : (

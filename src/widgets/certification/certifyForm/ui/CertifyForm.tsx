@@ -103,9 +103,12 @@ const CertifyForm = (props: CertifyFormProps) => {
     return () => clearTimeout(timer);
   }, [isIntro]);
 
-  // 사진은 선택이라 업로드에 실패해도 사진 없이 인증할 수 있어요.
+  // 사진은 선택이에요. 업로드에 실패하면 실패한 사진을 지워야 인증할 수 있어요(수정도 같아요).
   const canSubmit =
-    isValidMemo(memo) && (!isFailed || isValidAmount(amount)) && photo.status !== "uploading";
+    isValidMemo(memo) &&
+    (!isFailed || isValidAmount(amount)) &&
+    photo.status !== "uploading" &&
+    photo.status !== "failed";
 
   return (
     <main className="min-h-svh bg-(--adaptiveBackground)">

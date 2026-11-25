@@ -1,13 +1,28 @@
+import { useEffect } from "react";
+
 import { BottomCTA, Paragraph } from "@toss/tds-mobile";
 import { useNavigate } from "react-router";
 
 import { paths } from "@/shared/config";
+import { logEvent } from "@/shared/lib/appsInToss";
 
 import IntroHero from "./IntroHero";
+
+/**
+ * 이번 실행에서 인트로를 봤다고 이미 보냈는지예요. 가입 완료율의 분모라서,
+ * 방 만들기에서 뒤로 돌아와 인트로가 다시 그려져도 한 번만 세요.
+ */
+let hasLoggedView = false;
 
 /** 참여 중인 방이 없을 때 보는 첫 화면이에요. 방을 만들거나, 초대받았다면 받은 링크로 들어와요. */
 const IntroPage = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (hasLoggedView) return;
+    hasLoggedView = true;
+    logEvent("intro_view");
+  }, []);
 
   return (
     <main className="flex min-h-svh flex-col items-center bg-[linear-gradient(-25.22deg,var(--adaptiveYellow50)_3.97%,var(--color-mint-75)_63.07%,var(--color-mint-100))] text-center">

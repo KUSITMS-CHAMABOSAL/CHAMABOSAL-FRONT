@@ -15,6 +15,8 @@ export interface StoreItem {
 export interface DefenseTicketStatus {
   /** 미사용 방어권이 있으면 OWNED */
   status: "NONE" | "OWNED";
+  /** 보유한 미사용 방어권 개수. 없으면 0 */
+  count: number;
   /** 이번 주(회차 날짜 기준 월~일)에 방어권을 썼는지 */
   isUsedThisWeek: boolean;
 }

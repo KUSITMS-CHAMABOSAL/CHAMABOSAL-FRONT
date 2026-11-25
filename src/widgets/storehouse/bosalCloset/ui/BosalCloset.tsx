@@ -114,12 +114,11 @@ const Closet = ({ onPlantHair, onHairGuide, store, myRoom }: ClosetProps) => {
         id: "shield",
         name: "이마 방어권",
         price: SHIELD_PRICE,
-        // 서버가 개수를 주지 않아 "보유 n개" 대신 보유 중/미보유로만 보여줘요(2026-11-24 확정).
-        isOwned: store.defenseTicket.status === "OWNED",
+        count: store.defenseTicket.count,
       } as const,
       ...toClosetItems(storeItems),
     ],
-    [storeItems, store.defenseTicket.status],
+    [storeItems, store.defenseTicket.count],
   );
   const { outfit, toggleItem, wear } = useOutfit(
     toClosetItems(storeItems.filter(item => item.isEquipped)),

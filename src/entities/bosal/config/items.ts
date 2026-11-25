@@ -57,7 +57,15 @@ export const ITEM_ART: Record<ItemCode, ItemArt> = {
   RUDOLPH_NOSE: { href: rudolphNose, x: 38.25, y: 61.91, width: 12.88, height: 12.88 },
   DUCK_LIPS: fromDesign(duckLips, 30, 62, 17, 8),
   BEAD_EARRING: fromDesign(beadEarring, 1, 57, 75, 5),
-  JADE_RING: fromDesign(jadeRing, 12.31, 75, 46, 8),
+  // 시안 착용샷 자리(12.31, 75, 46×8)는 우리 보살보다 손이 위에 있는 그림 기준이라 반지가 손가락 끝에 걸려요.
+  // 그림 안에서 반지를 손가락 중간으로 옮기고(SVG의 translate), 옮긴 만큼 그림 영역을 왼쪽과 아래로 넓혔어요.
+  JADE_RING: fromDesign(
+    jadeRing,
+    12.31 - (4.52 * 46) / 90,
+    75,
+    (94.52 * 46) / 90,
+    (8 * 23.66) / 15.6522,
+  ),
   ENERGY_WAVE: fromDesign(energyWave, 19, 66, 40, 40),
 };
 

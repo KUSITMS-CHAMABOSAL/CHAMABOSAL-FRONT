@@ -4,7 +4,7 @@ import { Button, Paragraph } from "@toss/tds-mobile";
 import { BosalHead } from "@/entities/bosal";
 import { useConfirmPotSeen } from "@/features/room/confirmPotSeen";
 import type { PotCelebration as PotCelebrationData, PotContribution } from "@/entities/room";
-import { cn } from "@/shared/lib";
+import { cn, useLockScroll } from "@/shared/lib";
 
 import { CloseIcon, LotusIcon } from "../assets";
 import background from "../assets/background_glow.svg";
@@ -96,6 +96,7 @@ const RankCard = ({ contribution, revealStyle, revealed, className }: RankCardPr
 
 /** 한 솥 축하예요. 많이 넣은 3명은 시상대처럼, 4등부터는 아래 줄에 보여줘요. 닫거나 곳간으로 가면 본 것으로 저장해요. */
 const PotCelebration = ({ roomId, pot, onClose, onShop }: PotCelebrationProps) => {
+  useLockScroll();
   const { mutate: confirmSeen, isPending } = useConfirmPotSeen(roomId);
   // 쌀알이 다 떨어져 밥더미가 차오른 뒤에 순위가 나와요. 나오기 전에는 자리만 잡아 둬요.
   const [isSettled, setIsSettled] = useState(false);

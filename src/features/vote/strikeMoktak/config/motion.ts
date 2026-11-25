@@ -36,13 +36,14 @@ export const STRIKE_EASING = {
  * 목탁은 382 → 428(1.12배)로 커지고 투명도 0.8이 돼서 뒤쪽 물결이 비쳐요.
  */
 export const POSE = {
+  // 쉬는 자세의 기울기(방망이 32°, 목탁 15°)는 그림에 들어 있어서 여기서는 그만큼 빼고 돌려요.
   mallet: {
-    rest: { transform: "translate(0px, 0px) rotate(32deg) scale(1)" },
-    hit: { transform: "translate(-63.65px, -34.28px) rotate(-40deg) scale(0.7)" },
+    rest: { transform: "translate(0px, 0px) rotate(0deg) scale(1)" },
+    hit: { transform: "translate(-63.65px, -34.28px) rotate(-72deg) scale(0.7)" },
   },
   moktak: {
-    rest: { transform: "rotate(15deg) scale(1)", opacity: 1 },
-    hit: { transform: "rotate(14deg) scale(1.12)", opacity: 0.8 },
+    rest: { transform: "rotate(0deg) scale(1)", opacity: 1 },
+    hit: { transform: "rotate(-1deg) scale(1.12)", opacity: 0.8 },
   },
 } as const;
 

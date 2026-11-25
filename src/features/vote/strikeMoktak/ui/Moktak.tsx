@@ -74,8 +74,8 @@ interface MoktakProps {
  * 좌표는 시안 화면(375px)에서 횟수 알림 아래(y 282)부터 잰 값이에요.
  */
 const Moktak = ({ disabled = false, onStrike }: MoktakProps) => {
-  const malletRef = useRef<HTMLDivElement>(null);
-  const moktakRef = useRef<HTMLDivElement>(null);
+  const malletRef = useRef<HTMLImageElement>(null);
+  const moktakRef = useRef<HTMLImageElement>(null);
   const rippleRef = useRef<HTMLDivElement>(null);
   const running = useRef<Animation[]>([]);
   const lastStrikeAt = useRef(-Infinity);
@@ -133,26 +133,19 @@ const Moktak = ({ disabled = false, onStrike }: MoktakProps) => {
         aria-hidden
         className="pointer-events-none absolute top-[-112px] left-[-112px] size-[598px]"
       />
-      <div
+      {/* 목탁과 방망이는 쉬는 자세의 기울기가 그림에 들어 있어요. CSS로 돌리면 기기에서 가장자리가 거칠어져요. */}
+      <img
         ref={moktakRef}
-        className="pointer-events-none absolute top-[2.28px] left-[-4.16px] h-[420px] w-[382px] [transform:rotate(15deg)]"
-      >
-        <img
-          src={moktak}
-          alt=""
-          className="absolute top-[-3.36px] left-[-18.95px] h-[480.59px] w-[420.048px] max-w-none"
-        />
-      </div>
-      <div
+        src={moktak}
+        alt=""
+        className="pointer-events-none absolute top-[-45.02px] left-[-70.31px] size-[514px] max-w-none"
+      />
+      <img
         ref={malletRef}
-        className="pointer-events-none absolute top-[148.67px] left-[324.95px] h-[336px] w-[80px] [transform:rotate(32deg)]"
-      >
-        <img
-          src={mallet}
-          alt=""
-          className="absolute top-[-44.02px] left-[-60px] h-[456px] w-[200px] max-w-none"
-        />
-      </div>
+        src={mallet}
+        alt=""
+        className="pointer-events-none absolute top-[59.98px] left-[199.01px] h-[514px] w-[332px] max-w-none"
+      />
     </button>
   );
 };

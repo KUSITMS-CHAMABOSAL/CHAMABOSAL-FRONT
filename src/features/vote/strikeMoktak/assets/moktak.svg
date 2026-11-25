@@ -1,27 +1,27 @@
-<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="420.048" height="480.59" viewBox="0 0 420.048 480.59" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="Group 2147224708" filter="url(#filter0_d_0_218)">
-<ellipse id="Ellipse 47" cx="143.217" cy="143.378" rx="143.217" ry="143.378" transform="matrix(0.943807 0.330498 -0.329658 0.9441 122.12 11.5442)" fill="#69432F"/>
-<path id="Subtract" d="M183.125 271.277C218.821 283.777 237.639 322.889 225.158 358.636C212.676 394.383 173.619 413.229 137.924 400.729C102.228 388.229 83.4092 349.117 95.8912 313.37C108.373 277.623 147.429 258.778 183.125 271.277ZM174.105 297.108C152.656 289.597 129.187 300.921 121.687 322.402C114.187 343.882 125.495 367.383 146.944 374.894C168.394 382.405 191.861 371.081 199.362 349.602C206.862 328.122 195.555 304.62 174.105 297.108Z" fill="#7A5644"/>
-<g id="Subtract_2">
-<use xlink:href="#stroke0_0_218" fill="#7A5644"/>
-<use xlink:href="#stroke0_0_218" fill="url(#paint0_radial_0_218)"/>
-</g>
-</g>
+<svg width="514" height="514" viewBox="0 0 514 514" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<!-- iOS는 필터 안의 모양을 낮은 해상도로 그려요. 그림자만 필터로 그리고 모양은 필터 밖에서 그려요. -->
+<use xlink:href="#shape" filter="url(#filter0_d_1666_79929)"/>
+<use xlink:href="#shape"/>
 <defs>
-<filter id="filter0_d_0_218" x="0" y="0" width="420.048" height="480.59" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<g id="shape">
+<ellipse cx="143.217" cy="143.378" rx="143.217" ry="143.378" transform="matrix(0.826108 0.563512 -0.562776 0.826609 224.547 39.6084)" fill="#69432F"/>
+<path d="M216.249 306.281C247.493 327.593 255.548 370.243 234.239 401.541C212.931 432.839 170.328 440.935 139.083 419.622C107.839 398.309 99.7845 355.659 121.093 324.361C142.402 293.063 185.005 284.968 216.249 306.281ZM200.851 328.897C182.077 316.09 156.476 320.954 143.672 339.761C130.868 358.568 135.709 384.196 154.483 397.003C173.258 409.809 198.856 404.945 211.661 386.138C224.465 367.331 219.625 341.704 200.851 328.897Z" fill="#7A5644"/>
+<use xlink:href="#stroke0_1666_79929" fill="#7A5644"/>
+<use xlink:href="#stroke0_1666_79929" fill="url(#paint0_radial_1666_79929)"/>
+</g>
+<filter id="filter0_d_1666_79929" x="49.1826" y="44.6309" width="422.999" height="462.889" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
 <feOffset dy="16"/>
 <feGaussianBlur stdDeviation="30"/>
 <feComposite in2="hardAlpha" operator="out"/>
 <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0.113725 0 0 0 0 0.227451 0 0 0 0.18 0"/>
-<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_218"/>
-<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_218" result="shape"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1666_79929"/>
 </filter>
-<radialGradient id="paint0_radial_0_218" cx="0" cy="0" r="1" gradientTransform="matrix(-49.4684 141.671 -141.577 -49.577 209.987 194.348)" gradientUnits="userSpaceOnUse">
+<radialGradient id="paint0_radial_1666_79929" cx="0" cy="0" r="1" gradientTransform="matrix(-84.4501 124.041 -123.922 -84.5306 262.106 238.924)" gradientUnits="userSpaceOnUse">
 <stop stop-color="#7A5644"/>
 <stop offset="1" stop-color="#69432F"/>
 </radialGradient>
-<path id="stroke0_0_218" d="M265.871 59.4329C266.633 57.2497 269.08 56.1538 271.19 57.0946C341.743 88.5561 377.55 169.504 351.602 243.816C324.26 322.119 238.709 363.4 160.518 336.019C82.3271 308.639 41.1054 222.965 68.4469 144.662C94.2359 70.8058 171.812 29.8858 246.152 48.453C248.407 49.0162 249.659 51.4127 248.891 53.6096L216.792 145.538C207.892 146.329 199.841 152.202 196.7 161.197C192.422 173.449 198.872 186.855 211.107 191.139C223.341 195.423 236.728 188.964 241.006 176.712C244.322 167.217 241.192 157.029 233.922 150.932L265.871 59.4329Z"/>
+<path id="stroke0_1666_79929" d="M351.005 123.071C352.306 121.159 354.953 120.734 356.747 122.189C416.754 170.839 430.39 258.295 386.092 323.36C339.416 391.918 246.096 409.65 177.656 362.965C109.216 316.28 91.5725 222.857 138.249 154.299C182.274 89.6337 267.798 70.186 334.799 107.361C336.832 108.489 337.42 111.128 336.111 113.051L281.313 193.539C272.511 192 263.215 195.589 257.852 203.465C250.549 214.192 253.31 228.81 264.019 236.115C274.727 243.42 289.33 240.645 296.633 229.918C302.293 221.604 301.907 210.954 296.462 203.183L351.005 123.071Z"/>
 </defs>
 </svg>

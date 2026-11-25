@@ -4,7 +4,7 @@ import { FixedBottomCTA, Paragraph, Top, useToast } from "@toss/tds-mobile";
 
 import { Moktak, useCompleteMoktak } from "@/features/vote/strikeMoktak";
 import { isApiError } from "@/shared/api";
-import { cn } from "@/shared/lib";
+import { cn, useLockScroll } from "@/shared/lib";
 
 import { COMPLETE_DELAY_MS, PRACTICE_BACKGROUND } from "../config/scene";
 import PracticeComplete from "./PracticeComplete";
@@ -35,6 +35,8 @@ const MoktakPractice = ({
   onClaimBonus,
   onClose,
 }: MoktakPracticeProps) => {
+  // 수행과 완료 화면 모두 한 화면이라 스크롤을 막아요.
+  useLockScroll();
   const [count, setCount] = useState(0);
   const [quitOpen, setQuitOpen] = useState(false);
   const [completed, setCompleted] = useState(false);

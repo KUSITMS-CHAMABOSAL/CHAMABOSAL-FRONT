@@ -77,18 +77,17 @@ const PracticeComplete = ({ onClaimBonus, onClose }: PracticeCompleteProps) => {
       </div>
 
       <div className="relative flex flex-col items-center gap-3.5 pt-[65px]">
-        {/* 제목 글자에 시안의 원형 그라데이션을 입혀요. */}
-        <Paragraph
-          typography="st2"
-          fontWeight="bold"
-          className="bg-[radial-gradient(46%_50%_at_50%_50%,rgba(237,40,49,0.24)_0%,rgba(193,63,138,0.5)_50%,rgba(149,85,227,0.76)_100%)] bg-clip-text text-center! [-webkit-text-fill-color:transparent]"
-        >
-          수행을 완료했어요
+        {/* 제목 글자에 시안의 원형 그라데이션을 입혀요. iOS는 글자를 직접 감싼 요소에 걸어야 글자에 칠해져서,
+            TDS가 글자를 넣는 span 안에 한 겹 더 두고 거기에 걸어요. 접두사도 iOS 때문이에요. */}
+        <Paragraph typography="st2" fontWeight="bold" className="text-center!">
+          <span className="inline-block bg-[radial-gradient(46%_50%_at_50%_50%,rgba(237,40,49,0.24)_0%,rgba(193,63,138,0.5)_50%,rgba(149,85,227,0.76)_100%)] bg-clip-text [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+            수행을 완료했어요
+          </span>
         </Paragraph>
         <Paragraph
           typography="t7"
           fontWeight="semibold"
-          color="var(--adaptiveGrey600)"
+          color="var(--adaptiveGreyOpacity600)"
           className="text-center!"
         >
           머릿속 번뇌가 모두 사라졌어요

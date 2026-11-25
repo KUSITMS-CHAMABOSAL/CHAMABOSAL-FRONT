@@ -14,15 +14,18 @@ interface RoomCreatedProps {
 /** 방을 만든 뒤 보는 화면이에요. 초대링크를 복사해 친구를 부르고 방으로 가요. */
 const RoomCreated = ({ roomId, goal, onGoToRoom }: RoomCreatedProps) => {
   const { openToast } = useToast();
-  const { mutate: copy, isPending } = useCopyInviteLink(roomId, (message, succeeded) =>
-    // 시안처럼 [내 방으로 가기] 위에 띄워요.
-    openToast(
-      message,
-      succeeded
-        ? // 시안 아이콘과 같은 토스 아이콘이에요(초록 원 + 흰 체크).
-          { icon: "icon-check-circle-green", higherThanCTA: true }
-        : { higherThanCTA: true },
-    ),
+  const { mutate: copy, isPending } = useCopyInviteLink(
+    roomId,
+    "room_created",
+    (message, succeeded) =>
+      // 시안처럼 [내 방으로 가기] 위에 띄워요.
+      openToast(
+        message,
+        succeeded
+          ? // 시안 아이콘과 같은 토스 아이콘이에요(초록 원 + 흰 체크).
+            { icon: "icon-check-circle-green", higherThanCTA: true }
+          : { higherThanCTA: true },
+      ),
   );
 
   return (

@@ -38,6 +38,9 @@ interface AnalyticsEventParams {
   invite_preview_view: { inviter_shown: boolean };
 }
 
+/** 초대링크를 복사한 곳이에요. 방 홈의 위쪽 초대 버튼과 격자의 초대 카드는 둘 다 `home_card`예요. */
+export type InviteEntryPoint = AnalyticsEventParams["invite_link_copy"]["entry_point"];
+
 type AnalyticsEventName = keyof AnalyticsEventParams;
 
 /** 이벤트마다 정의서의 종류대로 화면(screen) 또는 클릭(click) 로그로 보내요. */

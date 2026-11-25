@@ -44,7 +44,11 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
   const { mutate: react, isPending: isReacting } = useReactCertification(roomId, openToast);
   /** 리액션은 인증이 속한 회차가 인증 중일 때만 받아요. 투표가 시작되면 남긴 리액션만 보여줘요. */
   const canReact = today.round.status === "CERTIFYING";
-  const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(roomId, openToast);
+  const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(
+    roomId,
+    "home_card",
+    openToast,
+  );
 
   const goToPage = (page: number) => {
     scrollerRef.current?.querySelector(`[data-page="${page}"]`)?.scrollIntoView({

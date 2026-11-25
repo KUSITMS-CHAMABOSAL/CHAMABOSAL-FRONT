@@ -23,8 +23,10 @@ interface RoomInfoProps {
 const RoomInfo = ({ today }: RoomInfoProps) => {
   const { roomId, name, isOwner, hasVotingRound } = today.room;
   const { openToast } = useToast();
-  const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(roomId, message =>
-    openToast(message),
+  const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(
+    roomId,
+    "room_info",
+    message => openToast(message),
   );
   const { mutate: kick, isPending: isKicking } = useKickMember(roomId);
   /** 시트가 닫히는 동안에도 내용이 남도록 마지막으로 고른 멤버를 들고 있어요. */

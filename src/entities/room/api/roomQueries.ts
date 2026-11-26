@@ -1,4 +1,7 @@
-import { queryOptions } from "@tanstack/react-query";
+import { queryOptions, replaceEqualDeep } from "@tanstack/react-query";
+
+import { keepTodayImageUrls } from "../lib/keepImageUrls";
+import type { TodayResponse } from "../model/types";
 
 import {
   getInvitePreview,
@@ -14,6 +17,12 @@ export const roomQueries = {
     queryOptions({
       queryKey: [...roomQueries.all(), roomId, "today"],
       queryFn: () => getToday(roomId),
+      // 다시 받아도 인증 사진 주소가 바뀌지 않게 해요. 나머지는 기본처럼 바뀐 부분만 새 객체로 바꿔요.
+      structuralSharing: (prev, next) =>
+        replaceEqualDeep(
+          prev,
+          keepTodayImageUrls(prev as TodayResponse | undefined, next as TodayResponse),
+        ),
     }),
   /** 다 채운 솥은 바뀌지 않아요. */
   pot: (roomId: number, seq: number) =>

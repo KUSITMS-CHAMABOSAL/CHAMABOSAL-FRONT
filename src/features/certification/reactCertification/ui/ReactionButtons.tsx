@@ -45,13 +45,17 @@ interface ReactionButtonsProps {
   onChange: (reaction: ReactionType | null) => void;
   /** 리액션별 수예요. 시안 "잘 참았어요 1" */
   counts: Record<ReactionType, number>;
+  /** 리액션을 받지 않는 때예요. 흐리게 그려서 누를 수 없다는 걸 보여줘요. */
   disabled?: boolean;
+  /** 보내는 중이에요. 겹쳐 누르는 것만 막고 모양은 그대로 둬서, 누를 때마다 흐려지며 깜빡이지 않아요. */
+  busy?: boolean;
 }
 
-const ReactionButtons = ({ value, onChange, counts, disabled }: ReactionButtonsProps) => {
+const ReactionButtons = ({ value, onChange, counts, disabled, busy }: ReactionButtonsProps) => {
   const floats = useRef<Partial<Record<ReactionType, HTMLSpanElement | null>>>({});
 
   const select = (reaction: ReactionType) => {
+    if (busy) return;
     const next = value === reaction ? null : reaction;
     // 누를 때마다 다시 재생해서 Web Animations API를 써요.
     if (next && !prefersReducedMotion())
@@ -73,6 +77,7 @@ const ReactionButtons = ({ value, onChange, counts, disabled }: ReactionButtonsP
             className={cn(
               "flex h-14 flex-1 touch-manipulation appearance-none items-center justify-center gap-1.5 rounded-2xl! border border-solid border-(--adaptiveGreyOpacity200) bg-(--adaptiveGrey50) p-0 [-webkit-tap-highlight-color:transparent]",
               isSelected && style.selected,
+              "disabled:opacity-40",
             )}
           >
             <span className="relative size-6" aria-hidden>

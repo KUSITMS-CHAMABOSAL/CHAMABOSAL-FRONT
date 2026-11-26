@@ -78,14 +78,25 @@ const TodayBosals = ({ today, onCertify, onEditCertification }: TodayBosalsProps
             onEdit={onEditCertification}
           />
         ) : (
-          <ReactionButtons
-            value={view.certification.myReaction}
-            counts={{ GOOD: view.certification.goodCount, BAD: view.certification.badCount }}
-            disabled={!canReact || isReacting}
-            onChange={reaction =>
-              react({ certificationId: view.certification.certificationId, reaction })
-            }
-          />
+          <div className="flex flex-col gap-2">
+            <ReactionButtons
+              value={view.certification.myReaction}
+              counts={{ GOOD: view.certification.goodCount, BAD: view.certification.badCount }}
+              disabled={!canReact}
+              busy={isReacting}
+              onChange={reaction =>
+                react({ certificationId: view.certification.certificationId, reaction })
+              }
+            />
+            {/* 흐린 버튼만으로는 왜 안 눌리는지 몰라서 이유를 알려요. 🔖 시안이 없어 문구는 임시예요. */}
+            {!canReact && (
+              <Paragraph typography="t7" color="var(--adaptiveGrey500)" className="text-center!">
+                {isVoting
+                  ? "투표 중에는 리액션을 남길 수 없어요"
+                  : "리액션을 남길 수 있는 시간이 끝났어요"}
+              </Paragraph>
+            )}
+          </div>
         );
       case "unverified":
         return view.member.isMe ? (

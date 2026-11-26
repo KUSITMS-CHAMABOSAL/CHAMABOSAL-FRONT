@@ -8,9 +8,6 @@ import { paths } from "@/shared/config";
 import type { EntryState } from "../router/EntryRedirect";
 import RoomTabBar, { type RoomTab } from "./RoomTabBar";
 
-/** 탭 레이아웃 안에 있지만 하단 바를 그리지 않는 화면이에요. */
-const NO_TAB_BAR_PATHS: readonly string[] = [paths.hairPlanting];
-
 /** 방 화면 중 하단 바를 그리지 않는 화면이에요. 인증 작성은 시안에 하단 바가 없고, 수정도 같은 폼이에요. */
 const hidesTabBar = (pathname: string, roomId?: number) =>
   roomId !== undefined &&
@@ -69,11 +66,10 @@ const RoomTabLayout = () => {
     <>
       <Outlet />
       {/* 회차가 붙은 화면(목탁 수행)도 하단 바를 그리지 않아요. */}
-      {!NO_TAB_BAR_PATHS.includes(pathname) &&
-        !hidesTabBar(pathname, roomId) &&
-        roundId === undefined && (
-          <RoomTabBar activeTab={activeTab} onTabClick={tab => tab !== activeTab && goToTab(tab)} />
-        )}
+      {/* 나발 빠짐 설명과 나발 심기는 하단 바 위에 겹쳐 띄워서 가려요. 닫으며 내려갈 때 밑의 곳간과 함께 드러나요. */}
+      {!hidesTabBar(pathname, roomId) && roundId === undefined && (
+        <RoomTabBar activeTab={activeTab} onTabClick={tab => tab !== activeTab && goToTab(tab)} />
+      )}
     </>
   );
 };

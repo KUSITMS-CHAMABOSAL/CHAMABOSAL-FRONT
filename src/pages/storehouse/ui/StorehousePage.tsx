@@ -12,7 +12,7 @@ const StorehousePage = () => {
         onPlantHair={() => navigate(paths.hairPlanting)}
         onHairGuide={() => navigate(paths.hairGuide)}
       />
-      {/* 나발 빠짐 설명(/storehouse/hair/guide)을 곳간 위에 겹쳐 띄워요. */}
+      {/* 나발 빠짐 설명(/storehouse/hair/guide)과 나발 심기(/storehouse/hair)를 곳간 위에 겹쳐 띄워요. */}
       <Outlet />
     </>
   );

@@ -11,7 +11,7 @@ const NO_PLUCKED: ReadonlySet<number> = new Set();
  * 나발 심기와 같은 틀에 문구와 회색 보살은 그대로 두고, 공양미와 빈자리 수만 비워 둬요.
  */
 const HairPlantingSkeleton = () => (
-  <main className="relative flex h-svh flex-col overflow-hidden bg-(--adaptiveGrey900)">
+  <main className="fixed inset-0 z-20 flex touch-none flex-col overflow-hidden bg-(--adaptiveGrey900)">
     <header className="flex flex-col items-center gap-[13px] px-[43px] pt-8 opacity-50">
       <Paragraph typography="st12" color="var(--color-on-fill-opacity-60)" className="text-center!">
         모든 설정은 절약에 재미를 더하기 위한 창작적 표현이에요

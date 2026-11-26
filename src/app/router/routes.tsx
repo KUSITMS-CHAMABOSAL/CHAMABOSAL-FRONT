@@ -137,21 +137,21 @@ export const router = createBrowserRouter([
                 children: [
                   // 곳간만 볼 때는 겹쳐 띄울 화면이 없어요.
                   { index: true, Component: () => null },
-                  // 나발 빠짐 설명은 곳간 위에 겹쳐 띄워요. 밑에 곳간이 그려져 있어야 올라오고 내려가는 전환이 자연스러워요.
+                  // 나발 빠짐 설명과 나발 심기는 곳간 위에 겹쳐 띄워요. 밑에 곳간이 그려져 있어야 닫을 때 내려가는 전환이 자연스러워요.
                   {
                     path: "hair/guide",
                     lazy: {
                       Component: async () => (await import("@/pages/hairPlanting")).HairGuidePage,
                     },
                   },
+                  {
+                    path: "hair",
+                    lazy: {
+                      Component: async () =>
+                        (await import("@/pages/hairPlanting")).HairPlantingPage,
+                    },
+                  },
                 ],
-              },
-              // 곳간에서만 들어가는 화면이라 곳간 아래에 두고 탭바만 숨겨요.
-              {
-                path: "hair",
-                lazy: {
-                  Component: async () => (await import("@/pages/hairPlanting")).HairPlantingPage,
-                },
               },
             ],
           },

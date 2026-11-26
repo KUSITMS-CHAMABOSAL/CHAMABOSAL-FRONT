@@ -10,6 +10,7 @@ import {
 } from "@/shared/lib/appsInToss";
 
 import { issueInviteToken } from "../api/inviteTokenApi";
+import { INVITE_OG_IMAGE_URL } from "../config/ogImage";
 
 /** 디자인 문구예요(1-6 초대링크 공유). */
 const COPIED_MESSAGE = "초대링크를 복사했어요.";
@@ -24,7 +25,7 @@ const FAILED_MESSAGE = "초대링크를 복사하지 못했어요. 잠시 후 �
 let latestRequest = 0;
 
 /**
- * 초대 토큰으로 토스 공유 링크를 만들어 클립보드에 복사해요.
+ * 초대 토큰으로 토스 공유 링크를 만들어 클립보드에 복사해요. 메신저 미리보기에는 참아보살 이미지가 보여요.
  * 결과는 화면마다 다른 토스트(탭바 위, 화면 아래)로 알리도록 `notify`로 넘겨요.
  * 더 새 요청이 있으면 쓰기와 토스트를 건너뛰어요.
  * 복사에 성공하면 어디서 복사했는지(`entryPoint`)를 분석 이벤트로 보내요.
@@ -39,7 +40,7 @@ export const useCopyInviteLink = (
       const request = ++latestRequest;
       try {
         const { inviteToken } = await issueInviteToken(roomId);
-        const link = await createShareLink(deepLinks.invite(inviteToken));
+        const link = await createShareLink(deepLinks.invite(inviteToken), INVITE_OG_IMAGE_URL);
         if (request !== latestRequest) return false;
         await copyToClipboard(link);
         return true;

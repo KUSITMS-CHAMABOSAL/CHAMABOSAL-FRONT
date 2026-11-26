@@ -42,8 +42,8 @@ const MemberSheet = ({
     }
   >
     {member && (
-      // [내보내기]가 없으면 기록 박스가 시트 아래에 붙어서 좌우 여백만큼 띄워요.
-      <div className={cn("flex flex-col gap-5 px-5 pt-3", !canKick && "pb-5")}>
+      // [내보내기]가 없으면 기록 박스가 시트 아래에 붙어요. 시안(3-4)의 버튼 영역 여백(16px)만큼 띄워요.
+      <div className={cn("flex flex-col gap-5 px-5 pt-3", !canKick && "pb-4")}>
         <div className="flex items-center gap-5">
           <BosalHead color={member.color} className="size-15 shrink-0" />
           <div className="flex min-w-0 flex-col gap-1.25">

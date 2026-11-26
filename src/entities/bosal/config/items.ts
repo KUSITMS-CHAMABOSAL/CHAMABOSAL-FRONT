@@ -37,7 +37,7 @@ const fromDesign = (href: string, x: number, y: number, width: number, height: n
 
 /**
  * 아이템마다 보살 위에 겹칠 그림과 자리예요. 시안 `item/착용샷`(2717:81073)에서 보살 기준 좌표를 옮겼어요.
- * 옥반지와 산타 수염 그림은 배경이 섞이지 않은 기획 '코스튬 가격표'의 SVG를 써요. 산타 수염 자리는 가격표 착용샷에서 계산했어요.
+ * 옥반지 그림은 배경이 섞이지 않은 기획 '코스튬 가격표'의 SVG를 써요.
  * 갸루 머리핀과 호피 안경은 무늬가 사진이라, 가격표 SVG에서 캔버스 배경을 빼고 무늬 사진만 그리는 크기에 맞게 줄였어요.
  * 모양은 벡터라 모양 밖은 투명해요.
  */
@@ -48,12 +48,14 @@ export const ITEM_ART: Record<ItemCode, ItemArt> = {
     rotate: 6.67,
   },
   HEADSET: fromDesign(headset, 0, 4, 77, 67),
-  RUDOLPH_HEADBAND: fromDesign(rudolphHeadband, 1, -8, 72.58, 77),
+  RUDOLPH_HEADBAND: fromDesign(rudolphHeadband, 1, -1, 72.58, 77),
   GYARU_HAIRPIN: fromDesign(gyaruHairpin, 49, 17, 19.04, 15.87),
   SUNGLASSES: fromDesign(sunglasses, 18, 55, 40, 5),
   EYEBROW_PIERCING: fromDesign(eyebrowPiercing, 53, 44, 2, 8),
   LEOPARD_GLASSES: fromDesign(leopardGlasses, 18, 54, 41, 7),
-  SANTA_BEARD: fromDesign(santaBeard, 16, 60.4, 43.7, 38),
+  // 수정 시안(3170:96355)에는 착용 자리가 없어요. 예전 삼각 수염과 가운데(37.85)를 맞추고,
+  // 윗변 가운데 홈(그림 안 y 5.4)이 입 윗선(오리입과 같은 y 62)에 오게 해서 입을 가려요.
+  SANTA_BEARD: fromDesign(santaBeard, 37.85 - 56.9 / 2, 62 - 5.4, 56.9, 44.85),
   RUDOLPH_NOSE: { href: rudolphNose, x: 38.25, y: 61.91, width: 12.88, height: 12.88 },
   DUCK_LIPS: fromDesign(duckLips, 30, 62, 17, 8),
   BEAD_EARRING: fromDesign(beadEarring, 1, 57, 75, 5),

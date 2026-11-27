@@ -1,12 +1,13 @@
 import { useState } from "react";
 
-import { IconButton, Paragraph, Skeleton, TableRow } from "@toss/tds-mobile";
+import { IconButton, Paragraph, TableRow } from "@toss/tds-mobile";
 
 import { useCalendarQuery, usePrefetchCalendar } from "@/entities/certification";
 import { cn } from "@/shared/lib";
 import type { CertificationResult } from "@/shared/types";
 
 import { formatMonthLabel, getMonthGrid, shiftMonth } from "../lib/month";
+import CalendarSkeleton from "./CalendarSkeleton";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 const WEEKDAY_COLOR = (index: number) => {
@@ -48,8 +49,7 @@ const CertificationCalendar = ({ roomId }: CertificationCalendarProps) => {
   usePrefetchCalendar(roomId, thisMonth ? shiftMonth(month ?? thisMonth, -1) : undefined);
 
   // 🔖 에러 시안이 없어 아직 로딩과 같이 그려요.
-  if (!thisMonth)
-    return <Skeleton className="pt-3" custom={["title", "card"]} repeatLastItemCount={1} />;
+  if (!thisMonth) return <CalendarSkeleton />;
 
   const shownMonth = month ?? thisMonth;
   // 다음 달을 받는 동안에는 이전 달 데이터가 남아 있어서, 달이 같을 때만 표시해요.

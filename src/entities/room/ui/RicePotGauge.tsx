@@ -94,7 +94,7 @@ const RicePotGauge = ({ rice, capacity, reward, days, gainFrom }: RicePotGaugePr
     };
     // 차오르기를 시작할 때 한 번만 재생해요.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filledKey]);
+  }, [filledKey, gainKey]);
 
   return (
     <div className="flex flex-col px-6 pt-5 pb-[19px]">

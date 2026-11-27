@@ -75,7 +75,8 @@ const RicePotGauge = ({ rice, capacity, reward, days, gainFrom }: RicePotGaugePr
 
   // 바는 TDS 전환으로 차올라요. 밥그릇은 `left`가 바로 바뀌어서, 이전 자리에서 `transform`으로 따라가게 해요.
   useLayoutEffect(() => {
-    if (!gainKey || filledKey !== gainKey || gainFrom === undefined) return;
+    if (!gainKey || filledKey !== gainKey || gainFrom === undefined || prefersReducedMotion())
+      return;
     const width = trackRef.current?.getBoundingClientRect().width ?? 0;
     const offset = getBowlLeft(width, toProgress(gainFrom)) - getBowlLeft(width, toProgress(rice));
     const move = bowlRef.current?.animate(

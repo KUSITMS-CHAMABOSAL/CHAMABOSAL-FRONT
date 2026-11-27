@@ -5,7 +5,7 @@ import { FixedBottomCTA, Paragraph, Top, useToast } from "@toss/tds-mobile";
 import { Moktak, useCompleteMoktak } from "@/features/vote/strikeMoktak";
 import { isApiError } from "@/shared/api";
 import { cn, useLockScroll } from "@/shared/lib";
-import { logEvent } from "@/shared/lib/appsInToss";
+import { logEvent, useBackEvent } from "@/shared/lib/appsInToss";
 
 import { COMPLETE_DELAY_MS, PRACTICE_BACKGROUND } from "../config/scene";
 import PracticeComplete from "./PracticeComplete";
@@ -136,8 +136,22 @@ const MoktakPractice = ({
 
   // 이미 마친 회차는 바로 완료 화면이에요. 치는 중에는 이번 저장 결과를 따르되,
   // 저장에 실패했는데 서버가 이미 마쳤다고 하면(다른 기기 등) 완료 화면으로 넘어가요.
-  if (completed || (alreadyDone && (count === 0 || saveFailed)))
-    return <PracticeComplete onClaimBonus={onClaimBonus} onClose={onClose} />;
+  const showsComplete = completed || (alreadyDone && (count === 0 || saveFailed));
+  /** [종료하기]를 누를 수 있는 동안이에요. 목표를 채워 완료를 보내는 중이면 숨겨요. */
+  const canQuit = !reachedGoal || saveFailed;
+
+  // 토스 뒤로가기도 [종료하기]처럼 확인 시트를 띄워요(한 번도 안 쳤어도). 시트가 열려 있으면 시트를 닫아요.
+  // 완료 화면과 완료를 보내는 중에는 원래대로 뒤로 가요.
+  useBackEvent(
+    !showsComplete && canQuit
+      ? () => {
+          if (!quitOpen) return setQuitOpen(true);
+          if (!isPending) setQuitOpen(false);
+        }
+      : undefined,
+  );
+
+  if (showsComplete) return <PracticeComplete onClaimBonus={onClaimBonus} onClose={onClose} />;
 
   return (
     <main className={cn("relative flex min-h-svh flex-col overflow-hidden", PRACTICE_BACKGROUND)}>
@@ -167,7 +181,7 @@ const MoktakPractice = ({
         </Paragraph>
       </div>
       <Moktak disabled={reachedGoal || quitOpen} onStrike={strike} />
-      {(!reachedGoal || saveFailed) && (
+      {canQuit && (
         <FixedBottomCTA color="dark" background="none" onClick={() => setQuitOpen(true)}>
           종료하기
         </FixedBottomCTA>

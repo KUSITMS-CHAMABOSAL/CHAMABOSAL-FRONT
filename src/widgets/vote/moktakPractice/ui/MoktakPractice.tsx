@@ -108,7 +108,7 @@ const MoktakPractice = ({
    * [종료하기]도 친 횟수를 보내야 서버가 이 회차 수행을 끝내요(받은 톡톡보다 적으면 보상 없이 끝나요).
    * 한 번도 치지 않았으면 서버 요청 없이 즉시 나가요.
    * 회차가 이미 끝나 다시 보내도 안 되는 거절이면 그대로 나가요. 투표 탭이 상태를 다시 받아 맞춰요.
-   * 그 밖의 실패(네트워크·서버 오류)는 시트에 남아 다시 누르게 해요. 토스 뒤로가기로는 언제든 나갈 수 있어요.
+   * 그 밖의 실패(네트워크·서버 오류)는 시트에 남아 다시 누르게 해요. 보내는 중에는 토스 뒤로가기로 나갈 수 있어요.
    */
   const quit = () => {
     const tapCount = counted.current;
@@ -148,14 +148,9 @@ const MoktakPractice = ({
   const canQuit = !reachedGoal || saveFailed;
 
   // 토스 뒤로가기도 [종료하기]처럼 확인 시트를 띄워요(한 번도 안 쳤어도). 시트가 열려 있으면 시트를 닫아요.
-  // 완료 화면과 완료를 보내는 중에는 원래대로 뒤로 가요.
+  // 완료 화면과 완료·종료를 보내는 중에는 원래대로 뒤로 가요. 요청이 끝나지 않아도 갇히지 않게 해요.
   useBackEvent(
-    !showsComplete && canQuit
-      ? () => {
-          if (!quitOpen) return setQuitOpen(true);
-          if (!isPending) setQuitOpen(false);
-        }
-      : undefined,
+    !showsComplete && canQuit && !isPending ? () => setQuitOpen(open => !open) : undefined,
   );
 
   if (showsComplete)

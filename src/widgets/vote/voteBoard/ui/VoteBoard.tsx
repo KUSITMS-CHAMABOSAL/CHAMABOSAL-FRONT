@@ -78,6 +78,22 @@ const VoteContent = ({ roomId, view, onVoteClosed }: VoteContentProps) => {
 
   switch (view.kind) {
     case "beforeFirstVote":
+      // 서버는 마지막 인증에서 바로 투표를 열어서, 첫 투표 전에 깨울 친구가 없으면 나만 인증하지 않은 거예요.
+      if (!view.firstUncertifiedMember)
+        return (
+          <div className={NOTICE_TOP}>
+            <Result
+              figure={<EmojiFigure {...VOTE_EMOJI.eyes} />}
+              title="다른 보살들이 기다리고 있어요"
+              description="오늘의 인증을 하러 가볼까요?"
+              button={
+                <Result.Button onClick={() => navigate(paths.room.certify(roomId))}>
+                  인증하러 가기
+                </Result.Button>
+              }
+            />
+          </div>
+        );
       return (
         <div className={NOTICE_TOP}>
           <Result
@@ -91,13 +107,10 @@ const VoteContent = ({ roomId, view, onVoteClosed }: VoteContentProps) => {
               </>
             }
             button={
-              // 나만 인증하지 않았으면 깨울 친구가 없어 버튼을 빼요.
-              // 🔖 이 경우 시안이 없어요. 홈에서 첫 미인증 멤버 카드를 고른 채로 여는 것도 아직 없어요.
-              view.firstUncertifiedMember ? (
-                <Result.Button onClick={() => navigate(paths.room.home(roomId))}>
-                  콕 찌르러 가기
-                </Result.Button>
-              ) : undefined
+              // 🔖 홈에서 첫 미인증 멤버 카드를 고른 채로 여는 것은 아직 없어요.
+              <Result.Button onClick={() => navigate(paths.room.home(roomId))}>
+                콕 찌르러 가기
+              </Result.Button>
             }
           />
         </div>

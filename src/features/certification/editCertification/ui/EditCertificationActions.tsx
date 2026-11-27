@@ -52,7 +52,9 @@ const EditCertificationActions = ({
         color="var(--adaptiveGrey400)"
         className="px-2"
       >
-        수정기한이 지나 수정할 수 없어요.
+        {lockReason === "VOTE_STARTED"
+          ? "투표가 시작되어 수정할 수 없어요."
+          : "수정기한이 지나 수정할 수 없어요."}
       </Paragraph>
     );
 
@@ -60,12 +62,11 @@ const EditCertificationActions = ({
     setIsConfirmOpen(false);
     remove(certificationId, {
       onSuccess: () => openToast("인증을 지웠어요"),
-      onError: error =>
-        openToast(
-          isApiError(error, "CERT_004", "CERT_005")
-            ? "수정기한이 지나 지울 수 없어요"
-            : "인증을 지우지 못했어요. 잠시 후 다시 시도해 주세요",
-        ),
+      onError: error => {
+        if (isApiError(error, "CERT_005")) return openToast("투표가 시작되어 지울 수 없어요");
+        if (isApiError(error, "CERT_004")) return openToast("수정기한이 지나 지울 수 없어요");
+        openToast("인증을 지우지 못했어요. 잠시 후 다시 시도해 주세요");
+      },
     });
   };
 

@@ -28,8 +28,9 @@ export const usePotGainFrom = (roomId: number, completedCount: number, amount: n
     const remembered = seenInSession.get(roomId);
 
     const compare = (value: string | null | undefined) => {
+      if (!active) return;
       const seen = parse(value);
-      if (active && seen?.seq === completedCount && seen.amount < amount)
+      if (seen?.seq === completedCount && seen.amount < amount)
         setGain({ roomId, from: seen.amount, to: amount });
       // 비교한 뒤에 기억해요. 저장소를 읽는 사이 다시 실행돼도(StrictMode 등) 이전 값과 비교해요.
       seenInSession.set(roomId, current);

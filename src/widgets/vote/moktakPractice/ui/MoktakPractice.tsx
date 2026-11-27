@@ -26,6 +26,7 @@ const QUIT_FINAL_ERRORS = [
 ];
 
 interface MoktakPracticeProps {
+  roomId: number;
   roundId: number;
   /** 친구들에게 받은 톡톡 합계예요. 이만큼 쳐야 수행이 끝나요. 수행 중 톡톡이 더 오면 늘어나요. */
   goal: number;
@@ -47,6 +48,7 @@ interface MoktakPracticeProps {
  * 목표를 채우면 더 칠 수 없고 [종료하기]도 사라져요(시안 목탁-07).
  */
 const MoktakPractice = ({
+  roomId,
   roundId,
   goal,
   alreadyDone,
@@ -61,7 +63,7 @@ const MoktakPractice = ({
   const [completed, setCompleted] = useState(false);
   /** 완료를 저장하지 못했어요. 갇히지 않게 [종료하기]를 다시 보여줘요. */
   const [saveFailed, setSaveFailed] = useState(false);
-  const { mutate: complete, isPending } = useCompleteMoktak(roundId);
+  const { mutate: complete, isPending } = useCompleteMoktak(roomId, roundId);
   const { openToast } = useToast();
   const reachedGoal = count >= goal;
   /** 완료를 보내는 중이에요. 같은 프레임에 연타가 겹쳐도 한 번만 보내요. */

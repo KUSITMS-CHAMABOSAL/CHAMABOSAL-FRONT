@@ -28,6 +28,7 @@ const TapTapPage = () => {
 
   return (
     <MoktakPractice
+      roomId={roomId}
       roundId={roundId}
       goal={received.data.totalCount}
       alreadyDone={received.data.isMoktakDone}

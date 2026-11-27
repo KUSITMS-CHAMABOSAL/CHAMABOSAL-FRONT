@@ -72,6 +72,7 @@ const ReactionButtons = ({ value, onChange, counts, disabled, busy }: ReactionBu
             key={option}
             type="button"
             disabled={disabled}
+            aria-disabled={disabled || busy}
             aria-pressed={isSelected}
             onClick={() => select(option)}
             className={cn(

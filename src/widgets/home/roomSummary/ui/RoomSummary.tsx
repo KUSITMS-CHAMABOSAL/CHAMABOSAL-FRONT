@@ -6,6 +6,8 @@ import { MIN_VOTERS } from "@/entities/vote";
 import { useCopyInviteLink } from "@/features/room/shareInvite";
 import { useTabBarToast } from "@/shared/lib";
 
+import { usePotGainFrom } from "../model/usePotGainFrom";
+
 interface RoomSummaryProps {
   /** 참여 중인 방이에요. GET /api/users/me 의 rooms */
   rooms: MyRoom[];
@@ -18,6 +20,7 @@ interface RoomSummaryProps {
 const RoomSummary = ({ rooms, today, onSelectRoom, onRoomInfo }: RoomSummaryProps) => {
   const { room, pot } = today;
   const openToast = useTabBarToast();
+  const potGainFrom = usePotGainFrom(room.roomId, room.potCompletedCount, pot.amount);
   const { mutate: copyInviteLink, isPending: isCopying } = useCopyInviteLink(
     room.roomId,
     "home_card",
@@ -84,10 +87,12 @@ const RoomSummary = ({ rooms, today, onSelectRoom, onRoomInfo }: RoomSummaryProp
         </div>
       )}
       <RicePotGauge
+        key={room.roomId}
         rice={pot.amount}
         capacity={pot.goalAmount}
         reward={pot.rewardAmount}
         days={room.daysTogether}
+        gainFrom={potGainFrom}
       />
     </section>
   );

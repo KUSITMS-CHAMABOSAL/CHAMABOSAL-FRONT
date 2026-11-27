@@ -1,4 +1,4 @@
-import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useState } from "react";
 
 import { Button, Paragraph, TextButton } from "@toss/tds-mobile";
 
@@ -25,6 +25,7 @@ import {
   GUIDE_SLOT_FADE_MS,
   GUIDE_TRANSITION_MS,
 } from "../config/guide";
+import { prefersReducedMotion, slideDownClass, useLeave } from "../lib/useLeave";
 
 const COPIES = [
   {
@@ -52,8 +53,6 @@ const getGuideView = (scene: number) => ({
   showActions: scene >= 1,
   restored: scene === GUIDE_LAST_SCENE,
 });
-
-const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // 빈 자리 원은 시안대로 보살 폭의 55/346이에요. 나발 심기 화면과 같은 방식으로 자리를 잡아요.
 const slotStyle = (index: number) => {
@@ -100,30 +99,20 @@ const HairGuide = ({ nabalLossId, onPlant, onBuy, onClose }: HairGuideProps) => 
     return () => timers.forEach(window.clearTimeout);
   }, []);
 
-  /** 떠나는 중인 모양이에요. 내려가기는 곳간으로, 어두워지기는 심기 화면으로 갈 때예요. */
-  const [leaving, setLeaving] = useState<"down" | "dim" | null>(null);
-  const leaveTimer = useRef<number>(undefined);
-  useEffect(() => () => window.clearTimeout(leaveTimer.current), []);
-
-  // 떠나는 동안 다시 누르면 무시해요. 동작 줄이기에서는 바로 이동해요.
-  const leave = (kind: "down" | "dim", next: () => void) => {
-    if (leaving) return;
-    if (prefersReducedMotion()) return next();
-    setLeaving(kind);
-    leaveTimer.current = window.setTimeout(next, kind === "down" ? GUIDE_CLOSE_MS : GUIDE_DIM_MS);
-  };
+  /** 내려가기는 곳간으로, 어두워지기는 심기 화면으로 갈 때예요. */
+  const { leaving, leave } = useLeave<"down" | "dim">();
 
   /**
    * 밑에 곳간이 그려져 있어서, 설명 화면을 아래로 내려보낸 뒤 이동해요.
    * [닫기]와 [구매하기]가 같이 써요. 둘 다 곳간으로 돌아가는 거라 시트를 닫는 모양이 맞아요.
    */
-  const slideDown = (next: () => void) => leave("down", next);
+  const slideDown = (next: () => void) => leave("down", GUIDE_CLOSE_MS, next);
 
   /**
    * 심기 화면은 곳간이 아닌 새 화면이라, 내려가면 곳간이 잠깐 보였다가 또 바뀌어요.
    * 그래서 움직이지 않고 심기 화면 배경색으로 어두워진 뒤 이동해요. 심기 화면은 그 배경 위에서 내용만 나타나요.
    */
-  const dimToPlant = () => leave("dim", onPlant);
+  const dimToPlant = () => leave("dim", GUIDE_DIM_MS, onPlant);
   const closing = leaving === "down";
 
   const view = getGuideView(scene);
@@ -132,15 +121,13 @@ const HairGuide = ({ nabalLossId, onPlant, onBuy, onClose }: HairGuideProps) => 
   return (
     <main
       // 곳간 위에 겹쳐 띄워요(하단 탭바 z-10보다 위). 열리면 아래에서 올라오고, 닫으면 내려가요.
-      // `transform`을 늘 걸어 두어 안쪽 `fixed` 하단 버튼도 이 화면을 기준으로 같이 움직여요.
       className={cn(
-        "motion-safe:animate-hair-guide-enter fixed inset-0 z-20 [transform:translateY(var(--exit-y))] touch-none overflow-hidden bg-[linear-gradient(var(--adaptiveGrey900)_150px,var(--adaptiveGrey300))] transition-[transform,opacity] duration-(--guide-close) ease-[cubic-bezier(0.32,0,0.67,0)] motion-reduce:transition-none",
+        "motion-safe:animate-hair-guide-enter fixed inset-0 z-20 touch-none overflow-hidden bg-[linear-gradient(var(--adaptiveGrey900)_150px,var(--adaptiveGrey300))]",
         // 떠나는 동안에도 입력을 막아 밑의 곳간과 탭바가 눌리지 않게 해요.
-        closing && "opacity-0",
+        slideDownClass(closing),
       )}
       style={
         {
-          "--exit-y": closing ? "100%" : "0px",
           "--guide-close": `${GUIDE_CLOSE_MS}ms`,
           "--guide-dim": `${GUIDE_DIM_MS}ms`,
           "--safe-area-bottom": `${safeAreaBottom}px`,

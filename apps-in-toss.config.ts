@@ -11,5 +11,10 @@ export default defineConfig({
     { name: "camera", access: "access" },
     { name: "photos", access: "read" },
   ],
+  webView: {
+    // iOS WebView는 기본으로 좌우 스와이프가 브라우저 기록을 넘겨요(기본값 true). 앱처럼 쓰려고 꺼요.
+    // 뒤로 가기는 토스 상단 바의 뒤로가기와 안드로이드 시스템 뒤로가기로만 해요.
+    allowsBackForwardNavigationGestures: false,
+  },
   webBundleDir: "dist",
 });

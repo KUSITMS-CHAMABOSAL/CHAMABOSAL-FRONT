@@ -24,7 +24,8 @@ import {
   PLANT_ZOOM_SHIFT,
   TOAST_GAP,
 } from "../config/motion";
-import { GUIDE_DIM_MS } from "../config/guide";
+import { GUIDE_CLOSE_MS, GUIDE_DIM_MS } from "../config/guide";
+import { slideDownClass, useLeave } from "../lib/useLeave";
 
 /** 머리카락 자리를 `--slot-x`, `--slot-y` 변수로 넘겨요. 빈 자리 원은 시안대로 보살 폭의 55/346이에요. */
 const slotStyle = (index: number) => {
@@ -76,6 +77,7 @@ const HairPlanting = ({ onClose, fadeIn = false }: HairPlantingProps) => {
   const { openToast } = useToast();
   const safeAreaBottom = useSafeAreaBottom();
   const timers = useRef<number[]>([]);
+  const { leaving, leave } = useLeave<"down">();
   const isMounted = useRef(true);
 
   useEffect(
@@ -112,6 +114,8 @@ const HairPlanting = ({ onClose, fadeIn = false }: HairPlantingProps) => {
   };
 
   const submit = () => {
+    // 닫는 중에는 심기 요청을 받지 않아요.
+    if (leaving !== null) return;
     // 확대 중에도 버튼은 포커스가 남아 키보드나 스크린 리더로 다시 누를 수 있어요. 고르는 단계에서만 받아요.
     if (!isSelecting || selected === null || !canAfford || !plucked.has(selected)) return;
 
@@ -146,11 +150,16 @@ const HairPlanting = ({ onClose, fadeIn = false }: HairPlantingProps) => {
 
   return (
     <main
-      className="relative flex h-svh flex-col overflow-hidden bg-(--adaptiveGrey900)"
+      // 나발 빠짐 설명처럼 곳간 위에 겹쳐 띄우고(하단 탭바 z-10보다 위), 닫으면 내려가며 흐려져 밑의 곳간이 드러나요.
+      className={cn(
+        "fixed inset-0 z-20 flex touch-none flex-col overflow-hidden bg-(--adaptiveGrey900)",
+        slideDownClass(leaving === "down"),
+      )}
       style={
         {
           "--safe-area-bottom": `${safeAreaBottom}px`,
           "--fade-in": `${GUIDE_DIM_MS}ms`,
+          "--guide-close": `${GUIDE_CLOSE_MS}ms`,
         } as CSSProperties
       }
     >
@@ -282,7 +291,7 @@ const HairPlanting = ({ onClose, fadeIn = false }: HairPlantingProps) => {
         <Button
           size="medium"
           className="w-41!"
-          disabled={!isSelecting || !canAfford || selected === null}
+          disabled={leaving !== null || !isSelecting || !canAfford || selected === null}
           onClick={submit}
         >
           {`${HAIR_PLANT_PRICE}석으로 나발 심기`}
@@ -290,7 +299,7 @@ const HairPlanting = ({ onClose, fadeIn = false }: HairPlantingProps) => {
         <TextButton
           size="small"
           color="var(--adaptiveGrey900)"
-          onClick={onClose}
+          onClick={() => leave("down", GUIDE_CLOSE_MS, onClose)}
           className="px-6! py-[12.75px]!"
         >
           {/* TextButton은 내용을 글자 span 안에 넣어서 아이콘을 인라인으로 붙여요. */}

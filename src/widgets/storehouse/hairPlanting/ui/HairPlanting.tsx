@@ -114,6 +114,8 @@ const HairPlanting = ({ onClose, fadeIn = false }: HairPlantingProps) => {
   };
 
   const submit = () => {
+    // 닫는 중에는 심기 요청을 받지 않아요.
+    if (leaving !== null) return;
     // 확대 중에도 버튼은 포커스가 남아 키보드나 스크린 리더로 다시 누를 수 있어요. 고르는 단계에서만 받아요.
     if (!isSelecting || selected === null || !canAfford || !plucked.has(selected)) return;
 
@@ -289,7 +291,7 @@ const HairPlanting = ({ onClose, fadeIn = false }: HairPlantingProps) => {
         <Button
           size="medium"
           className="w-41!"
-          disabled={!isSelecting || !canAfford || selected === null}
+          disabled={leaving !== null || !isSelecting || !canAfford || selected === null}
           onClick={submit}
         >
           {`${HAIR_PLANT_PRICE}석으로 나발 심기`}

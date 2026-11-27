@@ -1,4 +1,5 @@
 export { type InviteEntryPoint, logEvent } from "./analytics";
+export { useBackEvent } from "./backEvent";
 export { copyToClipboard, isClipboardPermissionError } from "./clipboard";
 export { openExternalUrl } from "./externalUrl";
 export { triggerTapHaptic } from "./haptic";

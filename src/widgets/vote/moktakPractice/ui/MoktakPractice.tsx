@@ -5,7 +5,7 @@ import { FixedBottomCTA, Paragraph, Top, useToast } from "@toss/tds-mobile";
 import { Moktak, useCompleteMoktak } from "@/features/vote/strikeMoktak";
 import { isApiError } from "@/shared/api";
 import { cn, useLockScroll } from "@/shared/lib";
-import { logEvent } from "@/shared/lib/appsInToss";
+import { logEvent, useBackEvent } from "@/shared/lib/appsInToss";
 
 import { COMPLETE_DELAY_MS, PRACTICE_BACKGROUND } from "../config/scene";
 import PracticeComplete from "./PracticeComplete";
@@ -33,7 +33,11 @@ interface MoktakPracticeProps {
   alreadyDone: boolean;
   /** 확인 시트에서 [종료하기]를 눌러 친 횟수를 보낸 뒤예요. 다시 보내도 안 되는 거절이어도 불러요. */
   onQuit: () => void;
-  onClaimBonus: () => void;
+  /**
+   * 완료 화면의 [보너스 공양미 받기]예요. 공양미는 완료를 보낼 때 이미 지급돼서, 이번에 받은 양(`riceEarned`)만 넘겨요.
+   * 이미 마친 회차로 들어와 이번에 보내지 않았으면 0이에요.
+   */
+  onClaimBonus: (riceEarned: number) => void;
   /** 완료 화면의 [닫기]예요. */
   onClose: () => void;
 }
@@ -63,6 +67,8 @@ const MoktakPractice = ({
   /** 완료를 보내는 중이에요. 같은 프레임에 연타가 겹쳐도 한 번만 보내요. */
   const sending = useRef(false);
   const timer = useRef<number | undefined>(undefined);
+  /** 이번 완료로 받은 공양미예요. */
+  const riceEarned = useRef(0);
 
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
@@ -82,7 +88,8 @@ const MoktakPractice = ({
     const startedAt = performance.now();
     complete(finalCount, {
       // 응답이 빨리 와도 마지막 타격이 끝날 시간(COMPLETE_DELAY_MS)은 채우고 넘어가요.
-      onSuccess: () => {
+      onSuccess: result => {
+        riceEarned.current = result.riceEarned;
         logSession(finalCount);
         timer.current = window.setTimeout(
           () => setCompleted(true),
@@ -101,7 +108,7 @@ const MoktakPractice = ({
    * [종료하기]도 친 횟수를 보내야 서버가 이 회차 수행을 끝내요(받은 톡톡보다 적으면 보상 없이 끝나요).
    * 한 번도 치지 않았으면 서버 요청 없이 즉시 나가요.
    * 회차가 이미 끝나 다시 보내도 안 되는 거절이면 그대로 나가요. 투표 탭이 상태를 다시 받아 맞춰요.
-   * 그 밖의 실패(네트워크·서버 오류)는 시트에 남아 다시 누르게 해요. 토스 뒤로가기로는 언제든 나갈 수 있어요.
+   * 그 밖의 실패(네트워크·서버 오류)는 시트에 남아 다시 누르게 해요. 보내는 중에는 토스 뒤로가기로 나갈 수 있어요.
    */
   const quit = () => {
     const tapCount = counted.current;
@@ -136,8 +143,20 @@ const MoktakPractice = ({
 
   // 이미 마친 회차는 바로 완료 화면이에요. 치는 중에는 이번 저장 결과를 따르되,
   // 저장에 실패했는데 서버가 이미 마쳤다고 하면(다른 기기 등) 완료 화면으로 넘어가요.
-  if (completed || (alreadyDone && (count === 0 || saveFailed)))
-    return <PracticeComplete onClaimBonus={onClaimBonus} onClose={onClose} />;
+  const showsComplete = completed || (alreadyDone && (count === 0 || saveFailed));
+  /** [종료하기]를 누를 수 있는 동안이에요. 목표를 채워 완료를 보내는 중이면 숨겨요. */
+  const canQuit = !reachedGoal || saveFailed;
+
+  // 토스 뒤로가기도 [종료하기]처럼 확인 시트를 띄워요(한 번도 안 쳤어도). 시트가 열려 있으면 시트를 닫아요.
+  // 완료 화면과 완료·종료를 보내는 중에는 원래대로 뒤로 가요. 요청이 끝나지 않아도 갇히지 않게 해요.
+  useBackEvent(
+    !showsComplete && canQuit && !isPending ? () => setQuitOpen(open => !open) : undefined,
+  );
+
+  if (showsComplete)
+    return (
+      <PracticeComplete onClaimBonus={() => onClaimBonus(riceEarned.current)} onClose={onClose} />
+    );
 
   return (
     <main className={cn("relative flex min-h-svh flex-col overflow-hidden", PRACTICE_BACKGROUND)}>
@@ -167,7 +186,7 @@ const MoktakPractice = ({
         </Paragraph>
       </div>
       <Moktak disabled={reachedGoal || quitOpen} onStrike={strike} />
-      {(!reachedGoal || saveFailed) && (
+      {canQuit && (
         <FixedBottomCTA color="dark" background="none" onClick={() => setQuitOpen(true)}>
           종료하기
         </FixedBottomCTA>

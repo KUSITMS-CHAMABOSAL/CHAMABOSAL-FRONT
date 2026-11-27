@@ -1,4 +1,3 @@
-import { FullScreenLoader } from "@toss/tds-mobile";
 import { Navigate, useNavigate, useParams } from "react-router";
 
 import { canCertify, useTodayQuery } from "@/entities/room";
@@ -11,13 +10,12 @@ const CertifyPage = () => {
   const today = useTodayQuery(roomId);
   const navigate = useNavigate();
 
-  if (!today.data) {
-    if (today.error) throw today.error;
-    return <FullScreenLoader />;
-  }
+  if (!today.data && today.error) throw today.error;
   // 이미 인증했거나 인증 시간이 아니면 홈으로 가요. 완료 화면에서 뒤로 와도 여기서 막혀요.
-  if (!canCertify(today.data)) return <Navigate to={paths.room.home(roomId)} replace />;
+  if (today.data && !canCertify(today.data))
+    return <Navigate to={paths.room.home(roomId)} replace />;
 
+  // 화면에 서버 값이 없어서 받는 동안에도 같은 화면을 그려요. 먼저 눌러도 작성 화면이 다시 확인해요.
   return <CertifyChoice onSelect={result => navigate(paths.room.certifyWrite(roomId, result))} />;
 };
 

@@ -84,7 +84,11 @@ const CertifyForm = (props: CertifyFormProps) => {
         onSuccess: props.onEdited,
         onError: error => {
           if (isApiError(error, "CERT_002", "CERT_004", "CERT_005")) {
-            openToast("수정기한이 지나 수정할 수 없어요");
+            openToast(
+              isApiError(error, "CERT_005")
+                ? "투표가 시작되어 수정할 수 없어요"
+                : "수정기한이 지나 수정할 수 없어요",
+            );
             onUnavailable();
           } else if (isApiError(error, "COMMON_002") && error.field === "imageKey") {
             openToast("사진을 다시 올려 주세요");

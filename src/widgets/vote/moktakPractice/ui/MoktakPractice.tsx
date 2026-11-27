@@ -33,7 +33,11 @@ interface MoktakPracticeProps {
   alreadyDone: boolean;
   /** 확인 시트에서 [종료하기]를 눌러 친 횟수를 보낸 뒤예요. 다시 보내도 안 되는 거절이어도 불러요. */
   onQuit: () => void;
-  onClaimBonus: () => void;
+  /**
+   * 완료 화면의 [보너스 공양미 받기]예요. 공양미는 완료를 보낼 때 이미 지급돼서, 이번에 받은 양(`riceEarned`)만 넘겨요.
+   * 이미 마친 회차로 들어와 이번에 보내지 않았으면 0이에요.
+   */
+  onClaimBonus: (riceEarned: number) => void;
   /** 완료 화면의 [닫기]예요. */
   onClose: () => void;
 }
@@ -63,6 +67,8 @@ const MoktakPractice = ({
   /** 완료를 보내는 중이에요. 같은 프레임에 연타가 겹쳐도 한 번만 보내요. */
   const sending = useRef(false);
   const timer = useRef<number | undefined>(undefined);
+  /** 이번 완료로 받은 공양미예요. */
+  const riceEarned = useRef(0);
 
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
@@ -82,7 +88,8 @@ const MoktakPractice = ({
     const startedAt = performance.now();
     complete(finalCount, {
       // 응답이 빨리 와도 마지막 타격이 끝날 시간(COMPLETE_DELAY_MS)은 채우고 넘어가요.
-      onSuccess: () => {
+      onSuccess: result => {
+        riceEarned.current = result.riceEarned;
         logSession(finalCount);
         timer.current = window.setTimeout(
           () => setCompleted(true),
@@ -151,7 +158,10 @@ const MoktakPractice = ({
       : undefined,
   );
 
-  if (showsComplete) return <PracticeComplete onClaimBonus={onClaimBonus} onClose={onClose} />;
+  if (showsComplete)
+    return (
+      <PracticeComplete onClaimBonus={() => onClaimBonus(riceEarned.current)} onClose={onClose} />
+    );
 
   return (
     <main className={cn("relative flex min-h-svh flex-col overflow-hidden", PRACTICE_BACKGROUND)}>

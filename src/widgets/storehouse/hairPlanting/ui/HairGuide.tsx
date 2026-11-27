@@ -116,13 +116,16 @@ const HairGuide = ({ nabalLossId, onPlant, onBuy, onClose }: HairGuideProps) => 
   const closing = leaving === "down";
 
   const view = getGuideView(scene);
+  /** 위에서 잰 시안 위치를 화면 높이에 비례해 내려요. 시안보다 짧은 화면에서는 시안 위치 그대로예요. */
+  const scaledTop = (px: number) =>
+    `max(${px}px, calc(100svh * ${px / GUIDE_LAYOUT.screenHeight}))`;
   const plucked = GUIDE_PLUCKED_BY_SCENE[scene];
 
   return (
     <main
       // 곳간 위에 겹쳐 띄워요(하단 탭바 z-10보다 위). 열리면 아래에서 올라오고, 닫으면 내려가요.
       className={cn(
-        "motion-safe:animate-hair-guide-enter fixed inset-0 z-20 touch-none overflow-hidden bg-[linear-gradient(var(--adaptiveGrey900)_150px,var(--adaptiveGrey300))]",
+        "motion-safe:animate-hair-guide-enter fixed inset-0 z-20 touch-none overflow-hidden bg-[linear-gradient(var(--adaptiveGrey900)_var(--band),var(--adaptiveGrey300))]",
         // 떠나는 동안에도 입력을 막아 밑의 곳간과 탭바가 눌리지 않게 해요.
         slideDownClass(closing),
       )}
@@ -131,16 +134,16 @@ const HairGuide = ({ nabalLossId, onPlant, onBuy, onClose }: HairGuideProps) => 
           "--guide-close": `${GUIDE_CLOSE_MS}ms`,
           "--guide-dim": `${GUIDE_DIM_MS}ms`,
           "--safe-area-bottom": `${safeAreaBottom}px`,
-          "--design-height": `${GUIDE_LAYOUT.screenHeight}px`,
+          "--band": scaledTop(GUIDE_LAYOUT.bandHeight),
           "--guide-transition": `${GUIDE_TRANSITION_MS}ms`,
           "--slot-fade": `${GUIDE_SLOT_FADE_MS}ms`,
         } as CSSProperties
       }
     >
-      {/* 시안 배경은 위 30%까지 단색이에요. 토스 상단 바(94px)를 뺀 화면에서는 150px이에요. */}
+      {/* 시안 배경은 위 30%까지 단색이에요(`bandHeight`). 긴 화면에서는 다른 위치처럼 비례해서 늘어나요. */}
       <div
         className={cn(
-          "absolute inset-0 bg-[linear-gradient(var(--adaptiveGrey50)_150px,var(--adaptiveGrey300))]",
+          "absolute inset-0 bg-[linear-gradient(var(--adaptiveGrey50)_var(--band),var(--adaptiveGrey300))]",
           transition,
           !view.light && "opacity-0",
         )}
@@ -156,7 +159,7 @@ const HairGuide = ({ nabalLossId, onPlant, onBuy, onClose }: HairGuideProps) => 
         )}
         style={
           {
-            "--top": `${GUIDE_LAYOUT.figureTop}px`,
+            "--top": scaledTop(GUIDE_LAYOUT.figureTop),
             "--width": `${GUIDE_LAYOUT.figureWidth}px`,
             "--zoom": view.zoomed ? GUIDE_LAYOUT.zoom : 1,
           } as CSSProperties
@@ -185,7 +188,7 @@ const HairGuide = ({ nabalLossId, onPlant, onBuy, onClose }: HairGuideProps) => 
         )}
         style={
           {
-            "--top": `${GUIDE_LAYOUT.mintTop}px`,
+            "--top": scaledTop(GUIDE_LAYOUT.mintTop),
             "--width": `${GUIDE_LAYOUT.mintWidth}px`,
             "--rise": view.restored ? "0px" : `${GUIDE_LAYOUT.mintRise}px`,
           } as CSSProperties
@@ -195,7 +198,7 @@ const HairGuide = ({ nabalLossId, onPlant, onBuy, onClose }: HairGuideProps) => 
       {/* 문구는 겹쳐 두고 장면에 맞는 것만 보여줘요. 다음 문구는 아래에, 지난 문구는 위에 숨겨 둬요. */}
       <div
         className="absolute inset-x-0 top-(--top) grid justify-items-center px-5"
-        style={{ "--top": `${GUIDE_LAYOUT.copyTop}px` } as CSSProperties}
+        style={{ "--top": scaledTop(GUIDE_LAYOUT.copyTop) } as CSSProperties}
       >
         {COPIES.map((copy, index) => (
           <div
@@ -244,7 +247,7 @@ const HairGuide = ({ nabalLossId, onPlant, onBuy, onClose }: HairGuideProps) => 
         )}
         style={
           {
-            "--top": `${GUIDE_LAYOUT.cardTop}px`,
+            "--top": scaledTop(GUIDE_LAYOUT.cardTop),
             "--rise": view.restored ? "0px" : `${GUIDE_LAYOUT.cardRise}px`,
           } as CSSProperties
         }
@@ -288,7 +291,7 @@ const HairGuide = ({ nabalLossId, onPlant, onBuy, onClose }: HairGuideProps) => 
       <div
         className={cn(
           // 낮은 화면에서 07 카드의 [구매하기]와 겹쳐도 가로채지 않게, 영역은 터치를 통과시키고 버튼만 받아요.
-          "pointer-events-none fixed inset-x-0 bottom-0 flex flex-col items-center pt-[57px] pb-[calc(16px+var(--safe-area-bottom)+max(0px,100svh-var(--design-height)))]",
+          "pointer-events-none fixed inset-x-0 bottom-0 flex flex-col items-center pt-[57px] pb-[calc(16px+var(--safe-area-bottom))]",
           transition,
           view.showActions && "[&_button]:pointer-events-auto",
           !view.showActions && "opacity-0",

@@ -87,6 +87,7 @@ const RoomSummary = ({ rooms, today, onSelectRoom, onRoomInfo }: RoomSummaryProp
         </div>
       )}
       <RicePotGauge
+        key={room.roomId}
         rice={pot.amount}
         capacity={pot.goalAmount}
         reward={pot.rewardAmount}

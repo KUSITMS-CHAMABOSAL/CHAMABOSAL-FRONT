@@ -2,6 +2,8 @@ import { type CSSProperties, useEffect, useLayoutEffect, useRef, useState } from
 
 import { Paragraph, ProgressBar } from "@toss/tds-mobile";
 
+import { cn } from "@/shared/lib";
+
 import riceBowl from "../assets/icon_rice_bowl.svg";
 
 interface RicePotGaugeProps {
@@ -23,7 +25,7 @@ const FILL_DELAY_MS = 400;
 const FILL_MS = 500;
 const FILL_EASING = "ease-in-out";
 
-// 다 차오르면 밥그릇이 한 번 튀고, `+n석`이 떠올랐다 사라져요(리액션 엄지와 같은 리듬).
+// 다 차오르면 밥그릇이 한 번 튀고, 옆에 `+n석`이 떠올랐다 사라져요.
 const POP: Keyframe[] = [
   { transform: "scale(1)" },
   { transform: "scale(1.2)", offset: 0.4 },
@@ -31,13 +33,15 @@ const POP: Keyframe[] = [
 ];
 const FLOAT_MS = 1200;
 const FLOAT: Keyframe[] = [
-  { opacity: 0, transform: "translate(-50%, 4px)" },
-  { opacity: 1, transform: "translate(-50%, -6px)", offset: 0.25 },
-  { opacity: 1, transform: "translate(-50%, -6px)", offset: 0.75 },
-  { opacity: 0, transform: "translate(-50%, -12px)" },
+  { opacity: 0, transform: "translateY(6px)" },
+  { opacity: 1, transform: "translateY(0)", offset: 0.25 },
+  { opacity: 1, transform: "translateY(0)", offset: 0.75 },
+  { opacity: 0, transform: "translateY(-4px)" },
 ];
 
 const BOWL_WIDTH = 26;
+/** 밥그릇이 이보다 오른쪽이면 `+n석`을 밥그릇 왼쪽에 띄워요. 오른쪽에 띄우면 화면 밖으로 나가요. */
+const FLOAT_FLIP_PROGRESS = 0.7;
 
 /** 밥그릇 왼쪽 위치예요(시안 설명: 밥그릇 위치 = 바 폭 × 진행률 - 13). 양 끝에서는 바 안에 머물러요. */
 const getBowlLeft = (trackWidth: number, progress: number) =>
@@ -132,9 +136,12 @@ const RicePotGauge = ({ rice, capacity, reward, days, gainFrom }: RicePotGaugePr
             <div
               ref={floatRef}
               aria-hidden
-              className="pointer-events-none absolute bottom-full left-1/2 flex w-max [transform:translateX(-50%)] items-center gap-0.5 whitespace-nowrap opacity-0"
+              // 밥그릇 위에 띄우면 왼쪽에 있을 때 위의 큰 숫자(`150 / 300석`)와 겹쳐서, 밥그릇과 같은 줄 옆에 띄워요.
+              className={cn(
+                "pointer-events-none absolute top-[3px] w-max whitespace-nowrap opacity-0",
+                progress > FLOAT_FLIP_PROGRESS ? "right-full mr-1" : "left-full ml-1",
+              )}
             >
-              <img src={riceBowl} alt="" width={14} height={13.24} className="max-w-none" />
               <Paragraph typography="t7" fontWeight="bold" color="var(--adaptiveBlue600)">
                 {`+${rice - gainFrom}석`}
               </Paragraph>
